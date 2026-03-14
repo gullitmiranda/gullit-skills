@@ -39,16 +39,24 @@ See the [agentskills.io](https://agentskills.io) spec for the full format refere
 
 ## Install
 
+Requires [ai-skills-cli](https://github.com/gullitmiranda/ai-skills-cli).
+
 ```bash
 # Install all cross-agent skills
 ai-skills add gullitmiranda/gullit-skills
 
 # Install a single skill
-ai-skills add gullitmiranda/gullit-skills/skills/my-skill
+ai-skills add https://github.com/gullitmiranda/gullit-skills/tree/main/skills/git
 
 # Install Cursor-specific skills
-ai-skills add gullitmiranda/gullit-skills/.cursor/skills/plan-archive
+ai-skills add https://github.com/gullitmiranda/gullit-skills/tree/main/.cursor/skills/plan-archive
 
 # Pin to a specific ref
 ai-skills add gullitmiranda/gullit-skills --ref v1.0.0
+```
+
+Don't have `ai-skills` yet?
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/gullitmiranda/ai-skills-cli/main/scripts/install | bash
 ```
