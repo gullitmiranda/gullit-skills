@@ -1,22 +1,54 @@
 # gullit-skills
 
-Common personal skills for AI coding agents.
+Personal skills for AI coding agents, following the [Agent Skills](https://agentskills.io) open standard.
 
-## Structure
+## Directory Structure
 
-Skills follow the filesystem convention for discovery:
+```
+skills/                        # Cross-agent skills (installed by all agents)
+  <skill-name>/SKILL.md
+  gh-profile-template/SKILL.md # Reusable template — copy and fill in placeholders
 
-- Single skill: `SKILL.md` at root
-- Multiple skills: `<skill-name>/SKILL.md`
-- Agent-specific: `.cursor/skills/...`, `.claude/skills/...`
-- Common across agents: `.ai-agents/skills/...`
+.cursor/skills/                # Cursor-specific skills
+  plan-archive/SKILL.md
+
+.claude/skills/                # Claude Code-specific skills
+.agents/skills/                # Other agent-specific skills
+```
+
+- `skills/` contains skills that work across any agent runtime.
+- Skills with a `-template` suffix are reusable templates with placeholders. Copy to your own skills repo, rename, and fill in the values.
+- `.<agent>/skills/` contains skills scoped to a specific agent (Cursor, Claude, Codex, etc.).
+
+## SKILL.md Format
+
+Each skill is a `SKILL.md` file with YAML frontmatter:
+
+```markdown
+---
+name: my-skill
+description: Short description of what the skill does and when to use it.
+---
+
+# My Skill
+
+Instructions for the agent...
+```
+
+See the [agentskills.io](https://agentskills.io) spec for the full format reference.
 
 ## Install
 
 ```bash
-# Install all skills from this repo
-ai-skills add https://github.com/gullitmiranda/gullit-skills
+# Install all cross-agent skills
+ai-skills add gullitmiranda/gullit-skills
 
 # Install a single skill
-ai-skills add https://github.com/gullitmiranda/gullit-skills/tree/main/skills/my-skill
+ai-skills add gullitmiranda/gullit-skills/skills/my-skill
+
+# Install Cursor-specific skills
+ai-skills add gullitmiranda/gullit-skills/.cursor/skills/plan-archive
+
+# Pin to a specific ref
+ai-skills add gullitmiranda/gullit-skills --ref v1.0.0
 ```
