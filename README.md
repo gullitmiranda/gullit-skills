@@ -55,8 +55,20 @@ ai-skills add https://github.com/gullitmiranda/gullit-skills/tree/main/.cursor/s
 ai-skills add gullitmiranda/gullit-skills --ref v1.0.0
 ```
 
-Don't have `ai-skills` yet?
+<details>
+<summary>Don't have <code>ai-skills</code> yet?</summary>
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/gullitmiranda/ai-skills-cli/main/scripts/install | bash
 ```
+
+Or review the script before running:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/gullitmiranda/ai-skills-cli/main/scripts/install -o /tmp/ai-skills-install.sh && \
+  less /tmp/ai-skills-install.sh && \
+  read -p "Execute? [y/N] " -n 1 -r && echo && \
+  [[ $REPLY =~ ^[Yy]$ ]] && bash /tmp/ai-skills-install.sh
+```
+
+</details>
