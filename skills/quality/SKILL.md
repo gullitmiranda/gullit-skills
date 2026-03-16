@@ -70,6 +70,7 @@ Do not manually fix what Trunk can fix; let Trunk do it first, then the agent re
 - Include comprehensive descriptions with context
 - Reference Linear issues when applicable
 - Follow conventional commit format for PR titles
+- When referencing PRs or issues, always use full GitHub URLs (e.g., `https://github.com/org/repo/pull/123`), never shorthand like `repo #123` or `repo#number`
 
 ### Testing Requirements
 
