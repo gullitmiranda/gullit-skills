@@ -71,6 +71,7 @@ Do not manually fix what Trunk can fix; let Trunk do it first, then the agent re
 - Reference Linear issues when applicable
 - Follow conventional commit format for PR titles
 - When referencing PRs or issues, always use full GitHub URLs (e.g., `https://github.com/org/repo/pull/123`), never shorthand like `repo #123` or `repo#number`
+- **Before publishing any text with file paths or links** (PR body, issue body, comments, Slack/Linear messages, versioned docs), follow the `publish-safe-links` skill to avoid linking to gitignored, untracked, or unpushed files such as `.cursor/plans/`, `.factory/`, `wt-*/`, or absolute machine paths
 
 ### Testing Requirements
 
