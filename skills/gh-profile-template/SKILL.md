@@ -1,64 +1,64 @@
 ---
 name: gh-profile
 description: >
-  Template: Route GitHub CLI (gh) profile/auth based on workspace path.
-  Use before running any gh command to ensure the correct GitHub account is active.
-  Copy this skill and fill in the placeholders for your environment.
+  Route GitHub CLI (gh) profile/auth based on workspace path. ALWAYS use before
+  any gh command or git push/pull to a remote. ~/code/cw/ → gullit-cw,
+  ~/code/gullit/ and ~/code/oss/ → gullitmiranda.
 ---
 
-# GitHub CLI Profile Routing (Template)
+# GitHub CLI Profile Routing
 
-> **This is a reusable template.** Copy it to your skills repo and replace
-> all `<placeholder>` values with your actual paths and GitHub usernames.
+## MANDATORY — Run before every `gh` command or `git push/pull`
 
-## Purpose
-
-Different workspace paths belong to different GitHub accounts. Before running any `gh` CLI command, the agent must ensure the correct profile is active.
+Different workspace paths use different GitHub accounts. The wrong account will cause 403 errors on push/pull.
 
 ## Routing Rules
 
-Determine the expected GitHub user from the current working directory:
+| Workspace path prefix | GitHub user      |
+|-----------------------|------------------|
+| `~/code/cw/`          | `gullit-cw`      |
+| `~/code/gullit/`      | `gullitmiranda`  |
+| `~/code/oss/`         | `gullitmiranda`  |
+| `~/.ai-skills/`       | `gullitmiranda`  |
+| `~/.factory/`         | `gullitmiranda`  |
 
-| Workspace path prefix   | GitHub user       |
-|--------------------------|-------------------|
-| `~/Code/<personal>/`     | `<personal-user>` |
-| `~/Code/oss/`            | `<personal-user>` |
-| `~/.dotfiles`            | `<personal-user>` |
-| `~/Code/<work>/`         | `<work-user>`     |
+## Procedure
 
-Paths are matched by prefix after expanding `~` to `$HOME`.
-Add or remove rows to match your directory layout.
-
-## Procedure (before every `gh` command)
-
-1. Resolve the current working directory to one of the routing rules above.
-2. Run `gh auth status` to check which user is currently active.
-3. If the active user does not match the expected user, switch first:
-
+1. Check which account is active:
+   ```sh
+   gh auth status
+   ```
+2. If it does not match the expected user for the current path, switch:
    ```sh
    gh auth switch --user <expected-user>
    ```
+3. For work repos (`~/code/cw/`), load env vars if needed:
+   ```sh
+   eval "$(mise env)"
+   ```
+4. Then run the intended command.
 
-4. Then proceed with the intended `gh` command.
+## Initial Account Setup
 
-## Environment Variables
-
-- **Never** rely on the `GH_TOKEN` environment variable set in `mise.toml` for profile selection. Profile routing must always use `gh auth switch`.
-- Still run `eval "$(mise env)"` when needed for **other** environment variables in work repos (e.g., API keys, service tokens), but do not use it as a substitute for profile switching.
-
-## Example
+When logging in to an account for the first time, always include the `workflow` scope:
 
 ```sh
-# 1. Check current profile
-gh auth status
-# active account: <wrong-user>
-
-# 2. Switch to the expected profile
-gh auth switch --user <expected-user>
-
-# 3. (work repos only) Load env vars if needed
-eval "$(mise env)"
-
-# 4. Run the actual command
-gh pr create --fill
+gh auth login --scopes workflow
 ```
+
+This ensures the token can push changes to `.github/workflows/` files. Without this scope, GitHub rejects those pushes even if you have repo access.
+
+If an existing account is missing the scope, refresh it once:
+
+```sh
+gh auth refresh --scopes workflow
+```
+
+The scope persists across automatic token refreshes. It is only lost on full re-login (`gh auth logout` + `gh auth login`).
+
+## Rules
+
+- **Never** rely on `GH_TOKEN` from `mise.toml` for profile selection — always use `gh auth switch`.
+- `eval "$(mise env)"` is only for loading other env vars (API keys, tokens), not for profile switching.
+- When in doubt about which account to use, check `gh auth status` first.
+- Always use `--scopes workflow` when running `gh auth login` for any account.
