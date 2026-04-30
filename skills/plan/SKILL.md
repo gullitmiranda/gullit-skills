@@ -4,12 +4,22 @@ description: Create or update project plans. Use when the user asks to create a 
 ---
 # Plan
 
-When creating or updating plans (in plan mode or in normal chat):
+When creating or updating plans, check which tool you are before choosing the location and format.
 
-1. **Location**: Save plan files in `.cursor/plans/`. Do not create plan files in the workspace root or ad-hoc locations.
-2. **Format**: Use the standard plan format (`.plan.md` extension) and the same structure Cursor uses for native plans (e.g. tasks in the expected plan format), so plans are consistent whether generated in plan mode or not.
-3. **Structure**: Objective, Tasks, Dependencies, Acceptance Criteria, Notes (markdown with clear sections). Match the task/todo format of `.plan.md` plans.
-4. **Content**: Clear, actionable task breakdown; include dependencies and prerequisites.
-5. **Never**: Add timelines, schedules, cronograms, or time estimates (unless the user explicitly asks for them).
+## Routing by tool
 
-If the user has not specified a filename, use a descriptive name with `.plan.md` extension (e.g. `my-feature.plan.md`). For full structure details, see the **workflow** skill (Planning Workflow section).
+| Tool | Location | Format/extension | Committed? |
+|------|----------|-----------------|------------|
+| **Cursor** | `.cursor/plans/<name>.plan.md` | `.plan.md` — integrates with Cursor plan UI | No — gitignored; NEVER commit |
+| **Claude CLI** | `.cursor/plans/<name>.plan.md` | `.plan.md` | No — gitignored; NEVER commit |
+| **Factory / Droid** | `.factory/orchestrator/<name>.md` | Plain `.md` | Yes — committed alongside code |
+
+**Decision rule:** If you are Cursor or Claude CLI, use `.cursor/plans/` with `.plan.md`. If you are Factory/Droid, use `.factory/orchestrator/` with plain `.md`. Never create plan files in the workspace root, `tmp/`, or any ad-hoc location.
+
+## Content (applies to all tools)
+
+- **Structure**: Objective, Tasks, Dependencies, Acceptance Criteria, Notes
+- **Content**: Clear, actionable task breakdown; include dependencies and prerequisites
+- **Never**: Add timelines, schedules, cronograms, or time estimates (unless the user explicitly asks)
+
+If the user has not specified a filename, use a descriptive name (e.g. `my-feature.plan.md` for Cursor, `my-feature.md` for Droid).
