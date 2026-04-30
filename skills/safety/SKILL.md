@@ -12,6 +12,12 @@ description: Git, command, Kubernetes, data, workspace, and temporary files safe
 - Do not push unless explicitly requested
 - Never commit to main/master branch unless explicitly requested
 - Never run `git reset --hard` without explicit user approval
+- Never add gitignored files to git (`git add`) — at most, show the command for the user to run themselves
+- **Never commit files under `.cursor/plans/`** — they are local-only/gitignored; this breaks the user's setup and has been corrected multiple times
+- When splitting, stacking, or consolidating work from an existing feature/draft
+  branch, **never execute the mission on the source branch**. First create a new
+  working branch (or worktree) from the agreed base and treat the source branch
+  as read-only input.
 
 ### Core Safety Guidelines
 
@@ -20,6 +26,8 @@ description: Git, command, Kubernetes, data, workspace, and temporary files safe
 - Always create feature branches for changes
 - Use `/git-branch` command for safe branch creation
 - `/commit` command automatically creates feature branch when on main/master
+- For incremental delivery, branch-split, or PR-stack work, create the delivery
+  branch/worktree before editing anything
 - Verify branch before committing
 - Never commit unstaged changes without explicit request
 - Always validate conventional commit format
