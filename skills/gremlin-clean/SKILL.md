@@ -26,3 +26,27 @@ Strip gremlin/invisible Unicode characters from files.
 - Removes control characters (except tab, LF, CR)
 - Removes line/paragraph separators
 - Skips binary files automatically
+
+## What It Does NOT Do
+
+The script intentionally leaves typographic dashes untouched:
+
+- `--` U+2013 en dash
+- `-` U+2014 em dash
+
+These are valid Unicode and can appear in legitimate prose. If the user reports
+them as gremlins (common in AI-generated Markdown tables or range notation in
+infrastructure code), replace them manually with ASCII hyphens:
+
+```python
+content.replace('\u2014', '-').replace('\u2013', '-')
+```
+
+Or run inline:
+
+```bash
+python3 -c "
+import sys; p = sys.argv[1]
+open(p,'w').write(open(p).read().replace('\u2014','-').replace('\u2013','-'))
+" <file>
+```
