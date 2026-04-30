@@ -53,7 +53,7 @@ description: Language, terminal, workspace, branch, commit, PR, planning, and do
 - Make small, focused commits
 - Use conventional commit format
 - Include meaningful commit messages
-- Reference Linear issues when applicable
+- Reference issues when applicable: GitHub Issues by default; Linear only when explicitly referenced in the prompt or commits
 
 ## PR Workflow
 
@@ -86,6 +86,7 @@ description: Language, terminal, workspace, branch, commit, PR, planning, and do
 
 - Save in `.cursor/plans/` with `.plan.md` extension so plans match the standard format (e.g. `descriptive-name.plan.md`).
 - Use the same task/todo structure as native Cursor plans so plans stay consistent whether created in plan mode or in chat.
+- **NEVER commit files under `.cursor/plans/`** — they are local-only and gitignored; committing them is a hard error that breaks the user's setup.
 
 ## Documentation Standards
 

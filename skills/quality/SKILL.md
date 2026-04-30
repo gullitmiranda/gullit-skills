@@ -15,7 +15,7 @@ description: Code quality, commit standards, quality gates, PR standards, docume
 - Types: feat, fix, chore, docs, style, refactor, test
 - Present tense, imperative mood
 - **Always write commit messages in English**
-- Include Linear issue references when applicable
+- Include issue references when applicable: GitHub Issues by default (`#123` / `owner/repo#123`); Linear `TEAM-123` only when explicitly referenced
 - Keep descriptions concise but descriptive
 
 ### Code Style
@@ -68,7 +68,7 @@ Do not manually fix what Trunk can fix; let Trunk do it first, then the agent re
 - **Always write PR titles and descriptions in English**
 - Use descriptive and clear PR titles
 - Include comprehensive descriptions with context
-- Reference Linear issues when applicable
+- Reference issues when applicable: GitHub Issues by default; Linear only when explicitly referenced in commits or prompt
 - Follow conventional commit format for PR titles
 - When referencing PRs or issues, always use full GitHub URLs (e.g., `https://github.com/org/repo/pull/123`), never shorthand like `repo #123` or `repo#number`
 
