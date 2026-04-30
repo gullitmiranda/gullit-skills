@@ -1,6 +1,6 @@
 ---
 name: pr
-description: Pull request lifecycle - create PR with gh CLI, validate quality gates, and mark ready for review. Use when creating a PR, running quality checks, or marking PR ready for review.
+description: Pull request lifecycle - create and update PRs with gh CLI, validate quality gates, keep PR metadata aligned with the current diff, and mark ready for review. Use when creating a PR, updating an existing PR after new changes, running quality checks, or marking PR ready for review.
 ---
 # Pull Request Management
 
@@ -14,11 +14,37 @@ PR Management Rules:
 - Ensure branch has been created and changes committed before PR creation
 - Generate conventional commit format titles: `<type>(<scope>): <summary>`
 - Run quality checks before PR creation
+- Treat PR title, description, linked issues, and test plan as living metadata that must match the current branch diff
+- Whenever new commits or edits materially change scope, behavior, testing, or linked issues, re-check the existing PR info and update it if it became stale
 - Validate PR completeness and readiness for review
-- Include Linear issue references for auto-linking, but only if they are present in the commit message or prompt
-
-Reference: Linear GitHub Integration - https://linear.app/docs/github#enable-autolink
+- Default issue tracker is GitHub Issues; only include Linear references when they are explicitly present in the commit message or prompt (URL or `TEAM-123` ID)
+- Never claim tests/checks passed unless they were actually executed in the current session
+- Prefer reviewer-oriented PR bodies that explain problem, change, risk, and validation evidence
+- Keep PR title and body grounded in `git diff <base>...HEAD`, not only commit message wording
+- Always report PR references as markdown links, never as a bare ID: use `[<repo>#<number>](<url>)` when only the link is known, and `[<repo>#<number>: <title>](<url>) by @<author>` when title and author are available
 </context>
+
+<pr_information_quality>
+
+## PR Information Quality Contract
+
+Every PR body should contain, when applicable:
+
+1. **Why**: concise problem/context statement
+2. **What changed**: grouped bullets by area/component
+3. **Risk & impact**: user impact, operational risk, migrations, breaking changes
+4. **Validation**: exact commands executed and short outcomes
+5. **Rollout/Backout**: only when deployment risk is non-trivial
+6. **Linked issues**: GitHub Issue references supported by branch context (Linear only if explicitly referenced)
+
+Hard rules:
+
+- Do not include placeholders like "TODO", "N/A", or template hints in final body
+- Do not include "tests passed" without command evidence
+- Remove stale sections when scope changes (do not append contradictory notes)
+- Prefer short factual bullets over marketing text
+
+</pr_information_quality>
 
 <workflow>
 ## Main Command Routes
@@ -38,7 +64,7 @@ Reference: Linear GitHub Integration - https://linear.app/docs/github#enable-aut
    - Run `git diff main...HEAD` to see all changes
    - Identify primary change type (feat, fix, chore, etc.)
    - Determine scope from affected components
-   - Check for Linear issue references in commits
+   - Check for issue references in commits (GitHub Issues by default; Linear only if explicitly mentioned)
 
 3. **Generate PR Title**:
 
@@ -51,9 +77,10 @@ Reference: Linear GitHub Integration - https://linear.app/docs/github#enable-aut
 
    - Check for `.github/pull_request_template.md`
    - If template exists, use as base structure
-   - Generate Summary section from commit messages
-   - Add Test Plan with checklist items
-   - Include Linear issue links if mentioned
+   - Generate a structured body with: Why, What changed, Risk/Impact, Test Plan, Linked issues
+   - Build "What changed" from `git diff <base>...HEAD` grouped by component/area
+   - Add Test Plan using commands actually run in the session
+   - Include GitHub Issue links when present in commits/prompt; include Linear links only if explicitly referenced
    - Remove template placeholders if no data available
 
 5. **Create PR**:
@@ -61,6 +88,47 @@ Reference: Linear GitHub Integration - https://linear.app/docs/github#enable-aut
    - Use heredoc for proper formatting
    - Set base branch (usually main)
    - Return PR URL for user as a markdown link
+
+### Continuous PR Sync - Applies After Any Material Change
+
+1. **Detect Existing PR**:
+
+   - Check whether the current branch already has an open PR using `gh pr view`
+   - If no PR exists, skip sync and follow the create flow instead
+
+2. **Check For Metadata Drift**:
+
+   - Compare current PR title/body against `git diff <base>...HEAD`, recent commits, and executed validations
+   - Look for drift in:
+     - scope or primary change type
+     - summary bullets
+     - test plan
+     - risk/impact notes
+     - linked issues
+     - draft/ready status notes that no longer reflect reality
+
+3. **Update PR When Drift Exists**:
+
+   - If the current PR information no longer matches the actual changes, update it immediately with `gh pr edit`
+   - Refresh the title if the main scope or change type shifted
+   - Refresh the body if the summary, rollout notes, risks, or test plan changed
+   - Remove stale claims rather than piling on contradictory notes
+   - Prefer editing the canonical PR body over leaving corrections only in chat replies
+
+4. **Before Finishing The Task**:
+
+   - Do not end a PR-related task while the PR metadata is known to be stale
+   - If changes were made, prefer `gh pr edit --title ... --body-file ...` to keep body canonical and reproducible
+   - In the final response, mention that the PR information was updated when a sync was required
+
+### Review Comment Resolution
+
+- When the user asks to resolve PR review comments, inspect each targeted unresolved thread/comment instead of handling only a subset
+- For comments from `cloudwalk-review-agent[bot]` and `enrond-cw[bot]`, address every targeted comment individually
+- Choose the action that best resolves each comment: reply in GitHub when explanation/rationale is sufficient, or update the PR when code or metadata changes are needed
+- After addressing each targeted comment, mark the GitHub review thread/comment as resolved before finishing the task
+- Do not report the review-comment task as complete while any targeted bot comment remains unresolved
+- If a comment cannot be safely resolved without user input, stop and ask the user instead of leaving it silently unresolved
 
 ### `/pr check` or `/pr validate` or `/pr review` - PR Validation
 
@@ -88,6 +156,7 @@ Reference: Linear GitHub Integration - https://linear.app/docs/github#enable-aut
 
    - Check for required template sections (Summary, Test Plan)
    - Verify description provides sufficient context
+   - Verify the description still matches the current diff and recent commits
    - Look for linked issues or related work
    - Ensure test plan is actionable
 
@@ -235,9 +304,13 @@ fi
 
 - Has summary of changes
 - Includes test plan with checkboxes
+- Lists concrete validation commands and outcomes
+- Includes risk/impact when relevant
 - Links to related issues
 - Provides sufficient context
+- Matches the current branch diff and recent commits
 - No template placeholders left unfilled
+- No unverifiable claims
 
 ### ✅ Metadata Complete
 
@@ -261,36 +334,52 @@ fi
 - Changes are focused and related
   </validation_checks>
 
-<linear_integration>
+<issue_tracking>
 
-## Linear GitHub Integration
+## Issue Tracking Integration
 
-### Issue Reference Format
+GitHub Issues is the default issue tracker. Linear is supported only when the user explicitly references a Linear issue (URL or `TEAM-123` ID) in the prompt, branch name, or commit message. Never invent or suggest a Linear issue when none was provided.
 
-**IMPORTANT**: Always use full markdown URL format for Linear issue references:
+### When to Link an Issue
+
+- A linked issue is mentioned in the prompt, branch name, or any commit message on the branch
+- The PR description should reflect those references; do not fabricate issue links
+
+### Default: GitHub Issues
+
+Use full markdown URL format for GitHub Issue references:
 
 ```markdown
-# Correct - Full markdown URL (preferred)
-Closes [PLTFRM-123: Issue Title](https://linear.app/cloudwalk/issue/PLTFRM-123/issue-slug)
+# Same repo
+Closes [#123: Issue Title](https://github.com/<owner>/<repo>/issues/123)
 
-# Avoid - Just the ID (less informative)
-Closes PLTFRM-123
+# Cross-repo
+Closes [<owner>/<repo>#123: Issue Title](https://github.com/<owner>/<repo>/issues/123)
 ```
 
-### Fetching Issue Details
+When a GitHub Issue number is detected, fetch details with `gh`:
 
-When a Linear issue ID is detected in commits, fetch the issue details using Linearis CLI:
+```bash
+gh issue view 123 --json number,title,url
+```
+
+Use the response to build the full markdown URL with title. Use closing keywords (`Closes`, `Fixes`, `Resolves`) so GitHub auto-closes the issue on merge.
+
+### Conditional: Linear
+
+Only when a Linear reference is explicitly present (URL or `TEAM-123` ID like `PLTFRM-123`, `ENG-123`):
+
+```markdown
+Closes [PLTFRM-123: Issue Title](https://linear.app/<workspace>/issue/PLTFRM-123/issue-slug)
+```
+
+If only the ID is provided, fetch the title to build the full link:
 
 ```bash
 linearis issues read PLTFRM-123
 ```
 
-Use the response to build the full markdown URL with title.
-
-### Auto-linking Setup
-
-- Use magic words like "Closes", "Fixes", "Resolves" followed by the full markdown link
-- Linear will auto-link and close issues when GitHub integration is enabled
+Reference: <https://linear.app/docs/github#enable-autolink>
 
 ### Commit Message Format
 
@@ -301,7 +390,7 @@ feat(auth): add JWT token validation middleware
 - Add error handling for expired tokens
 - Update authentication flow documentation
 
-Closes [PLTFRM-123: Add JWT validation](https://linear.app/cloudwalk/issue/PLTFRM-123/add-jwt-validation)
+Closes [#42: Add JWT validation](https://github.com/<owner>/<repo>/issues/42)
 ```
 
 ### PR Description Format
@@ -309,7 +398,7 @@ Closes [PLTFRM-123: Add JWT validation](https://linear.app/cloudwalk/issue/PLTFR
 ```markdown
 ## Related Issues
 
-Closes [PLTFRM-123: Add JWT validation](https://linear.app/cloudwalk/issue/PLTFRM-123/add-jwt-validation)
+Closes [#42: Add JWT validation](https://github.com/<owner>/<repo>/issues/42)
 
 ## Summary
 
@@ -325,7 +414,7 @@ Closes [PLTFRM-123: Add JWT validation](https://linear.app/cloudwalk/issue/PLTFR
 - [ ] Run existing authentication test suite
 ```
 
-</linear_integration>
+</issue_tracking>
 
 <safety_checks>
 
@@ -335,7 +424,7 @@ Closes [PLTFRM-123: Add JWT validation](https://linear.app/cloudwalk/issue/PLTFR
 - ✅ Always verify branch is ahead of base
 - ✅ Always push branch before PR creation
 - ✅ Always use conventional commit format for title
-- ✅ Include Linear issue references for auto-linking
+- ✅ Include issue references for auto-linking (GitHub Issues by default; Linear only when explicitly referenced)
 - ✅ Run quality checks before PR creation
   </safety_checks>
 
@@ -343,12 +432,18 @@ Closes [PLTFRM-123: Add JWT validation](https://linear.app/cloudwalk/issue/PLTFR
 
 ## Command Output Formats
 
+### GitHub PR Reference Format
+
+- When reporting a PR with only repo, number, and URL, use `[<repo>#<number>](<url>)`
+- When title and author are available, use `[<repo>#<number>: <title>](<url>) by @<author>`
+- Do not report PRs as bare `#<number>`, `<repo>#<number>`, or raw URLs unless the user explicitly asks for raw output
+
 ### `/pr` - PR Creation Report
 
 ```markdown
 # 🚀 PR Created Successfully
 
-**PR**: #[number] - [title](github-pr-url)
+**PR**: [<repo>#<number>: <title>](github-pr-url) by @<author>
 **Branch**: [feature-branch] → [base-branch]
 **URL**: [github-pr-url]
 **Status**: [Draft | Open]
@@ -371,7 +466,7 @@ Closes [PLTFRM-123: Add JWT validation](https://linear.app/cloudwalk/issue/PLTFR
 ```markdown
 # 🔍 PR Validation Report
 
-**PR**: #[number] - [title](github-pr-url)
+**PR**: [<repo>#<number>: <title>](github-pr-url) by @<author>
 **Branch**: [feature-branch] → [base-branch]
 **Author**: @[username]
 **Status**: [Draft|Open|Ready for Review]
@@ -405,7 +500,7 @@ Closes [PLTFRM-123: Add JWT validation](https://linear.app/cloudwalk/issue/PLTFR
 ```markdown
 # 🎯 PR Ready for Review
 
-**PR**: #[number] - [title](github-pr-url)
+**PR**: [<repo>#<number>: <title>](github-pr-url) by @<author>
 **Branch**: [feature-branch] → [base-branch]
 **Author**: @[username]
 **URL**: [github-pr-url]
@@ -493,7 +588,7 @@ git commit -m "feat(auth): add JWT validation
 - Add error handling
 - Update documentation
 
-Closes ENG-123"
+Closes [#42: Add JWT validation](https://github.com/<owner>/<repo>/issues/42)"
 
 # 2. Create PR
 /pr
