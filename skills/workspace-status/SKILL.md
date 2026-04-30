@@ -82,5 +82,5 @@ Repository 3: /path/to/repo3
 
 - Works with all git commands
 - Integrates with PR workflow
-- Supports Linear issue tracking
+- Supports GitHub Issue tracking (Linear when explicitly referenced)
 - Compatible with branch management

@@ -26,14 +26,14 @@ You are a git commit specialist that creates conventional commits with automatic
      - `style`: Code formatting, style changes
      - `refactor`: Code restructuring without behavior change
      - `test`: Adding or updating tests
-   - Check for Linear issue references in commit message or staged changes
+   - Check for issue references in commit message or staged changes (GitHub Issues by default; Linear `TEAM-123` IDs only when explicitly present)
 
 3. **Generate Commit Message**:
    - Format: `<type>(<scope>): <description>`
    - Scope should be component/area affected (optional)
    - Description should be concise and clear
    - Use present tense, imperative mood
-   - Include Linear issue references (e.g., `ENG-123`, `PROJ-456`) in description for auto-linking
+   - Include issue references for auto-linking only when present in the prompt or staged content. Default is GitHub Issues (`#123` or `owner/repo#123`); use Linear IDs (e.g., `ENG-123`, `PLTFRM-456`) only when explicitly referenced
 
 4. **Execute Commit**:
    - Use heredoc format for multi-line commit messages
@@ -71,7 +71,7 @@ When on main/master branch and using `/commit` (without `--main` flag):
 - Never push automatically
 - Always validate conventional commit format
 - Always show what will be committed before executing
-- Include Linear issue references for GitHub auto-linking
+- Include issue references for auto-linking only when explicitly provided (GitHub Issues by default; Linear only when referenced)
 - Automatically create feature branch when on main/master
 - `--main` flag bypasses main/master protection - use only for emergency fixes
 
@@ -107,7 +107,7 @@ feat(auth): add JWT token validation middleware
 - Add error handling for expired tokens
 - Update authentication flow documentation
 
-Closes ENG-123
+Closes [#42: Add JWT validation](https://github.com/<owner>/<repo>/issues/42)
 EOF
 )"
 ```
@@ -147,12 +147,12 @@ Auto branch creation when on main/master:
 /commit --all
 ```
 
-Linear Integration:
+Issue Linking:
 
-- Include Linear issue IDs (e.g., `ENG-123`, `PROJ-456`) in commit messages
-- Use magic words like "Closes", "Fixes", "Resolves" followed by issue ID
-- Linear will auto-link commits to issues when GitHub integration is enabled
-- Reference: https://linear.app/docs/github#enable-autolink
+- Default tracker is GitHub Issues. Reference with `#123` (same repo) or `owner/repo#123` (cross-repo); prefer full markdown URLs (`[#123: Title](https://github.com/owner/repo/issues/123)`) when title is known
+- Use magic words like `Closes`, `Fixes`, `Resolves` so GitHub auto-closes the issue on merge
+- Linear is supported only when explicitly referenced (URL or `TEAM-123` ID like `ENG-123`, `PLTFRM-456`); never invent a Linear reference
+- Reference: <https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue>; Linear auto-link: <https://linear.app/docs/github#enable-autolink>
 
 ## Arguments
 
@@ -211,7 +211,7 @@ Safe branch creation following project conventions and best practices.
 
 ## Integration
 
-- Works with Linear issue references
+- Works with GitHub Issue references (and Linear when explicitly referenced)
 - Integrates with PR creation workflow
 - Supports multi-repository workspaces
 
@@ -279,7 +279,7 @@ Safe reset with automatic backup and recovery options.
 
 - Works with multi-repository workspaces
 - Integrates with branch protection
-- Supports Linear issue references
+- Supports GitHub Issue references (and Linear when explicitly referenced)
 - Compatible with PR workflow
 
 ---

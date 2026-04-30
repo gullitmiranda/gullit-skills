@@ -110,7 +110,7 @@ This table helps the agent route without scanning when the mapping is obvious:
 | Dangerous operations, destructive commands, permissions | `safety/SKILL.md`                             |
 | Language, documentation style, planning format          | `workflow/SKILL.md`                           |
 | Kubernetes operations                                   | `k8s/SKILL.md`                                |
-| Linear, GitHub, MCP, external services                  | `integration/SKILL.md` or `linear/SKILL.md`   |
+| GitHub Issues, MCP, external integrations               | `integration/SKILL.md` or topical skill       |
 | Agent behavior constraints (don't do X)                 | Delegate to `persist-agent-constraints` skill |
 | File-specific rules (applies to certain paths/globs)    | `.cursor/rules/*.mdc`                         |
 
