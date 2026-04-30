@@ -27,7 +27,9 @@ description: Git, command, Kubernetes, data, workspace, and temporary files safe
 - Use `/git-branch` command for safe branch creation
 - `/commit` command automatically creates feature branch when on main/master
 - For incremental delivery, branch-split, or PR-stack work, create the delivery
-  branch/worktree before editing anything
+  branch/worktree before editing anything (see `incremental-delivery/SKILL.md`
+  for the full protocol — slice mapping, cherry-picking, validation per
+  increment)
 - Verify branch before committing
 - Never commit unstaged changes without explicit request
 - Always validate conventional commit format
