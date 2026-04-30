@@ -18,6 +18,12 @@ description: Git, command, Kubernetes, data, workspace, and temporary files safe
   branch, **never execute the mission on the source branch**. First create a new
   working branch (or worktree) from the agreed base and treat the source branch
   as read-only input.
+- **Never `git add`/`commit`/`push` inside `~/.ai-skills/repos/`**. That path is
+  the ai-skills CLI cache (managed clone), not a working repo. Before any git
+  write op, resolve the cwd (`pwd -P`) and check for `.ai-skills-cache` at the
+  repo root or any `~/.ai-skills/repos/` prefix. If detected, stop and either
+  edit in the source clone (e.g. `~/code/gullit/<repo>/`) or use
+  `ai-skills publish <repo>` when available.
 
 ### Core Safety Guidelines
 
