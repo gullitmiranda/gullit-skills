@@ -124,11 +124,59 @@ Hard rules:
 ### Review Comment Resolution
 
 - When the user asks to resolve PR review comments, inspect each targeted unresolved thread/comment instead of handling only a subset
-- For comments from `cloudwalk-review-agent[bot]` and `enrond-cw[bot]`, address every targeted comment individually
-- Choose the action that best resolves each comment: reply in GitHub when explanation/rationale is sufficient, or update the PR when code or metadata changes are needed
+- For comments from `cloudwalk-review-agent[bot]` and `elrond-cw[bot]`, address every targeted comment individually
 - After addressing each targeted comment, mark the GitHub review thread/comment as resolved before finishing the task
 - Do not report the review-comment task as complete while any targeted bot comment remains unresolved
 - If a comment cannot be safely resolved without user input, stop and ask the user instead of leaving it silently unresolved
+
+#### Severity triage (especially for bot reviewers)
+
+Bot reviewers — particularly `elrond-cw[bot]` — tend to over-flag stylistic
+nits and to push back on intentional design decisions. Do **not** mechanically
+"fix" every comment. Triage first, then act:
+
+1. **Critical / relevant — fix the code**
+
+   Real bugs, security issues, regressions, broken builds, wrong API usage,
+   missing required fields, breaking-change risk, incorrect business logic,
+   data-loss risk, broken docs that ship to users.
+
+2. **Important quality — fix or reply with explicit rationale**
+
+   Maintainability concerns with real impact (missing error handling on a hot
+   path, racey concurrency, leaky abstractions, untested edge case the diff
+   actually introduces). Fix when cheap; otherwise reply with the rationale
+   and resolve.
+
+3. **Trivial nits — won't-fix by default**
+
+   Pure preference/style with no functional impact (alternate naming, prose
+   wording, optional refactors, suggestions to extract a helper that is used
+   once, "consider" comments without a concrete bug). Reply briefly explaining
+   why we are leaving it as-is, mark resolved.
+
+4. **Bot trying to undo an intentional decision — always won't-fix**
+
+   When the PR description, commit message, plan, linked issue, or prior chat
+   makes the intent explicit (e.g. "intentionally remove X", "we are migrating
+   away from Y", "keeping Z mutable on purpose") and the bot suggests reverting
+   that decision, the answer is **won't-fix**. Reply pointing at where the
+   intent is documented, then resolve.
+
+When uncertain whether something is critical vs. nit, ask the user — do not
+silently downgrade a real concern to won't-fix.
+
+#### Won't-fix reply template
+
+Keep the reply short, neutral, and grounded in the documented intent. Example:
+
+```text
+Won't fix — intentional. <one-line rationale, e.g. "this is the migration
+target documented in the PR description / linked issue / plan #N">.
+```
+
+Do not argue with the bot, do not list pros/cons, do not promise follow-ups
+that are not real. State the rationale once and resolve the thread.
 
 ### `/pr check` or `/pr validate` or `/pr review` - PR Validation
 
