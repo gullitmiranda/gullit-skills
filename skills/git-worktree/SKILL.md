@@ -1,6 +1,6 @@
 ---
 name: git-worktree
-description: Enforce git worktree discipline. Use whenever the user asks to create a worktree, work on a feature branch in isolation, or says "nova worktree", "worktree separada", "a partir do branch X". CRITICAL: never rationalize skipping worktree creation.
+description: 'Enforce git worktree discipline. Use whenever the user asks to create a worktree, work on a feature branch in isolation, or says "nova worktree", "worktree separada", "a partir do branch X". CRITICAL: never rationalize skipping worktree creation.'
 ---
 
 # Git Worktree Rules
