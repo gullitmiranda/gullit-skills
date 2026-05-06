@@ -47,6 +47,8 @@ description: Language, terminal, workspace, branch, commit, PR, planning, and do
 
 ## Commit Workflow
 
+- When committing from an AI agent in a repo with Trunk hooks, run the final `git commit` with stdin closed by appending `</dev/null` so the hook cannot hang waiting for EOF
+- If Trunk hook execution still appears stuck with closed stdin, or reports daemon/GRPC errors, use `trunk daemon shutdown` only as fallback recovery before retrying
 - Only commit when explicitly requested
 - Never commit unstaged changes without explicit request
 - Never commit directly to main/master branch

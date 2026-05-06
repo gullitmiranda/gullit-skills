@@ -21,6 +21,8 @@ description: Git, command, Kubernetes, data, workspace, and temporary files safe
 
 ### Core Safety Guidelines
 
+- In repos with Trunk git hooks, agent commits must close stdin on the `git commit` command by appending `</dev/null` to prevent hook hangs in pseudo-terminals
+- If Trunk still appears stuck with closed stdin or logs `Socket closed`, `Connection refused`, or `Daemon stopped`, use `trunk daemon shutdown` only as fallback recovery before retrying the commit
 - Do not change git stage without being asked
 - Do not make commits without reviews unless explicitly requested
 - Always create feature branches for changes
