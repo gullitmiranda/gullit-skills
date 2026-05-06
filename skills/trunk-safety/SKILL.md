@@ -152,7 +152,72 @@ When the user wants to add a linter or formatter:
 3. Check `references/compromised-versions.md` for that tool
 4. Run `trunk check --sample 2` to verify
 
-## Workflow 4: Check Advisories
+## Workflow 4: Agent-safe Git Hooks
+
+Use this workflow when `git commit` appears to hang while Trunk hooks are
+running, especially from an AI agent or pseudo-terminal.
+
+### Symptom
+
+- `git commit` does not return success or failure.
+- Output stops around Trunk hook execution.
+- Manual `trunk check` may pass, or logs may show daemon or GRPC errors.
+
+### Root causes to check
+
+1. **Hook stdin waiting for EOF.** Trunk-generated git hooks save hook stdin
+   with `cat` into a tempfile before they redirect stdin to `/dev/tty` or
+   `/dev/null`. In agent-run commands, stdin can remain open, so `cat` waits
+   indefinitely and the hook never reaches the actual success or error path.
+2. **Stopped or crashed daemon.** Trunk may report internal errors such as
+   `GRPC Failed`, `Socket closed`, `Connection refused`, or `Daemon stopped`.
+   This is a fallback recovery case, not the default assumption.
+
+### Default agent behavior
+
+For commits in a repo that uses Trunk hooks, keep the daemon alone and run the
+final `git commit` with stdin explicitly closed by appending `</dev/null`.
+This is the least disruptive mitigation and should resolve the most common
+agent hang, where the generated hook is waiting for EOF.
+
+For multi-line messages, prefer writing the message to a temporary file and
+running `git commit -F <message-file> </dev/null`.
+
+### Optional preflight checks
+
+If you want to validate before committing, run explicit checks without stopping
+the daemon:
+
+- `trunk check --ci --upstream HEAD --no-progress`
+- `trunk fmt --ci --upstream HEAD --no-progress`
+
+### Fallback recovery
+
+Only run `trunk daemon shutdown` when one of these is true:
+
+- The commit or check still hangs even with `</dev/null`.
+- Trunk logs or output show `Socket closed`, `Connection refused`,
+  `Daemon stopped`, or another daemon/GRPC internal error.
+- The daemon is confirmed unhealthy with `trunk daemon status`.
+
+Recovery sequence:
+
+1. Stop the stuck command.
+2. Run `trunk daemon shutdown`.
+3. Re-run `trunk check --ci --upstream HEAD --no-progress --print-failures`.
+4. Inspect repo-specific logs under `~/.cache/trunk/repos/*/logs/cli.log` and
+   `daemon.log` for `Socket closed`, `Connection refused`, `Daemon stopped`, or
+   the linter name that was running last.
+5. Retry the commit with `</dev/null`.
+
+### Optional mitigation
+
+If one linter repeatedly crashes the daemon in a personal repo, prefer a
+repo-specific tool ignore or disable over repeatedly stopping the daemon. Broad
+IaC/security linters such as `checkov` may be too noisy for personal dotfiles
+unless scoped carefully.
+
+## Workflow 5: Check Advisories
 
 Periodically check for new vulnerabilities affecting enabled tools.
 

@@ -64,6 +64,24 @@ When on main/master branch and using `/commit` (without `--main` flag):
 - `fix/login-bug` (for login bug fix)
 - `chore/update-deps` (for dependency updates)
 
+## Trunk-backed Commit Safety
+
+When the repository uses Trunk git hooks, agent-driven commits must avoid
+hanging on hook stdin:
+
+1. Run the final `git commit` with stdin closed by appending `</dev/null`.
+   This is the default, low-impact mitigation.
+2. Optional preflight checks may be run without stopping the daemon:
+   - `trunk check --ci --upstream HEAD --no-progress`
+   - `trunk fmt --ci --upstream HEAD --no-progress`
+3. Use `trunk daemon shutdown` only as fallback recovery when the commit/check
+   still hangs with closed stdin, or Trunk reports `Socket closed`,
+   `Connection refused`, `Daemon stopped`, or another daemon/GRPC error.
+
+This prevents the Trunk-generated hook from blocking on `cat` while waiting for
+EOF in AI-agent pseudo-terminals, without disrupting the daemon during normal
+commits.
+
 ## Safety Checks
 
 - Never commit to main/master without explicit approval (unless using `--main` flag)
