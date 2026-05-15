@@ -30,14 +30,22 @@ Trigger on any of these signals:
 
 ## Mandatory Protocol
 
-### Step 1 — Confirm worktree path
+### Step 1 — Determine worktree path
 
-If the user did not specify a path, ask before proceeding:
+If the user explicitly provided a path, use it.
+
+If the user did not provide a path, derive one using this user's convention:
 ```
-Qual o caminho para a worktree? (ex: ../helm-charts-cw-app)
+../worktrees/<repo>-<topic>
 ```
 
-Do not assume a path. Do not proceed without one.
+Where:
+- `<repo>` is the current repository directory name
+- `<topic>` is a short kebab-case slug derived from the branch name or task intent
+
+Report the chosen path before creating the worktree. Do not stop to ask for
+confirmation unless required inputs are missing or ambiguous enough that the
+path cannot be derived safely.
 
 ### Step 2 — Create the worktree
 
