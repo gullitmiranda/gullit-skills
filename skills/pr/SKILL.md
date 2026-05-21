@@ -21,7 +21,7 @@ PR Management Rules:
 - Never claim tests/checks passed unless they were actually executed in the current session
 - Prefer reviewer-oriented PR bodies that explain problem, change, risk, and validation evidence
 - Keep PR title and body grounded in `git diff <base>...HEAD`, not only commit message wording
-- Always report PR references as markdown links, never as a bare ID: use `[<repo>#<number>](<url>)` when only the link is known, and `[<repo>#<number>: <title>](<url>) by @<author>` when title and author are available
+- Always include URLs when reporting GitHub PR and issue references in chat and generated content. Markdown links are fine when title or context improves readability; compact raw URLs are also acceptable and often preferred over label-only references.
 </context>
 
 <pr_information_quality>
@@ -482,9 +482,15 @@ Closes [#42: Add JWT validation](https://github.com/<owner>/<repo>/issues/42)
 
 ### GitHub PR Reference Format
 
-- When reporting a PR with only repo, number, and URL, use `[<repo>#<number>](<url>)`
-- When title and author are available, use `[<repo>#<number>: <title>](<url>) by @<author>`
-- Do not report PRs as bare `#<number>`, `<repo>#<number>`, or raw URLs unless the user explicitly asks for raw output
+- When reporting a PR, include the URL. Use `[<repo>#<number>: <title>](<url>) by @<author>` when title and author add useful context.
+- Compact raw URLs are acceptable and often preferred over label-only references.
+- Avoid reporting PRs only as `#<number>` or `<repo>#<number>` when a URL is available.
+
+### GitHub Issue Reference Format
+
+- When reporting an issue, include the URL. Use `[<repo>#<number>: <title>](<url>) by @<author>` when title and author add useful context.
+- Compact raw URLs are acceptable and often preferred over label-only references.
+- Avoid reporting issues only as `#<number>` or `<repo>#<number>` when a URL is available.
 
 ### `/pr` - PR Creation Report
 
