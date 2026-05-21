@@ -23,6 +23,10 @@ Before adding rules here, check if a topical skill already covers the domain
 
 - Prefer using `work` instead of `cw` or `cloudwalk` in directory and namespace naming when the value is not a fixed identifier.
 
+## Link formatting
+
+- When referencing any external resource, include a clickable URL whenever possible; compact raw URLs are welcome and often preferred over label-only references, and bare numbers or abbreviations should only be used when no URL is available.
+
 ## Git commit destinations
 
 - In the user's **personal** GitHub repos (owner `gullitmiranda`, e.g. `~/code/gullit/...`), committing/pushing directly to `main` is allowed without explicit per-task confirmation. The safety skill's "never commit to main/master" rule applies to **work** repos (CloudWalk/cw, OSS, shared), not personal ones. Still keep commits well-scoped and reversible.
