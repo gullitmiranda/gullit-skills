@@ -101,3 +101,16 @@ description: Language, terminal, workspace, branch, commit, PR, planning, and do
 - Avoid redundant information
 - Avoid overly complex explanations
 - In documentation, prefer linking to the GitHub repository URL instead of just mentioning the repo name
+
+### ZeroPath References
+
+- Apply the `zeropath` skill whenever the task or draft mentions ZeroPath,
+  `zeropath`, ZeroPath findings, or URLs under `https://zeropath.com/`.
+- When referencing ZeroPath findings in chat replies, documents, plans, PR
+  bodies, issue bodies, or comments, always include the full URL as visible
+  text. Format: `https://zeropath.com/app/issues/<uuid>`.
+- Do not replace known ZeroPath finding URLs with UUID-only references, shortened
+  links, hidden markdown labels, or vague labels like `ZeroPath 6.3`.
+- Do not add ZeroPath information to unrelated PRs or documents. These rules
+  apply only when ZeroPath is already part of the task, draft, commits, or
+  linked evidence.

@@ -62,6 +62,8 @@ Do not manually fix what Trunk can fix; let Trunk do it first, then the agent re
 - Documentation updated
 - Tests cover new functionality
 - Performance impact assessed
+- For ZeroPath-related changes, include relevant local validation and use the
+  `zeropath` skill for any ZeroPath scan or finding-status evidence
 
 ### Pull Request Standards
 
@@ -71,6 +73,12 @@ Do not manually fix what Trunk can fix; let Trunk do it first, then the agent re
 - Reference issues when applicable: GitHub Issues by default; Linear only when explicitly referenced in commits or prompt
 - Follow conventional commit format for PR titles
 - When referencing PRs or issues, always use full GitHub URLs (e.g., `https://github.com/org/repo/pull/123`), never shorthand like `repo #123` or `repo#number`
+- When a PR references ZeroPath, include known findings as complete visible URLs
+  like `https://zeropath.com/app/issues/<uuid>` and do not add ZeroPath content
+  to unrelated PRs
+- Do not claim "ZeroPath confirmed resolved" unless confirmed by the ZeroPath
+  CLI or explicit ZeroPath evidence supplied by the user; otherwise say the
+  change addresses the finding pattern and is awaiting re-scan
 - **Before publishing any text with file paths or links** (PR body, issue body, comments, Slack/Linear messages, versioned docs), follow the `publish-safe-links` skill to avoid linking to gitignored, untracked, or unpushed files such as `.cursor/plans/`, `.factory/`, `wt-*/`, or absolute machine paths
 
 ### Testing Requirements
@@ -184,7 +192,7 @@ Do not manually fix what Trunk can fix; let Trunk do it first, then the agent re
 
 ## Output / Character Hygiene (Gremlin Characters)
 
-**Known Cursor/LLM issue:** Models sometimes emit invisible Unicode despite instructions. See `docs/gremlin-characters-cursor-llm.md` for references and full list.
+**Known Cursor/LLM issue:** Models sometimes emit invisible Unicode despite instructions. Use the `gremlin-clean` skill when cleanup is needed.
 
 The AI must ensure that all generated text—including code, comments, documentation, and user-facing messages—is free from "gremlin characters" (invisible or problematic Unicode). These cause rendering issues, lint errors (e.g. `no-irregular-whitespace`), and parsing errors.
 
@@ -199,7 +207,7 @@ Use only **U+0020** (space) and **LF/CRLF**. Avoid:
 
 ### /gremlin-clean
 
-When the user runs `/gremlin-clean`, follow **`commands/gremlin-clean.md`**: run `~/.cursor/scripts/strip-gremlins.py` on the target file(s) and report. Command is defined in `commands/` so it appears in the / menu. The script automatically skips binary files (`.db`, `.sqlite`, images, archives, fonts, compiled files, etc.).
+When the user runs `/gremlin-clean`, follow the `gremlin-clean` skill: run its bundled `scripts/strip-gremlins.py` on the target file(s) and report. The script automatically skips binary files (`.db`, `.sqlite`, images, archives, fonts, compiled files, etc.).
 
 ### AI Enforcement
 
