@@ -19,6 +19,11 @@ Apply this skill BEFORE submitting any of:
 - Edits to versioned docs, READMEs, CHANGELOGs, ADRs, release notes
 - Any other text that will be read by someone outside the current agent session
 
+Also apply this skill when publishable content references ZeroPath, including a
+ZeroPath URL, finding UUID, or text such as "ZeroPath finding". This does not
+mean adding ZeroPath to unrelated drafts; it only validates drafts that already
+mention ZeroPath.
+
 Skip for:
 
 - Agent-private context: planning docs under `.cursor/plans/`, internal research
@@ -90,6 +95,19 @@ When a link cannot be used as-is:
 | Cross-repo path inside a monorepo      | Use the standalone repo's URL, not the submodule path                        |
 | Path inside a submodule                | Path relative to the submodule root (per AGENTS.md), not prefixed with submodule name |
 
+## ZeroPath references
+
+When the draft already references ZeroPath:
+
+- Finding links must be complete visible URLs, e.g.
+  `https://zeropath.com/app/issues/<uuid>`.
+- Do not publish UUID-only references, shortened links, vague labels like
+  `ZeroPath 6.3`, or hidden markdown links such as
+  `[View](https://zeropath.com/app/issues/<uuid>)`.
+- If a ZeroPath finding URL is known, write it visibly in the body/comment.
+- If only a UUID or vague reference is present, either use the `zeropath` skill
+  to obtain the full URL through the CLI or ask the user for the URL.
+
 ## Cross-repo and submodule context
 
 - When writing in a PR/issue of repo `cloudwalk/X`, do not link as if reader is
@@ -121,5 +139,7 @@ Before invoking the publishing tool, run mentally:
       is empty), OR the publish step pushes before submitting
 - [ ] Cross-repo links use standalone repo URLs, not monorepo paths
 - [ ] Submodule paths are relative to the submodule root
+- [ ] If ZeroPath is mentioned, every known finding uses a complete visible
+      `https://zeropath.com/app/issues/<uuid>` URL
 
 If any item fails, fix the draft before publishing.

@@ -22,6 +22,8 @@ PR Management Rules:
 - Prefer reviewer-oriented PR bodies that explain problem, change, risk, and validation evidence
 - Keep PR title and body grounded in `git diff <base>...HEAD`, not only commit message wording
 - Always include URLs when reporting GitHub PR and issue references in chat and generated content. Markdown links are fine when title or context improves readability; compact raw URLs are also acceptable and often preferred over label-only references.
+- Apply the `zeropath` skill only for PRs that already mention ZeroPath in the prompt, commits, diff, existing PR body, comments, or linked evidence
+- Do not add ZeroPath sections, scans, or references to unrelated PRs
 </context>
 
 <pr_information_quality>
@@ -81,6 +83,9 @@ Hard rules:
    - Build "What changed" from `git diff <base>...HEAD` grouped by component/area
    - Add Test Plan using commands actually run in the session
    - Include GitHub Issue links when present in commits/prompt; include Linear links only if explicitly referenced
+   - If the PR addresses ZeroPath findings, include each known finding as a
+     complete visible URL, e.g.
+     `Addresses ZeroPath finding: https://zeropath.com/app/issues/<uuid>`
    - Remove template placeholders if no data available
 
 5. **Create PR**:
@@ -113,6 +118,9 @@ Hard rules:
    - Refresh the title if the main scope or change type shifted
    - Refresh the body if the summary, rollout notes, risks, or test plan changed
    - Remove stale claims rather than piling on contradictory notes
+   - If ZeroPath references are present, keep them as complete visible URLs and
+     remove stale claims that ZeroPath confirmed resolution unless the CLI or
+     user-supplied evidence confirms it
    - Prefer editing the canonical PR body over leaving corrections only in chat replies
 
 4. **Before Finishing The Task**:
@@ -125,6 +133,13 @@ Hard rules:
 
 - When the user asks to resolve PR review comments, inspect each targeted unresolved thread/comment instead of handling only a subset
 - For comments from `cloudwalk-review-agent[bot]` and `elrond-cw[bot]`, address every targeted comment individually
+- If a targeted comment concerns ZeroPath, use the `zeropath` skill and prefer
+  CLI-backed evidence for finding status or scan state
+- In replies about ZeroPath findings, include known finding URLs as complete
+  visible URLs, not UUID-only references or hidden markdown labels
+- Do not say a ZeroPath finding is resolved unless the CLI or user-supplied
+  ZeroPath evidence confirms it; otherwise say the change addresses the finding
+  pattern and is awaiting re-scan
 - After addressing each targeted comment, mark the GitHub review thread/comment as resolved before finishing the task
 - Do not report the review-comment task as complete while any targeted bot comment remains unresolved
 - If a comment cannot be safely resolved without user input, stop and ask the user instead of leaving it silently unresolved
