@@ -40,6 +40,7 @@ larger engineering workflows.
 
 Core orchestration skills:
 
+- `workflow-intake`: analyze handoffs, docs, issues, or workspace state and recommend where/how to continue before implementation.
 - `engineering-workflow`: choose the workflow and compose atomic skills.
 - `agent-selection`: recommend the right agent/runtime for the next phase.
 - `context-capsule`: create portable handoff context for subagents, forks, Zed threads, terminal agents, or later resume.

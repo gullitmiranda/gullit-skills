@@ -14,6 +14,25 @@ agent without turning the repo into one rigid process.
 ## Common Phases
 
 ```text
+intake
+-> decide execution mode
+-> discover
+-> plan
+-> select agent/runtime
+-> isolate
+-> execute
+-> validate
+-> review/ship
+```
+
+Use `workflow-intake` when the starting context is a handoff, plan, issue, docs,
+current workspace state, or a broad "what should we do next?" question. Intake
+does not imply implementation in the same thread; it recommends the workflow and
+runtime first.
+
+Legacy shorthand without intake:
+
+```text
 discover
 -> plan
 -> select agent/runtime
