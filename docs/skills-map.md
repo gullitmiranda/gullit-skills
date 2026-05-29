@@ -10,6 +10,7 @@ workflow docs describe how to compose them.
 
 Use these when the goal, domain language, or relevant code area is still fuzzy.
 
+- `workflow-intake`: analyze available context and recommend how to start or resume before implementation.
 - `workspace-status`: understand repository boundaries in multi-repo workspaces.
 - `grill-with-docs` from `mattpocock/skills`: challenge a plan against the domain model, update `CONTEXT.md`, and capture durable decisions.
 - `zoom-out` from `mattpocock/skills`: build a higher-level map of an unfamiliar code area.
@@ -67,6 +68,7 @@ Use these before handing work to a reviewer or maintainer.
 Use these when parallel work, context pressure, or tool switching would otherwise
 pollute the main conversation.
 
+- `workflow-intake`: decide whether to continue in the current thread or route work to another runtime.
 - `context-capsule`: create a portable summary for subagents, forks, Zed threads, terminal agents, or future resumes.
 - `agent-selection`: decide whether the next step belongs in the main chat, subagent, fork, IDE agent, or terminal/ACP/Pi-style agent.
 - `handoff` from `mattpocock/skills`: compact a session when context window pressure is the main problem.
@@ -77,7 +79,8 @@ pollute the main conversation.
 For ambiguous feature work:
 
 ```text
-workspace-status
+workflow-intake when starting from unknown state
+-> workspace-status
 -> zoom-out or grill-with-docs
 -> plan or to-prd
 -> incremental-delivery or to-issues

@@ -4,6 +4,9 @@ Agent selection decides where the next step should run before substantial work
 starts. The goal is to match the task shape to the runtime, not to force every
 task through the same IDE chat.
 
+If the current state is unclear, run `workflow-intake` first. Intake identifies
+workstreams and then calls into this decision layer.
+
 ## Inputs
 
 Consider these factors before choosing a runtime:
@@ -14,6 +17,7 @@ Consider these factors before choosing a runtime:
 - Context need: one fact, context capsule, inherited thread, or full transcript.
 - Risk: destructive commands, broad edits, secrets, data boundary, or CI impact.
 - Ownership: main chat supervision, child agent execution, or human-in-the-loop.
+- Autonomy readiness: implementation-ready, collaborative, or discovery-first.
 
 ## Default Choices
 
@@ -26,6 +30,8 @@ Consider these factors before choosing a runtime:
 | Side path becomes main path | Cursor fork or new Zed thread | Preserves enough context while giving the path its own thread. |
 | Focused implementation | Cursor or Zed agent | Works well when IDE feedback and file review matter. |
 | Long implementation | Terminal, ACP, or Pi-style agent | Better for isolated, long-running, or mechanical execution. |
+| Implementation-ready work | Most autonomous safe runtime | Prefer autonomous execution when decisions and validation are clear. |
+| Discovery, grilling, or unresolved decisions | Main chat | Requires user judgment before autonomous execution is safe. |
 | Harness-driven debugging | Terminal agent or IDE agent | Choose terminal when the loop is command-driven; IDE when interactive inspection matters. |
 | CI watch/fix loop | Background watcher or terminal agent | Avoids tying up the main chat with polling. |
 | PR preparation | Main chat or IDE agent | Needs synthesis, diff awareness, and concise review framing. |
@@ -47,13 +53,16 @@ Consider these factors before choosing a runtime:
 4. Is the task long-running, mechanical, or likely to involve many tool calls?
    -> Yes: hand over to terminal/ACP/Pi-style agent with a context capsule.
 
-5. Does the task need tight IDE feedback, visual inspection, or manual review?
+5. Is the implementation ready for autonomous execution?
+   -> Yes: choose the most autonomous safe runtime and pass a context capsule.
+
+6. Does the task need tight IDE feedback, visual inspection, or manual review?
    -> Yes: Cursor or Zed agent.
 
-6. Is the work a CI/watch/fix loop?
+7. Is the work a CI/watch/fix loop?
    -> Yes: background watcher or terminal agent.
 
-7. Otherwise:
+8. Otherwise:
    -> Keep it in the current agent and create a capsule only if the work branches.
 ```
 
@@ -156,6 +165,7 @@ Before escalating, create or update a context capsule.
 When recommending a runtime, say:
 
 - Recommended runtime.
+- Autonomy mode.
 - Why it fits this phase.
 - What context to pass.
 - What result should come back.
@@ -164,6 +174,7 @@ Example:
 
 ```text
 Recommended runtime: terminal agent.
+Autonomy mode: autonomous.
 Why: this is a long, harness-driven implementation with repeated test runs.
 Context: pass the context capsule plus the target branch/worktree.
 Expected return: changed files, commands run, validation result, blockers.

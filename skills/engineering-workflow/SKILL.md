@@ -7,6 +7,11 @@ description: Route engineering work through the right workflow, skills, and runt
 
 Use this skill to choose the workflow before doing substantial work.
 
+If the user is starting from a handoff, plan, issue, docs, current workspace
+state, or a broad "what should we do next?" question, use `workflow-intake`
+first. `workflow-intake` decides whether work should continue in the current
+thread or be routed to another agent/runtime.
+
 ## Quick Protocol
 
 1. Classify the request:
