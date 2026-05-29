@@ -9,6 +9,11 @@ skills/                        # Cross-agent skills (installed by all agents)
   <skill-name>/SKILL.md
   gh-profile-template/SKILL.md # Reusable template — copy and fill in placeholders
 
+docs/                          # Workflow docs and tool adapters
+  skills-map.md
+  workflows/
+  tool-adapters/
+
 .cursor/skills/                # Cursor-specific skills
   plan-archive/SKILL.md
 
@@ -17,8 +22,27 @@ skills/                        # Cross-agent skills (installed by all agents)
 ```
 
 - `skills/` contains skills that work across any agent runtime.
+- `docs/` contains workflow composition docs, context transfer guidance, and tool adapters.
 - Skills with a `-template` suffix are reusable templates with placeholders. Copy to your own skills repo, rename, and fill in the values.
 - `.<agent>/skills/` contains skills scoped to a specific agent (Cursor, Claude, Codex, etc.).
+
+## Workflow Entry Points
+
+This repo keeps atomic skills independent and documents how to compose them into
+larger engineering workflows.
+
+- [`docs/skills-map.md`](docs/skills-map.md): phase-based map of personal and external skills.
+- [`docs/workflows/`](docs/workflows/): example flows for features, bugs, architecture work, existing plans, and parallel workstreams.
+- [`docs/context-management.md`](docs/context-management.md): portable context capsule protocol.
+- [`docs/agent-selection.md`](docs/agent-selection.md): when to use main chat, subagents, forks, IDE agents, or terminal/ACP/Pi-style agents.
+- [`docs/tool-adapters/`](docs/tool-adapters/): Cursor, Zed, terminal-agent, and Pi-extension adapters.
+- [`docs/references.md`](docs/references.md): external references that shaped the workflow design.
+
+Core orchestration skills:
+
+- `engineering-workflow`: choose the workflow and compose atomic skills.
+- `agent-selection`: recommend the right agent/runtime for the next phase.
+- `context-capsule`: create portable handoff context for subagents, forks, Zed threads, terminal agents, or later resume.
 
 ## SKILL.md Format
 
