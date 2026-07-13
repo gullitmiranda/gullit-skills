@@ -25,6 +25,7 @@ Use these when the work needs structure before implementation.
 - `to-prd` from `mattpocock/skills`: turn agreed context into a PRD in the project issue tracker.
 - `to-issues` from `mattpocock/skills`: break a PRD or plan into vertical-slice issues.
 - `agent-selection`: choose the right runtime before substantial work starts.
+- `model-selection`: compare complete model configurations and validate defaults with runtime-specific evidence.
 
 ### Isolation
 
