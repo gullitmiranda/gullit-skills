@@ -30,7 +30,7 @@ workspace-status
 
 3. Decide what matters.
    - Use `grill-with-docs` when the candidate depends on domain terminology or a durable trade-off.
-   - Record glossary terms or ADRs only when the external skill's criteria are met.
+   - Record glossary terms or ADRs only when the skill's criteria are met.
 
 4. Split the work.
    - Use `incremental-delivery`.

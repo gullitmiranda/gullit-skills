@@ -27,7 +27,7 @@ workspace-status
 2. Build the code and domain map.
    - Use `zoom-out` if the code area is unfamiliar.
    - Use `grill-with-docs` when terminology, domain rules, or decisions are fuzzy.
-   - Update `CONTEXT.md` or ADRs only when the external skill's rules say to.
+   - Update `CONTEXT.md` or ADRs only when the skill's rules say to.
 
 3. Produce a plan artifact.
    - Use `plan` for local operational planning.
