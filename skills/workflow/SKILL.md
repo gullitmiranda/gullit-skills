@@ -40,6 +40,8 @@ description: Language, terminal, workspace, branch, commit, PR, planning, and do
 
 ## Branch Management
 
+- Before creating a feature branch, fetch and fast-forward the local base branch
+  so new work starts from the latest `origin/main` or `origin/master`.
 - Create feature branches from main/master
 - Use descriptive branch names
 - Keep branches focused on single features
@@ -68,6 +70,8 @@ description: Language, terminal, workspace, branch, commit, PR, planning, and do
 
 ### Plan Creation Guidelines
 
+- Unless the user explicitly asks otherwise, switch to Plan mode before creating
+  or updating Cursor plan files so the originating chat is referenced in the plan.
 - Create plans in `.cursor/plans/` directory
 - Use clear, actionable task breakdown
 - Include dependencies and prerequisites
@@ -101,6 +105,9 @@ description: Language, terminal, workspace, branch, commit, PR, planning, and do
 - Avoid redundant information
 - Avoid overly complex explanations
 - In documentation, prefer linking to the GitHub repository URL instead of just mentioning the repo name
+- Do not include plan-only labels, deliverable IDs, or internal execution markers
+  (for example `D04`, `PR 2`, or spike numbering) in product/code documentation.
+  Keep those references in plans, PR descriptions, or issue tracker context.
 
 ### ZeroPath References
 
