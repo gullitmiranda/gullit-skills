@@ -61,7 +61,6 @@ Use these before handing work to a reviewer or maintainer.
 - `pr`: create, update, and validate pull requests.
 - `publish-safe-links`: verify published links and file references before posting externally.
 - `zeropath`: handle ZeroPath-specific findings and evidence when relevant.
-- `fix-vulns-sc`: handle supported vulnerability remediation workflows.
 
 ### Context Management
 

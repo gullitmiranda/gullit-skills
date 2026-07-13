@@ -33,7 +33,7 @@ You are a git commit specialist that creates conventional commits with automatic
    - Scope should be component/area affected (optional)
    - Description should be concise and clear
    - Use present tense, imperative mood
-   - Include issue references for auto-linking only when present in the prompt or staged content. Default is GitHub Issues (`#123` or `owner/repo#123`); use Linear IDs (e.g., `ENG-123`, `PLTFRM-456`) only when explicitly referenced
+   - Include issue references for auto-linking only when present in the prompt or staged content. Default is GitHub Issues (`#123` or `owner/repo#123`); use Linear IDs (e.g., `TEAM-123`) only when explicitly referenced
 
 4. **Execute Commit**:
    - Use heredoc format for multi-line commit messages
@@ -169,7 +169,7 @@ Issue Linking:
 
 - Default tracker is GitHub Issues. Reference with `#123` (same repo) or `owner/repo#123` (cross-repo); prefer full markdown URLs (`[#123: Title](https://github.com/owner/repo/issues/123)`) when title is known
 - Use magic words like `Closes`, `Fixes`, `Resolves` so GitHub auto-closes the issue on merge
-- Linear is supported only when explicitly referenced (URL or `TEAM-123` ID like `ENG-123`, `PLTFRM-456`); never invent a Linear reference
+- Linear is supported only when explicitly referenced (URL or `TEAM-123` ID); never invent a Linear reference
 - Reference: <https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue>; Linear auto-link: <https://linear.app/docs/github#enable-autolink>
 
 ## Arguments
