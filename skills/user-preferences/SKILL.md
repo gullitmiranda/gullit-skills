@@ -21,7 +21,7 @@ Before adding rules here, check if a topical skill already covers the domain
 
 ## Naming preferences
 
-- Prefer using `work` instead of `cw` or `cloudwalk` in directory and namespace naming when the value is not a fixed identifier.
+- Prefer using `work` instead of organization- or employer-specific abbreviations in directory and namespace naming when the value is not a fixed identifier.
 
 ## Link formatting
 
@@ -29,8 +29,8 @@ Before adding rules here, check if a topical skill already covers the domain
 
 ## Git commit destinations
 
-- In the user's **personal** GitHub repos (owner `gullitmiranda`, e.g. `~/code/gullit/...`), committing/pushing directly to `main` is allowed without explicit per-task confirmation. The safety skill's "never commit to main/master" rule applies to **work** repos (CloudWalk/cw, OSS, shared), not personal ones. Still keep commits well-scoped and reversible.
+- In the user's **personal** GitHub repos (owner `gullitmiranda`, e.g. `~/code/gullit/...`), committing/pushing directly to `main` is allowed without explicit per-task confirmation. The safety skill's "never commit to main/master" rule applies to shared or organizational repos, not personal ones. Still keep commits well-scoped and reversible.
 
 ## PR Review Comments
 
-- When the user asks to resolve PR review comments from `cloudwalk-review-agent[bot]` or `enrond-cw[bot]`, handle each targeted comment individually by replying in GitHub or updating the PR, whichever best resolves it, and then mark the thread/comment as resolved before finishing.
+- When the user asks to resolve PR review comments from automated review agents, handle each targeted comment individually by replying in GitHub or updating the PR, whichever best resolves it, and then mark the thread/comment as resolved before finishing.

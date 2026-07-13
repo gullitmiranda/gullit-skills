@@ -133,7 +133,7 @@ Hard rules:
 ### Review Comment Resolution
 
 - When the user asks to resolve PR review comments, inspect each targeted unresolved thread/comment instead of handling only a subset
-- For comments from `cloudwalk-review-agent[bot]` and `elrond-cw[bot]`, address every targeted comment individually
+- For comments from automated review agents, address every targeted comment individually
 - If a targeted comment concerns ZeroPath, use the `zeropath` skill and prefer
   CLI-backed evidence for finding status or scan state
 - In replies about ZeroPath findings, include known finding URLs as complete
@@ -431,16 +431,16 @@ Use the response to build the full markdown URL with title. Use closing keywords
 
 ### Conditional: Linear
 
-Only when a Linear reference is explicitly present (URL or `TEAM-123` ID like `PLTFRM-123`, `ENG-123`):
+Only when a Linear reference is explicitly present (URL or `TEAM-123` ID):
 
 ```markdown
-Closes [PLTFRM-123: Issue Title](https://linear.app/<workspace>/issue/PLTFRM-123/issue-slug)
+Closes [TEAM-123: Issue Title](https://linear.app/<workspace>/issue/TEAM-123/issue-slug)
 ```
 
 If only the ID is provided, fetch the title to build the full link:
 
 ```bash
-linearis issues read PLTFRM-123
+linearis issues read TEAM-123
 ```
 
 Reference: <https://linear.app/docs/github#enable-autolink>

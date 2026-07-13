@@ -110,12 +110,11 @@ When the draft already references ZeroPath:
 
 ## Cross-repo and submodule context
 
-- When writing in a PR/issue of repo `cloudwalk/X`, do not link as if reader is
-  inside the monorepo (e.g., do not write `cw-infra-monorepo/X/...`). Use paths
-  relative to the standalone repo, or full GitHub URLs.
-- Inside a submodule's docs (e.g., `endurance-iac/`, `resources-provisioning/`),
-  use paths relative to the submodule root. Do not prefix with the submodule
-  directory name (per the `cw-infra-monorepo/AGENTS.md` rule).
+- When writing in a PR/issue of repo `<org>/X`, do not link as if the reader is
+  inside a larger monorepo (e.g., do not write `<org>-infra-monorepo/X/...`). Use
+  paths relative to the standalone repo, or full GitHub URLs.
+- Inside a submodule's docs, use paths relative to the submodule root. Do not
+  prefix with the submodule directory name.
 
 ## Allowed exceptions
 
