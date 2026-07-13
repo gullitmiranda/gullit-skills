@@ -28,6 +28,11 @@ Trigger on any of these signals:
 - "trabalhe em uma worktree"
 - Any explicit instruction to isolate work in a separate worktree
 
+Do not create a worktree proactively when the primary repository is already on
+an up-to-date `main` branch and the working tree is clean. In that case, create
+the feature branch in the primary repository unless the user explicitly asks for
+worktree isolation or there is a parallel-work reason to isolate the task.
+
 ## Mandatory Protocol
 
 ### Step 1 — Determine worktree path
@@ -48,6 +53,10 @@ confirmation unless required inputs are missing or ambiguous enough that the
 path cannot be derived safely.
 
 ### Step 2 — Create the worktree
+
+Before creating a new branch or worktree, update the base branch from the remote
+(`git fetch` followed by a fast-forward update of `main`/`master` when possible)
+so the new branch starts from the latest base.
 
 ```bash
 git worktree add <path> <branch>
