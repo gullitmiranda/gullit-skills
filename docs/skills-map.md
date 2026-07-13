@@ -12,7 +12,7 @@ Use these when the goal, domain language, or relevant code area is still fuzzy.
 
 - `workflow-intake`: analyze available context and recommend how to start or resume before implementation.
 - `workspace-status`: understand repository boundaries in multi-repo workspaces.
-- `grill-with-docs` from `mattpocock/skills`: challenge a plan against the domain model, update `CONTEXT.md`, and capture durable decisions.
+- [`grill-with-docs`](../skills/grill-with-docs/README.md): challenge a plan against the domain model, update `CONTEXT.md`, and capture durable decisions.
 - `zoom-out` from `mattpocock/skills`: build a higher-level map of an unfamiliar code area.
 - `prototype` from `mattpocock/skills`: answer a design question with throwaway logic or UI code.
 
@@ -50,7 +50,7 @@ Use these to implement changes with tight feedback loops.
 Use these when design friction, testability, or module depth matters.
 
 - `improve-codebase-architecture` from `mattpocock/skills`: identify deepening opportunities informed by domain docs and ADRs.
-- `grill-with-docs` from `mattpocock/skills`: resolve terminology and durable trade-offs discovered during architecture work.
+- [`grill-with-docs`](../skills/grill-with-docs/README.md): resolve terminology and durable trade-offs discovered during architecture work.
 - `tech-debt`: record deferred technical debt without starting follow-up work.
 
 ### Validation And Review

@@ -27,15 +27,15 @@ thread or be routed to another agent/runtime.
 
 ## Default Routes
 
-Routes may reference external skills from `mattpocock/skills`. Use them only
-when they are installed; otherwise follow the linked workflow docs and apply the
-same phase manually.
+Routes may reference external skills from `mattpocock/skills`. The locally
+maintained `grill-with-docs` is an exception; its upstream provenance and
+self-contained support files are documented in [its README](../grill-with-docs/README.md).
 
 ### Ambiguous feature
 
 ```text
 workspace-status
--> zoom-out (mattpocock/skills) or grill-with-docs (mattpocock/skills)
+-> zoom-out (mattpocock/skills) or grill-with-docs
 -> plan or to-prd (mattpocock/skills)
 -> incremental-delivery or to-issues (mattpocock/skills)
 -> agent-selection
@@ -84,7 +84,7 @@ identify workstreams
 ```text
 zoom-out (mattpocock/skills)
 -> improve-codebase-architecture (mattpocock/skills)
--> grill-with-docs (mattpocock/skills) for durable decisions
+-> grill-with-docs for durable decisions
 -> incremental-delivery
 -> agent-selection
 -> implementation slice
@@ -97,7 +97,7 @@ zoom-out (mattpocock/skills)
 - Use terminal/ACP/Pi-style agents for long-running or mechanical work.
 - Keep local plans local; do not commit `.cursor/plans/`.
 - Prefer vertical slices over broad horizontal phases.
-- Treat external skills as dependencies to compose, not content to copy.
+- Treat external skills as dependencies to compose, not content to copy. The locally maintained `grill-with-docs` is the documented exception; see [its README](../grill-with-docs/README.md).
 
 ## References
 
