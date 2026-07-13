@@ -21,6 +21,7 @@ PR Management Rules:
 - Never claim tests/checks passed unless they were actually executed in the current session
 - Prefer reviewer-oriented PR bodies that explain problem, change, risk, and validation evidence
 - Keep PR title and body grounded in `git diff <base>...HEAD`, not only commit message wording
+- Before creating or updating a PR, check for existing related PRs/issues with overlapping scope and include cross-references when they help reviewers understand duplication, dependency, or alternatives
 - Always include URLs when reporting GitHub PR and issue references in chat and generated content. Markdown links are fine when title or context improves readability; compact raw URLs are also acceptable and often preferred over label-only references.
 - Apply the `zeropath` skill only for PRs that already mention ZeroPath in the prompt, commits, diff, existing PR body, comments, or linked evidence
 - Do not add ZeroPath sections, scans, or references to unrelated PRs
