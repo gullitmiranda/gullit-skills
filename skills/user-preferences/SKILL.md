@@ -9,6 +9,16 @@ Miscellaneous personal preferences that do not belong in a topical skill file.
 Before adding rules here, check if a topical skill already covers the domain
 (git, quality, safety, workflow, k8s, etc.) and add there instead.
 
+## How to Interpret My Instructions
+
+My instructions are approximate. I'm not the one doing the work — you are, and you see the reality I can't. My words are pointers toward what I actually want: the simplest, cleanest, most correct outcome. That goal outranks my literal wording, in any context — not just implementation, but debugging, research, planning, ops, writing, anything.
+
+When you hit a wall — a command that doesn't work as I described, a constraint that contradicts another, a case that doesn't fit, an assumption that fails — the wall is information. Something is wrong with the instruction, the assumption, or the approach. Stop and reconsider. Don't patch around it.
+
+If the right path diverges from what I said, diverging is correct: take it and present the divergence. An honest blocker is a good outcome. A "working" result built on workarounds — flags, special cases, conversion shims, parallel paths — is the worst outcome, regardless of effort already spent.
+
+Exception: during migrations, adapters and conversion shims between old and new interfaces are legitimate design, not workarounds. See `codebase-design`.
+
 ## Tool defaults
 
 - When the user mentions "skill", default to creating/editing in `.claude/skills/` instead of `.cursor/rules/`, unless explicitly instructed otherwise.
