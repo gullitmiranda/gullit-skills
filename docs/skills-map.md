@@ -60,7 +60,7 @@ Use these before handing work to a reviewer or maintainer.
 
 - `quality`: run appropriate checks and keep generated text clean.
 - `pr`: create, update, and validate pull requests.
-- `pr-delivery`: create an early draft, run isolated review, repair clear findings, and hand the final reviewed revision to the watcher.
+- `pr-delivery`: create an early draft, run a guarded or strict fixed-revision review, repair clear findings, and hand the final reviewed revision to the watcher.
 - `pr-babysit`: monitor one reviewed PR SHA, triage scoped CI/comments/conflicts, and safely watch, ready, or explicitly merge it.
 - `publish-safe-links`: verify published links and file references before posting externally.
 - `zeropath`: handle ZeroPath-specific findings and evidence when relevant.
@@ -90,7 +90,7 @@ workflow-intake when starting from unknown state
 -> git-worktree when isolation is needed
 -> tdd
 -> quality
--> pr-delivery when an early draft, isolated review, and remote-check follow-up are requested
+-> pr-delivery when an early draft, fixed-revision review, and remote-check follow-up are requested
 -> pr for direct lifecycle operations
 ```
 

@@ -1,15 +1,15 @@
 ---
 name: pr-delivery
-description: Create or reuse a draft PR early to start remote checks, run an isolated read-only review, repair clear findings, and hand the reviewed revision to pr-babysit. Use only when the user explicitly requests this complete PR delivery flow.
+description: Create or reuse a draft PR early to start remote checks, review a fixed revision with guarded or strict boundaries, repair clear findings, and hand the reviewed revision to pr-babysit. Use only when the user explicitly requests this complete PR delivery flow.
 disable-model-invocation: true
 ---
 
 # PR Delivery
 
 Use this skill as the explicit, end-to-end PR delivery action. It opens a draft
-PR early so remote checks can run while an isolated reviewer examines the diff.
-It does not make a PR mergeable until every review agent has returned and the
-final head revision has been checked.
+PR early so remote checks can run while a clean-context reviewer examines the
+fixed diff. It does not make a PR mergeable until every review agent has
+returned and the final head revision has been checked.
 
 Apply `gh-profile` before every GitHub or remote Git operation, `pr` for PR
 metadata and lifecycle rules, `quality` for validation, and `publish-safe-links`
@@ -19,12 +19,22 @@ before publishing PR text.
 
 ```text
 /pr-delivery [--base <branch>] [--spec <path-or-issue-url>] \
+  [--review-mode auto|guarded|strict] \
   [--on-green watch|ready|merge] [--allow-merge]
 ```
 
 Defaults:
 
 - Base branch: the repository default branch.
+- `--review-mode auto`: resolve to `strict` only when the runtime can verify an
+  independently enforced no-mutation child boundary; otherwise resolve to
+  `guarded`. Announce and record the resolved mode before spawning a reviewer.
+  In native Zed, `auto` resolves to `guarded`.
+- `--review-mode guarded`: force a clean-context reviewer with a no-mutation
+  policy and parent-side integrity verification.
+- `--review-mode strict`: require a runtime that technically enforces a
+  separate read-only child boundary. If unavailable, stop rather than claim
+  strict isolation.
 - `--on-green ready`: after all gates pass for the final reviewed revision,
   `pr-babysit` converts the draft to ready for review.
 - `merge` requires both `--on-green merge` and `--allow-merge`. It is never a
@@ -74,30 +84,60 @@ The remote checks may now run in parallel with the local review. The draft body
 may state that validation is in progress, but it must not use placeholders or
 claim passing results without evidence.
 
-### 2. Run An Isolated Review
+### 2. Run A Fixed-Revision Review
 
 Create a concise context capsule using the inputs in
-[reviewer-prompt.md](reviewer-prompt.md). Spawn the reviewer in a runtime
-profile that enforces read-only capabilities:
+[reviewer-prompt.md](reviewer-prompt.md). Pass the base SHA and head SHA
+explicitly; the reviewer examines only that fixed diff and returns the
+structured result in the template.
 
-- no file editing or write tools;
-- no staging, committing, pushing, resetting, checking out, or branch changes;
-- no GitHub mutations, including PR edits, comments, reviews, or thread
-  resolution; and
-- terminal access restricted to read-only inspection commands.
+#### Resolve the review mode
 
-A prompt alone is not sufficient access control. If the selected runtime cannot
-enforce this profile, stop and report that an isolated read-only review cannot
-be run safely.
+For `auto`, select `strict` only from a verified runtime capability boundary,
+not from a profile name or prompt. Otherwise select `guarded`. Record the
+resolved mode in the reviewer capsule, completion manifest, and final report
+before the reviewer starts.
 
-Pass the base SHA and head SHA explicitly. The reviewer examines only that
-fixed diff and returns the structured result in the template. Track every
-review session and wait for all of them to complete. Never start
+#### Fixed-revision integrity gate
+
+Before spawning any reviewer, verify that the local `HEAD` and remote PR head
+both equal the fixed review head SHA. Also require a clean worktree and index,
+and record a snapshot containing those values, the branch, and fixed base/head
+SHAs. If either head is already different, return `stale-head` and stop.
+
+After every reviewer returns, verify again that the local `HEAD` and remote PR
+head both equal the fixed review head SHA, and that the worktree/index status
+still equals the snapshot. If any check differs, return
+`review-integrity-unknown`, stop, and do not create a manifest or start
+`pr-babysit`. A concurrent actor can cause the same result; do not attribute it
+without evidence.
+
+#### `guarded` mode
+
+Native Zed subagents inherit the parent's capabilities. Tell the reviewer not
+to edit files, use write-capable tools, stage, commit, push, reset, checkout,
+mutate branches, or mutate GitHub resources. Require a text-only report. This
+is a policy guardrail, not technical isolation. The fixed-revision integrity
+gate above detects local Git and PR-head changes, but cannot prove that no other
+external mutation was attempted.
+
+#### `strict` mode
+
+Use this only when the calling runtime can technically remove the child's write
+and GitHub mutation capabilities and the fixed-revision integrity gate can be
+performed before and after the session. If either condition is unavailable,
+stop after the draft PR with a clear explanation. A native Zed `spawn_agent`
+child does not satisfy this mode. In Zed, a separate top-level thread is strict
+only if its no-mutation capability boundary has been explicitly verified; a
+named profile alone is not sufficient evidence.
+
+Track every review session and wait for all of them to complete. Never start
 `pr-babysit` concurrently with a reviewer. After a successful review set,
 build the serialized completion manifest described in
-[review-manifest.md](review-manifest.md). Do not build that manifest when any
-reviewer failed, timed out, returned malformed evidence, returned a different
-SHA, or left a user decision pending.
+[review-manifest.md](review-manifest.md), including the selected mode and the
+successful integrity result. Do not build that manifest when any reviewer
+failed, timed out, returned malformed evidence, returned a different SHA, or
+left a user decision pending.
 
 ### 3. Triage Findings
 
@@ -123,8 +163,9 @@ For autonomous repairs:
 5. Use the continuous PR sync route in `pr` to refresh stale title, body,
    validation evidence, risks, and links.
 6. Record the new final head SHA.
-7. Run a new isolated delta review from the previously reviewed SHA to the new
-   final head SHA. Wait for every delta reviewer and replace the serialized
+7. Run a new fixed-revision delta review in the selected mode from the
+   previously reviewed SHA to the new final head SHA. Wait for every delta
+   reviewer and replace the serialized
    review completion manifest only after they all succeed.
 
 Repeat this repair and delta-review cycle when a reviewer finds another clear,
@@ -146,6 +187,7 @@ AND every autonomous repair is committed, validated, and pushed
 AND remote PR head SHA equals the local final head SHA
 AND final head SHA is the reviewed head SHA
 AND a matching serialized completion manifest records at least one completed reviewer for that SHA
+AND the manifest records the selected review mode and successful integrity verification
 ```
 
 Invoke it with the fixed revision:
@@ -164,8 +206,9 @@ Append `--allow-merge` only when the user explicitly passed it to
 
 If `pr-babysit` returns `needs-delta-review` after making a scoped repair,
 first run the applicable targeted and project quality checks for its new head.
-Then repeat the isolated review only for the delta from the previously reviewed
-SHA to its new head SHA. Wait for every reviewer, build a matching replacement
+Then repeat the fixed-revision review in the selected mode only for the delta
+from the previously reviewed SHA to its new head SHA. Wait for every reviewer,
+build a matching replacement
 serialized manifest, and call `pr-babysit` again with the new SHA as expected and
 reviewed. Do not use `ready` or `merge` on an unreviewed revision.
 
@@ -179,7 +222,7 @@ Report:
 
 - PR URL and source/base branches;
 - initial and final reviewed head SHA;
-- reviewer sessions and their outcome;
+- selected review mode, fixed-SHA integrity checks, reviewer sessions, and their outcome;
 - autonomous fixes and validations actually run;
 - current `pr-babysit` result; and
 - any decision, CI failure, or merge blocker left for the user.
