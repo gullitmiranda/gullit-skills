@@ -42,6 +42,21 @@ When the Zed work finishes, return:
 - Remaining risks.
 - Next recommended action.
 
+## Read-Only Review Profile
+
+For the isolated review stage in `pr-delivery`, use a dedicated `Review` agent
+profile rather than relying on prompt text alone. Its permissions must exclude
+file edits and all Git or GitHub mutations: staging, commits, pushes, resets,
+checkouts, branch changes, PR edits, review submission, comments, and thread
+resolution.
+
+Allow only read/search tools and a terminal sandbox restricted to inspection
+commands such as `git diff`, `git show`, `git log`, and `rg`. The parent agent
+must pass a compact context capsule with the PR URL, base SHA, head SHA,
+relevant specification, standards paths, and expected return format. If the
+runtime cannot enforce this profile, do not claim the review was isolated or
+read-only.
+
 ## When Not To Use Zed
 
 Prefer Cursor subagents when the task is a small side investigation that only

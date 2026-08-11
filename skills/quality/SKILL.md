@@ -55,13 +55,23 @@ Do not manually fix what Trunk can fix; let Trunk do it first, then the agent re
 - Security scans must pass
 - No sensitive data in commits
 
-### Pre-PR Checks
+### Draft PR Opening Checks
 
-- All quality gates must pass
-- Code review requirements met
-- Documentation updated
-- Tests cover new functionality
-- Performance impact assessed
+A draft PR may be opened early by `pr-delivery` to start remote checks before
+isolated review and final local validation finish. Before doing so, verify the
+source branch, committed diff, PR metadata, and publishable links. Keep the PR
+draft and do not claim unexecuted validation as passing.
+
+### Ready Or Merge Checks
+
+Before a PR is marked ready or merged:
+
+- All applicable quality gates must pass
+- Code review requirements must be met
+- Documentation must be updated when needed
+- Tests must cover new functionality
+- Performance impact must be assessed
+- The final remote head must be the reviewed revision
 - For ZeroPath-related changes, include relevant local validation and use the
   `zeropath` skill for any ZeroPath scan or finding-status evidence
 
