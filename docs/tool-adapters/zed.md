@@ -42,20 +42,36 @@ When the Zed work finishes, return:
 - Remaining risks.
 - Next recommended action.
 
-## Read-Only Review Profile
+## Review Boundaries
 
-For the isolated review stage in `pr-delivery`, use a dedicated `Review` agent
-profile rather than relying on prompt text alone. Its permissions must exclude
-file edits and all Git or GitHub mutations: staging, commits, pushes, resets,
-checkouts, branch changes, PR edits, review submission, comments, and thread
-resolution.
+A native Zed `spawn_agent` child inherits its parent's profile and tool
+capabilities. It cannot be assigned the `Review` profile or a stricter
+permission/sandbox policy at spawn time. See
+[the research note](../research/zed-subagent-profile-isolation.md) for the
+source-backed limitation.
 
-Allow only read/search tools and a terminal sandbox restricted to inspection
-commands such as `git diff`, `git show`, `git log`, and `rg`. The parent agent
-must pass a compact context capsule with the PR URL, base SHA, head SHA,
-relevant specification, standards paths, and expected return format. If the
-runtime cannot enforce this profile, do not claim the review was isolated or
-read-only.
+`pr-delivery` defaults to `auto`, which resolves to `guarded` in a native Zed
+thread:
+
+1. Before spawning the child, the parent verifies that local `HEAD` and remote
+   PR head both equal the fixed review SHA, then records the clean
+   worktree/index status and branch.
+2. The child receives a compact capsule and explicit no-mutation, text-only
+   instructions.
+3. The parent verifies the same fixed-SHA and clean-worktree conditions after
+   every child returns. Any difference stops the flow as
+   `review-integrity-unknown`.
+
+This is a policy guardrail, not a technically read-only reviewer. Never report
+it as isolated or capability-enforced.
+
+Use `pr-delivery --review-mode strict` only in a runtime that can technically
+remove child write and GitHub mutation capabilities and run the same
+fixed-revision checks. In Zed, strict isolation is unavailable to native
+subagents. A separate top-level thread is an alternative only after its exact
+profile, tool permissions, and sandbox settings have been verified to exclude
+all mutation paths; a named `Review` profile alone is not sufficient and cannot
+be selected by native subagent delegation.
 
 ## When Not To Use Zed
 
