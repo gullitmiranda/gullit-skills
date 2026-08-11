@@ -10,6 +10,7 @@ agent without turning the repo into one rigid process.
 - [Existing Plan To PR](existing-plan-to-pr.md): execute an already agreed plan through branch, validation, and PR.
 - [Parallel Workstreams](parallel-workstreams.md): supervise multiple plans or side quests in one repo/workspace.
 - [Architecture Improvement](architecture-improvement.md): find and execute architecture improvements without mixing them with feature work.
+- [PR Delivery](pr-delivery.md): create an early draft, review a fixed diff in isolation, and watch the final reviewed revision.
 
 ## Common Phases
 
