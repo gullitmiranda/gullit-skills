@@ -13,7 +13,7 @@ PR Management Rules:
 - Always use `gh` CLI for GitHub operations
 - Ensure branch has been created and changes committed before PR creation
 - Generate conventional commit format titles: `<type>(<scope>): <summary>`
-- Run quality checks before PR creation
+- Run quality checks before a standard PR is marked ready; `/pr draft` may open an early draft after an integrity preflight so remote checks can start
 - Treat PR title, description, linked issues, and test plan as living metadata that must match the current branch diff
 - Whenever new commits or edits materially change scope, behavior, testing, or linked issues, re-check the existing PR info and update it if it became stale
 - Validate PR completeness and readiness for review
@@ -94,6 +94,23 @@ Hard rules:
    - Use heredoc for proper formatting
    - Set base branch (usually main)
    - Return PR URL for user as a markdown link
+
+### `/pr draft` - Create An Early Draft PR
+
+Use this route only when a parent workflow, such as `pr-delivery`, needs remote
+PR checks to begin before isolated review and final local validation complete.
+
+1. Run the integrity preflight:
+   - verify a non-main source branch with committed changes ahead of base;
+   - confirm the branch is pushed and GitHub authentication is routed correctly;
+   - inspect the diff, title, body, linked issues, and PR template; and
+   - apply `publish-safe-links` before publishing the body.
+2. Create or reuse a **draft** PR. Do not request reviewers, mark it ready, or
+   enable merging.
+3. Keep validation claims factual. State that checks are in progress rather than
+   claiming that local or remote checks passed.
+4. Defer full quality gates to the final reviewed revision. The normal `/pr`
+   and `/pr ready` routes still require their quality and readiness checks.
 
 ### Continuous PR Sync - Applies After Any Material Change
 
@@ -489,7 +506,7 @@ Closes [#42: Add JWT validation](https://github.com/<owner>/<repo>/issues/42)
 - ✅ Always push branch before PR creation
 - ✅ Always use conventional commit format for title
 - ✅ Include issue references for auto-linking (GitHub Issues by default; Linear only when explicitly referenced)
-- ✅ Run quality checks before PR creation
+- ✅ Run an integrity preflight before every PR creation; run full quality checks before marking a PR ready or mergeable
   </safety_checks>
 
 <output_formats>
@@ -675,5 +692,6 @@ Closes [#42: Add JWT validation](https://github.com/<owner>/<repo>/issues/42)"
 Arguments: $ARGUMENTS
 
 - `/pr` - Create pull request (optional: title override, base branch)
+- `/pr draft` - Create or reuse a draft PR after integrity preflight; intended for `pr-delivery`
 - `/pr check|validate|review` - Run quality checks and validation
 - `/pr ready` - Mark PR ready for review (optional: reviewers, priority)
