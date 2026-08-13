@@ -25,6 +25,7 @@ PR Management Rules:
 - Always include URLs when reporting GitHub PR and issue references in chat and generated content. Markdown links are fine when title or context improves readability; compact raw URLs are also acceptable and often preferred over label-only references.
 - Apply the `zeropath` skill only for PRs that already mention ZeroPath in the prompt, commits, diff, existing PR body, comments, or linked evidence
 - Do not add ZeroPath sections, scans, or references to unrelated PRs
+- If the current branch belongs to a `gh stack` stack (check `gh stack view --json`), delegate stack operations (submit, sync, merge, navigation) to the `gh-stack` skill; never use `gh pr merge` on a stacked PR — use `gh stack merge <target> --yes`
 </context>
 
 <pr_information_quality>

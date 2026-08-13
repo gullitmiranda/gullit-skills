@@ -55,7 +55,7 @@ Procedural specifics that are **unique to incremental delivery** and complement 
 
 5. **Keep branches/PRs small and progressive**
    - One increment per PR (max two only when tightly coupled).
-   - If PRs depend on each other, use an explicit stack.
+   - If PRs depend on each other, use an explicit stack. When the `gh-stack` skill is available, manage the stack with `gh stack` (see that skill); otherwise fall back to manual base-branch chaining.
    - Clearly state "depends on" and "unblocks" in PR description.
 
 6. **Close each slice with a short handoff**
