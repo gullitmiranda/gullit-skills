@@ -27,11 +27,11 @@ protection, required checks, or repository merge-queue policy.
   a draft, convert it first, keep watching the same SHA (some required checks
   only run once a PR is ready), and merge only after they succeed. It is never
   a default.
-- `--solo`: the user is the sole reviewer of this PR (solo repository). Waives
-  the review-manifest gate for `--ready`/`--merge`; every other condition
-  (green checks, mergeable, no blocking threads, no stale head) still applies.
-  Always report `solo` as the review mode in the result so the bypass is
-  auditable.
+- `--solo`: the user is the sole reviewer of this PR (solo repository). The
+  only requirement it waives is the human-review gate (review manifest). Every
+  other condition for `--ready` and `--merge` — green checks, mergeable, no
+  blocking threads, no stale head, no pending decision — still applies. Always
+  report `solo` as the review mode in the result so the bypass is auditable.
 
 `--ready` and `--merge` are cumulative steps, not exclusive modes. With
 neither, the run only watches and repairs.
@@ -48,11 +48,12 @@ single-PR invocation:
 - `--expected-head-sha <sha>`: the exact remote head this run may observe or
   repair. Defaults to the PR's current remote head, fetched at entry.
 - `--reviewed-head-sha <sha>`: the latest head SHA completed by a review
-  session. Required for `--ready` and `--merge`; when omitted, this run may
-  only watch or repair.
+  session. Required for `--ready` and `--merge` unless `--solo` was passed;
+  when omitted, this run may only watch or repair.
 - `--review-manifest-json '<serialized-manifest>'`: the serialized completion
   record created by `pr-delivery` as specified in
-  `pr-delivery/review-manifest.md`. Required for `--ready` and `--merge`.
+  `pr-delivery/review-manifest.md`. Required for `--ready` and `--merge`
+  unless `--solo` was passed.
 - `--on-green watch|ready|merge`: legacy alias for the flag set (`ready` maps
   to `--ready`, `merge` to `--ready --merge`). Prefer the flags.
 
