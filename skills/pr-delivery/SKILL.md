@@ -20,7 +20,7 @@ before publishing PR text.
 ```text
 /pr-delivery [--base <branch>] [--spec <path-or-issue-url>] \
   [--review-mode auto|guarded|strict] \
-  [--on-green watch|ready|merge] [--allow-merge]
+  [--ready] [--merge] [--allow-merge]
 ```
 
 Defaults:
@@ -35,14 +35,14 @@ Defaults:
 - `--review-mode strict`: require a runtime that technically enforces a
   separate read-only child boundary. If unavailable, stop rather than claim
   strict isolation.
-- `--on-green ready`: after all gates pass for the final reviewed revision,
+- `--ready` (default): after all gates pass for the final reviewed revision,
   `pr-babysit` converts the draft to ready for review.
-- `merge` requires both `--on-green merge` and `--allow-merge`. It is never a
-  default.
+- `--merge`: after all gates pass, `pr-babysit` merges the PR. Implies
+  `--ready`. Requires `--allow-merge`; it is never a default.
 
-`--on-green` is a user-facing pass-through to `pr-babysit`. The standalone
-`pr-babysit` default remains `watch` because monitoring a PR directly must not
-change its public state by surprise.
+`--ready` and `--merge` are user-facing pass-throughs to `pr-babysit`. The
+standalone `pr-babysit` default remains watch-only because monitoring a PR
+directly must not change its public state by surprise.
 
 ## Authorization And Preconditions
 
@@ -193,16 +193,15 @@ AND the manifest records the selected review mode and successful integrity verif
 Invoke it with the fixed revision:
 
 ```text
-/pr-babysit \
-  --pr <pr-url> \
+/pr-babysit <pr-url> \
   --expected-head-sha <final-head-sha> \
   --reviewed-head-sha <final-head-sha> \
   --review-manifest-json '<serialized-manifest>' \
-  --on-green <watch|ready|merge>
+  [--ready] [--merge]
 ```
 
-Append `--allow-merge` only when the user explicitly passed it to
-`/pr-delivery` together with `--on-green merge`.
+Pass `--merge` (with `--allow-merge`) through to `pr-babysit` only when the
+user explicitly requested it on `/pr-delivery`.
 
 If `pr-babysit` returns `needs-delta-review` after making a scoped repair,
 first run the applicable targeted and project quality checks for its new head.
