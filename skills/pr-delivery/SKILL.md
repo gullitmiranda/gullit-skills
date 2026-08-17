@@ -20,7 +20,7 @@ before publishing PR text.
 ```text
 /pr-delivery [--base <branch>] [--spec <path-or-issue-url>] \
   [--review-mode auto|guarded|strict] \
-  [--ready] [--merge] [--allow-merge]
+  [--ready] [--merge]
 ```
 
 Defaults:
@@ -38,7 +38,7 @@ Defaults:
 - `--ready` (default): after all gates pass for the final reviewed revision,
   `pr-babysit` converts the draft to ready for review.
 - `--merge`: after all gates pass, `pr-babysit` merges the PR. Implies
-  `--ready`. Requires `--allow-merge`; it is never a default.
+  `--ready`. It is never a default.
 
 `--ready` and `--merge` are user-facing pass-throughs to `pr-babysit`. The
 standalone `pr-babysit` default remains watch-only because monitoring a PR
@@ -200,8 +200,8 @@ Invoke it with the fixed revision:
   [--ready] [--merge]
 ```
 
-Pass `--merge` (with `--allow-merge`) through to `pr-babysit` only when the
-user explicitly requested it on `/pr-delivery`.
+Pass `--merge` through to `pr-babysit` only when the user explicitly
+requested it on `/pr-delivery`.
 
 If `pr-babysit` returns `needs-delta-review` after making a scoped repair,
 first run the applicable targeted and project quality checks for its new head.
