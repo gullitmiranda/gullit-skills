@@ -17,7 +17,7 @@ protection, required checks, or repository merge-queue policy.
 ## Interface
 
 ```text
-/pr-babysit <pr-url> [<pr-url> ...] [--ready] [--merge]
+/pr-babysit <pr-url> [<pr-url> ...] [--ready] [--merge] [--solo]
 ```
 
 - `<pr-url>`: one or more open PR URLs, passed as positional arguments. Each PR
@@ -27,14 +27,19 @@ protection, required checks, or repository merge-queue policy.
   a draft, convert it first, keep watching the same SHA (some required checks
   only run once a PR is ready), and merge only after they succeed. It is never
   a default.
+- `--solo`: the user is the sole reviewer of this PR (solo repository). Waives
+  the review-manifest gate for `--ready`/`--merge`; every other condition
+  (green checks, mergeable, no blocking threads, no stale head) still applies.
+  Always report `solo` as the review mode in the result so the bypass is
+  auditable.
 
 `--ready` and `--merge` are cumulative steps, not exclusive modes. With
 neither, the run only watches and repairs.
 
 `--ready` and `--merge` are allowed only when the expected and reviewed SHAs
-match for that PR, which in practice requires a `pr-delivery` handoff. When
-watching multiple PRs without review manifests, the run is watch-only for all
-of them.
+match for that PR (which in practice requires a `pr-delivery` handoff), or
+when `--solo` was passed. When watching multiple PRs without review manifests
+and without `--solo`, the run is watch-only for all of them.
 
 The advanced internal arguments below exist for the `pr-delivery` handoff. They
 are normally produced by that skill, not typed by the user, and apply to a
@@ -63,14 +68,15 @@ For each PR, before watching or changing anything:
 4. When a reviewed head SHA is known and differs from the expected head SHA,
    return `needs-delta-review`. A non-reviewed head cannot become ready or
    merge.
-5. For `--ready` or `--merge`, parse and validate the review manifest. Its PR
-   URL and expected/reviewed SHAs must match, completion must be `complete`,
-   review mode must be `guarded` or `strict`, integrity must be verified from
-   pre-review and post-review snapshots pinned to this SHA, and it must contain
-   at least one reviewer session. Every session must have `status: reviewed`, a
-   terminal successful result, and a `reviewed_head_sha` equal to this expected
-   SHA. If the manifest is absent or invalid, return `blocked` without watching
-   or changing the PR.
+5. For `--ready` or `--merge` without `--solo`, parse and validate the review
+   manifest. Its PR URL and expected/reviewed SHAs must match, completion must
+   be `complete`, review mode must be `guarded` or `strict`, integrity must be
+   verified from pre-review and post-review snapshots pinned to this SHA, and
+   it must contain at least one reviewer session. Every session must have
+   `status: reviewed`, a terminal successful result, and a `reviewed_head_sha`
+   equal to this expected SHA. If the manifest is absent or invalid, return
+   `blocked` without watching or changing the PR. With `--solo`, skip this
+   validation and record review mode `solo` for the result.
 6. The serialized manifest is evidence that the parent completed all review
    sessions. This skill must never be started in parallel with them.
 
@@ -142,9 +148,12 @@ Proceed only when all of the following hold for the same SHA:
 - no watcher action created a newer revision; and
 - no decision remains pending.
 
-For `--ready` and `--merge`, additionally require that the expected head SHA
-equals the reviewed head SHA and that the validated manifest records at least
-one completed reviewer for this SHA.
+For `--ready` and `--merge`, additionally require one of:
+
+- the expected head SHA equals the reviewed head SHA and the validated manifest
+  records at least one completed reviewer for this SHA; or
+- `--solo` was passed, in which case the review-manifest gate is waived and the
+  result reports review mode `solo`.
 
 Then apply the requested steps in order:
 

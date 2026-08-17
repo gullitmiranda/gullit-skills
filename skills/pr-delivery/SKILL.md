@@ -20,7 +20,7 @@ before publishing PR text.
 ```text
 /pr-delivery [--base <branch>] [--spec <path-or-issue-url>] \
   [--review-mode auto|guarded|strict] \
-  [--ready] [--merge]
+  [--ready] [--merge] [--solo]
 ```
 
 Defaults:
@@ -39,10 +39,17 @@ Defaults:
   `pr-babysit` converts the draft to ready for review.
 - `--merge`: after all gates pass, `pr-babysit` merges the PR. Implies
   `--ready`. It is never a default.
+- `--solo`: the user is the sole reviewer (solo repository). Passes through to
+  `pr-babysit`, waiving the review-manifest gate for readiness and merge.
 
 `--ready` and `--merge` are user-facing pass-throughs to `pr-babysit`. The
 standalone `pr-babysit` default remains watch-only because monitoring a PR
 directly must not change its public state by surprise.
+
+With `--solo`, skip the fixed-revision review (step 2), the repair delta
+reviews (step 4), and the manifest in the handoff. Repairs found by the user
+or CI are still validated locally and pushed, and the babysitter still requires
+green checks, a mergeable PR, and a non-stale head before ready or merge.
 
 ## Authorization And Preconditions
 
@@ -181,13 +188,13 @@ successfully.
 Call `pr-babysit` only after this barrier is true:
 
 ```text
-all reviewer sessions completed
+all reviewer sessions completed (skipped with --solo)
 AND no user decision is pending
 AND every autonomous repair is committed, validated, and pushed
 AND remote PR head SHA equals the local final head SHA
-AND final head SHA is the reviewed head SHA
-AND a matching serialized completion manifest records at least one completed reviewer for that SHA
-AND the manifest records the selected review mode and successful integrity verification
+AND final head SHA is the reviewed head SHA (not applicable with --solo)
+AND a matching serialized completion manifest records at least one completed reviewer for that SHA (not applicable with --solo)
+AND the manifest records the selected review mode and successful integrity verification (not applicable with --solo)
 ```
 
 Invoke it with the fixed revision:
@@ -200,16 +207,27 @@ Invoke it with the fixed revision:
   [--ready] [--merge]
 ```
 
-Pass `--merge` through to `pr-babysit` only when the user explicitly
-requested it on `/pr-delivery`.
+With `--solo`, omit `--reviewed-head-sha` and `--review-manifest-json`, and
+pass `--solo` instead:
+
+```text
+/pr-babysit <pr-url> \
+  --expected-head-sha <final-head-sha> \
+  --solo [--ready] [--merge]
+```
+
+Pass `--merge` and `--solo` through to `pr-babysit` only when the user
+explicitly requested them on `/pr-delivery`.
 
 If `pr-babysit` returns `needs-delta-review` after making a scoped repair,
 first run the applicable targeted and project quality checks for its new head.
-Then repeat the fixed-revision review in the selected mode only for the delta
-from the previously reviewed SHA to its new head SHA. Wait for every reviewer,
-build a matching replacement
-serialized manifest, and call `pr-babysit` again with the new SHA as expected and
-reviewed. Do not use `ready` or `merge` on an unreviewed revision.
+Without `--solo`, repeat the fixed-revision review in the selected mode only
+for the delta from the previously reviewed SHA to its new head SHA, wait for
+every reviewer, build a matching replacement serialized manifest, and call
+`pr-babysit` again with the new SHA as expected and reviewed. With `--solo`,
+skip the delta review and call `pr-babysit` again with the new head as
+`--expected-head-sha` and `--solo`. Do not use `ready` or `merge` on an
+unreviewed revision.
 
 Stop rather than loop indefinitely if the same failure recurs without progress,
 a decision is needed, the PR head becomes stale, or a validation result is
@@ -221,7 +239,7 @@ Report:
 
 - PR URL and source/base branches;
 - initial and final reviewed head SHA;
-- selected review mode, fixed-SHA integrity checks, reviewer sessions, and their outcome;
+- selected review mode (`guarded`, `strict`, or `solo`), fixed-SHA integrity checks, reviewer sessions, and their outcome;
 - autonomous fixes and validations actually run;
 - current `pr-babysit` result; and
 - any decision, CI failure, or merge blocker left for the user.
