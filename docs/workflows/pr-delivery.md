@@ -21,13 +21,14 @@ committed clean feature branch
 
 ## Defaults
 
-`/pr-delivery` defaults to `--review-mode auto` and `--on-green ready`. `auto`
+`/pr-delivery` defaults to `--review-mode auto` and `--ready`. `auto`
 selects `strict` only when the runtime proves a separate no-mutation child
 boundary; otherwise it selects `guarded` and reports that resolution. In native
 Zed, it resolves to `guarded`. After the final reviewed SHA is green, the flow
-may take the PR out of draft. It does not merge by default.
+may take the PR out of draft. It does not merge by default; `--merge` requires
+`--allow-merge`.
 
-`/pr-babysit` defaults to `--on-green watch` when run directly. This avoids
+`/pr-babysit` is watch-only by default when run directly. This avoids
 changing a PR's public state when its watcher is invoked independently.
 
 ## Safety Gates
@@ -53,7 +54,7 @@ changing a PR's public state when its watcher is invoked independently.
 - Every parent or babysitter repair creates a new SHA, must pass applicable
   quality checks, and requires fixed-revision delta review before the PR can become
   ready or merge.
-- Merge requires both `--on-green merge` and `--allow-merge`.
+- Merge requires `--merge` together with `--allow-merge`.
 
 ## Related Skills
 
