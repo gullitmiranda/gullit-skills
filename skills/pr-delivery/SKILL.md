@@ -47,9 +47,10 @@ standalone `pr-babysit` default remains watch-only because monitoring a PR
 directly must not change its public state by surprise.
 
 With `--solo`, skip the fixed-revision review (step 2), the repair delta
-reviews (step 4), and the manifest in the handoff. Repairs found by the user
-or CI are still validated locally and pushed, and the babysitter still requires
-green checks, a mergeable PR, and a non-stale head before ready or merge.
+reviews (step 4), and the manifest in the handoff. This waives only the
+human-review requirement: `--ready` and `--merge` still require green checks,
+a mergeable PR, no blocking threads, and a non-stale head. Repairs found by
+the user or CI are still validated locally and pushed.
 
 ## Authorization And Preconditions
 

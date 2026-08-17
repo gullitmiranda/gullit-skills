@@ -54,9 +54,10 @@ changing a PR's public state when its watcher is invoked independently.
   quality checks, and requires fixed-revision delta review before the PR can become
   ready or merge.
 - Merge requires the explicit `--merge` flag.
-- `--solo` (user is the sole reviewer) waives the review-manifest gate for
-  readiness and merge; all other gates (green checks, mergeable, non-stale
-  head) still apply, and the result records review mode `solo`.
+- `--solo` (user is the sole reviewer) waives only the human-review gate
+  (review manifest) for readiness and merge; every other gate (green checks,
+  mergeable, non-stale head, no pending decision) still applies, and the
+  result records review mode `solo`.
 
 ## Related Skills
 
