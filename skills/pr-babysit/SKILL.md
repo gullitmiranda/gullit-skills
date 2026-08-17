@@ -17,7 +17,7 @@ protection, required checks, or repository merge-queue policy.
 ## Interface
 
 ```text
-/pr-babysit <pr-url> [<pr-url> ...] [--ready] [--merge] [--allow-merge]
+/pr-babysit <pr-url> [<pr-url> ...] [--ready] [--merge]
 ```
 
 - `<pr-url>`: one or more open PR URLs, passed as positional arguments. Each PR
@@ -25,8 +25,8 @@ protection, required checks, or repository merge-queue policy.
 - `--ready`: when a PR is green, convert it from draft to ready for review.
 - `--merge`: when a PR is green, merge it. Implies `--ready`: if the PR is still
   a draft, convert it first, keep watching the same SHA (some required checks
-  only run once a PR is ready), and merge only after they succeed. Requires
-  `--allow-merge`; it is never a default.
+  only run once a PR is ready), and merge only after they succeed. It is never
+  a default.
 
 `--ready` and `--merge` are cumulative steps, not exclusive modes. With
 neither, the run only watches and repairs.
@@ -145,7 +145,7 @@ Then apply the requested steps in order:
    an active auto-merge request or repository automation could merge the PR
    unexpectedly. After converting, keep watching the same SHA: some required
    checks only start once a PR leaves draft.
-2. `--merge` (with `--allow-merge`): merge only after all prior conditions and
+2. `--merge`: merge only after all prior conditions and
    repository protections are satisfied, including any checks that started
    after the ready conversion. Respect merge queues and never override
    protections.
