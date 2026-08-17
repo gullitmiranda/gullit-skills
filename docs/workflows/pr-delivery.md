@@ -58,6 +58,10 @@ changing a PR's public state when its watcher is invoked independently.
   (review manifest) for readiness and merge; every other gate (green checks,
   mergeable, non-stale head, no pending decision) still applies, and the
   result records review mode `solo`.
+- `--admin` (with `--merge`) bypasses GitHub branch protection via
+  `gh pr merge --admin`. Requires admin permission on the repository. Use only
+  when the user is the sole maintainer and branch protection cannot be
+  satisfied otherwise. The result records `admin` so the bypass is auditable.
 
 ## Related Skills
 
