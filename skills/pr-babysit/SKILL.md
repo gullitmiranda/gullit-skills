@@ -17,7 +17,7 @@ protection, required checks, or repository merge-queue policy.
 ## Interface
 
 ```text
-/pr-babysit <pr-url> [<pr-url> ...] [--ready] [--merge] [--solo]
+/pr-babysit <pr-url> [<pr-url> ...] [--ready] [--merge] [--solo] [--admin]
 ```
 
 - `<pr-url>`: one or more open PR URLs, passed as positional arguments. Each PR
@@ -32,6 +32,12 @@ protection, required checks, or repository merge-queue policy.
   other condition for `--ready` and `--merge` — green checks, mergeable, no
   blocking threads, no stale head, no pending decision — still applies. Always
   report `solo` as the review mode in the result so the bypass is auditable.
+- `--admin`: merge with `gh pr merge --admin`, bypassing GitHub branch
+  protection (required reviews, required checks, etc.). Only valid with
+  `--merge`. Requires admin permission on the repository. Use only when the
+  user is the sole maintainer and branch protection cannot be satisfied
+  otherwise (e.g. org-level required review with no other reviewer). Always
+  report `admin` in the result so the bypass is auditable.
 
 `--ready` and `--merge` are cumulative steps, not exclusive modes. With
 neither, the run only watches and repairs.
@@ -165,7 +171,8 @@ Then apply the requested steps in order:
 2. `--merge`: merge only after all prior conditions and
    repository protections are satisfied, including any checks that started
    after the ready conversion. Respect merge queues and never override
-   protections.
+   protections. With `--admin`, use `gh pr merge --admin` to bypass branch
+   protection; report `admin` in the result.
 
 If checks are in progress, keep watching the same SHA. If they fail, triage the
 failure under the CI rules. Stop and report when the failure cannot be safely

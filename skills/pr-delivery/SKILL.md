@@ -20,7 +20,7 @@ before publishing PR text.
 ```text
 /pr-delivery [--base <branch>] [--spec <path-or-issue-url>] \
   [--review-mode auto|guarded|strict] \
-  [--ready] [--merge] [--solo]
+  [--ready] [--merge] [--solo] [--admin]
 ```
 
 Defaults:
@@ -41,6 +41,9 @@ Defaults:
   `--ready`. It is never a default.
 - `--solo`: the user is the sole reviewer (solo repository). Passes through to
   `pr-babysit`, waiving the review-manifest gate for readiness and merge.
+- `--admin`: merge with `gh pr merge --admin`, bypassing GitHub branch
+  protection. Only valid with `--merge`. Requires admin permission on the
+  repository. Passes through to `pr-babysit`.
 
 `--ready` and `--merge` are user-facing pass-throughs to `pr-babysit`. The
 standalone `pr-babysit` default remains watch-only because monitoring a PR
@@ -214,11 +217,11 @@ pass `--solo` instead:
 ```text
 /pr-babysit <pr-url> \
   --expected-head-sha <final-head-sha> \
-  --solo [--ready] [--merge]
+  --solo [--ready] [--merge] [--admin]
 ```
 
-Pass `--merge` and `--solo` through to `pr-babysit` only when the user
-explicitly requested them on `/pr-delivery`.
+Pass `--merge`, `--solo`, and `--admin` through to `pr-babysit` only when the
+user explicitly requested them on `/pr-delivery`.
 
 If `pr-babysit` returns `needs-delta-review` after making a scoped repair,
 first run the applicable targeted and project quality checks for its new head.
