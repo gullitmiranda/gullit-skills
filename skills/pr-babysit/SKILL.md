@@ -1,6 +1,6 @@
 ---
 name: pr-babysit
-description: Watch one reviewed PR revision, triage scoped conflicts, comments, and CI failures, and only make it ready or merge when the expected reviewed SHA is green. Use after pr-delivery has completed every review session.
+description: Watch one PR head, triage scoped conflicts, comments, and CI failures, and make it ready or merge only when the reviewed head SHA is green. Use after pr-delivery has completed every review session, or standalone to watch the current PR head.
 disable-model-invocation: true
 ---
 
@@ -19,23 +19,28 @@ protection, required checks, or repository merge-queue policy.
 ```text
 /pr-babysit \
   --pr <url> \
-  --expected-head-sha <sha> \
-  --reviewed-head-sha <sha> \
-  --review-manifest-json '<serialized-manifest>' \
   [--on-green watch|ready|merge] [--allow-merge]
 ```
 
 Required arguments:
 
 - `--pr`: the open PR URL.
-- `--expected-head-sha`: the exact remote head this run may observe or repair.
-- `--reviewed-head-sha`: the latest head SHA completed by a review session.
-- `--review-manifest-json`: the serialized completion record created by
-  `pr-delivery` as specified in `pr-delivery/review-manifest.md`.
 
 `--on-green` defaults to `watch`. `ready` is allowed only when the expected and
 reviewed SHAs match. `merge` additionally requires `--allow-merge`; it is never
 a default.
+
+The advanced internal arguments below exist for the `pr-delivery` handoff. They
+are normally produced by that skill, not typed by the user:
+
+- `--expected-head-sha <sha>`: the exact remote head this run may observe or
+  repair. Defaults to the PR's current remote head, fetched at entry.
+- `--reviewed-head-sha <sha>`: the latest head SHA completed by a review
+  session. Required for `--on-green ready|merge`; when omitted, this run may
+  only watch or repair.
+- `--review-manifest-json '<serialized-manifest>'`: the serialized completion
+  record created by `pr-delivery` as specified in
+  `pr-delivery/review-manifest.md`. Required for `--on-green ready|merge`.
 
 ## Entry Gate
 
@@ -43,17 +48,20 @@ Before watching or changing anything:
 
 1. Confirm the PR is open and belongs to the intended repository and branch.
 2. Fetch its current head SHA, base SHA, draft state, merge state, required
-   check status, and active unresolved threads.
-3. If current head differs from `--expected-head-sha`, return `stale-head`.
-4. If `--expected-head-sha` differs from `--reviewed-head-sha`, return
-   `needs-delta-review`. A non-reviewed head cannot become ready or merge.
-5. Parse and validate `--review-manifest-json`. Its PR URL and expected/reviewed
-   SHAs must match these arguments, completion must be `complete`, review mode
-   must be `guarded` or `strict`, integrity must be verified from pre-review and
-   post-review snapshots pinned to this SHA, and it must contain at least one
-   reviewer session. Every session must have `status: reviewed`, a
+   check status, and active unresolved threads. When `--expected-head-sha` was
+   not provided, pin the fetched head as the expected SHA for this run.
+3. If current head differs from the expected head SHA, return `stale-head`.
+4. When a reviewed head SHA is known and differs from the expected head SHA,
+   return `needs-delta-review`. A non-reviewed head cannot become ready or
+   merge.
+5. For `--on-green ready|merge`, parse and validate the review manifest. Its PR
+   URL and expected/reviewed SHAs must match, completion must be `complete`,
+   review mode must be `guarded` or `strict`, integrity must be verified from
+   pre-review and post-review snapshots pinned to this SHA, and it must contain
+   at least one reviewer session. Every session must have `status: reviewed`, a
    terminal successful result, and a `reviewed_head_sha` equal to this expected
-   SHA. If not, return `blocked` without watching or changing the PR.
+   SHA. If the manifest is absent or invalid, return `blocked` without watching
+   or changing the PR.
 6. The serialized manifest is evidence that the parent completed all review
    sessions. This skill must never be started in parallel with them.
 
@@ -112,13 +120,15 @@ using the new SHA as both expected and reviewed.
 
 Proceed only when all of the following hold for the same SHA:
 
-- current remote head equals `--expected-head-sha` and `--reviewed-head-sha`;
+- current remote head equals the expected head SHA;
 - all required checks are successful;
 - the PR is mergeable and has no unresolved blocking threads or conflicts;
-- no watcher action created a newer revision;
-- the validated serialized manifest records at least one completed reviewer for
-  this SHA; and
+- no watcher action created a newer revision; and
 - no decision remains pending.
+
+For `ready` and `merge`, additionally require that the expected head SHA equals
+the reviewed head SHA and that the validated manifest records at least one
+completed reviewer for this SHA.
 
 Then apply `--on-green`:
 
@@ -146,7 +156,8 @@ Return one of:
 - `timed-out`: checks did not settle within the active watcher limit.
 - `merged`: only after explicit merge mode succeeds.
 
-Always include the PR URL, current head SHA, reviewed head SHA, review mode,
-check summary, changes made during this run, and the next safe action.
+Always include the PR URL, current head SHA, reviewed head SHA (or `none` when
+watching without a review manifest), review mode, check summary, changes made
+during this run, and the next safe action.
 
 Arguments: $ARGUMENTS
