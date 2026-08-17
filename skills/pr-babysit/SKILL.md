@@ -79,6 +79,13 @@ For each PR, before watching or changing anything:
 Observe only the current expected head of each PR. Re-check its SHA before
 every remote mutation and after every CI polling interval.
 
+One invocation owns exactly one head SHA. Converting a draft to ready does not
+end the run because the SHA does not change. Any scoped fix that creates a new
+SHA ends this run's authority to ready or merge: the watcher returns
+`needs-delta-review`, `pr-delivery` reviews the delta, and only a new
+invocation pinned to the new SHA may proceed. This prevents accidental merges
+on unreviewed revisions.
+
 ### Merge Conflicts
 
 Resolve a conflict only when the intended result is clear from the PR and base
