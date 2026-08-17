@@ -1,12 +1,12 @@
 ---
 name: pr-babysit
-description: Watch one PR head, triage scoped conflicts, comments, and CI failures, and make it ready or merge only when the reviewed head SHA is green. Use after pr-delivery has completed every review session, or standalone to watch the current PR head.
+description: Watch PR heads, triage scoped conflicts, comments, and CI failures, and make each PR ready or merge it only when the reviewed head SHA is green. Use after pr-delivery has completed every review session, or standalone to watch current PR heads.
 disable-model-invocation: true
 ---
 
 # PR Babysit
 
-Keep one pull request revision moving toward a merge-ready state without acting
+Keep pull request revisions moving toward a merge-ready state without acting
 on a stale, unreviewed, or integrity-unknown head. This skill is versioned and
 portable, and is guarded by explicit PR and commit identities.
 
@@ -17,34 +17,43 @@ protection, required checks, or repository merge-queue policy.
 ## Interface
 
 ```text
-/pr-babysit \
-  --pr <url> \
-  [--on-green watch|ready|merge] [--allow-merge]
+/pr-babysit <pr-url> [<pr-url> ...] [--ready] [--merge] [--allow-merge]
 ```
 
-Required arguments:
+- `<pr-url>`: one or more open PR URLs, passed as positional arguments. Each PR
+  is watched and triaged independently, and each produces its own result.
+- `--ready`: when a PR is green, convert it from draft to ready for review.
+- `--merge`: when a PR is green, merge it. Implies `--ready`: if the PR is still
+  a draft, convert it first, keep watching the same SHA (some required checks
+  only run once a PR is ready), and merge only after they succeed. Requires
+  `--allow-merge`; it is never a default.
 
-- `--pr`: the open PR URL.
+`--ready` and `--merge` are cumulative steps, not exclusive modes. With
+neither, the run only watches and repairs.
 
-`--on-green` defaults to `watch`. `ready` is allowed only when the expected and
-reviewed SHAs match. `merge` additionally requires `--allow-merge`; it is never
-a default.
+`--ready` and `--merge` are allowed only when the expected and reviewed SHAs
+match for that PR, which in practice requires a `pr-delivery` handoff. When
+watching multiple PRs without review manifests, the run is watch-only for all
+of them.
 
 The advanced internal arguments below exist for the `pr-delivery` handoff. They
-are normally produced by that skill, not typed by the user:
+are normally produced by that skill, not typed by the user, and apply to a
+single-PR invocation:
 
 - `--expected-head-sha <sha>`: the exact remote head this run may observe or
   repair. Defaults to the PR's current remote head, fetched at entry.
 - `--reviewed-head-sha <sha>`: the latest head SHA completed by a review
-  session. Required for `--on-green ready|merge`; when omitted, this run may
+  session. Required for `--ready` and `--merge`; when omitted, this run may
   only watch or repair.
 - `--review-manifest-json '<serialized-manifest>'`: the serialized completion
   record created by `pr-delivery` as specified in
-  `pr-delivery/review-manifest.md`. Required for `--on-green ready|merge`.
+  `pr-delivery/review-manifest.md`. Required for `--ready` and `--merge`.
+- `--on-green watch|ready|merge`: legacy alias for the flag set (`ready` maps
+  to `--ready`, `merge` to `--ready --merge`). Prefer the flags.
 
 ## Entry Gate
 
-Before watching or changing anything:
+For each PR, before watching or changing anything:
 
 1. Confirm the PR is open and belongs to the intended repository and branch.
 2. Fetch its current head SHA, base SHA, draft state, merge state, required
@@ -54,7 +63,7 @@ Before watching or changing anything:
 4. When a reviewed head SHA is known and differs from the expected head SHA,
    return `needs-delta-review`. A non-reviewed head cannot become ready or
    merge.
-5. For `--on-green ready|merge`, parse and validate the review manifest. Its PR
+5. For `--ready` or `--merge`, parse and validate the review manifest. Its PR
    URL and expected/reviewed SHAs must match, completion must be `complete`,
    review mode must be `guarded` or `strict`, integrity must be verified from
    pre-review and post-review snapshots pinned to this SHA, and it must contain
@@ -67,8 +76,8 @@ Before watching or changing anything:
 
 ## Watch And Triage Loop
 
-Observe only the current expected head. Re-check its SHA before every remote
-mutation and after every CI polling interval.
+Observe only the current expected head of each PR. Re-check its SHA before
+every remote mutation and after every CI polling interval.
 
 ### Merge Conflicts
 
@@ -126,17 +135,20 @@ Proceed only when all of the following hold for the same SHA:
 - no watcher action created a newer revision; and
 - no decision remains pending.
 
-For `ready` and `merge`, additionally require that the expected head SHA equals
-the reviewed head SHA and that the validated manifest records at least one
-completed reviewer for this SHA.
+For `--ready` and `--merge`, additionally require that the expected head SHA
+equals the reviewed head SHA and that the validated manifest records at least
+one completed reviewer for this SHA.
 
-Then apply `--on-green`:
+Then apply the requested steps in order:
 
-| Mode | Action |
-| --- | --- |
-| `watch` | Report green status. Do not change draft state or merge. |
-| `ready` | Convert a draft PR to ready for review. Before doing so, stop if an active auto-merge request or repository automation could merge the PR unexpectedly. |
-| `merge` | Merge only with `--allow-merge`, after all prior conditions and repository protections are satisfied. Respect merge queues and never override protections. |
+1. `--ready`: convert a draft PR to ready for review. Before doing so, stop if
+   an active auto-merge request or repository automation could merge the PR
+   unexpectedly. After converting, keep watching the same SHA: some required
+   checks only start once a PR leaves draft.
+2. `--merge` (with `--allow-merge`): merge only after all prior conditions and
+   repository protections are satisfied, including any checks that started
+   after the ready conversion. Respect merge queues and never override
+   protections.
 
 If checks are in progress, keep watching the same SHA. If they fail, triage the
 failure under the CI rules. Stop and report when the failure cannot be safely
@@ -146,7 +158,7 @@ fixed within scope or when progress stops.
 
 Return one of:
 
-- `green`: expected reviewed SHA is green; include the selected action.
+- `green`: expected reviewed SHA is green; include the requested steps.
 - `needs-delta-review`: a mutation created a new head that needs a new review
   before readiness or merge.
 - `needs-decision`: a user decision is required.
@@ -158,6 +170,7 @@ Return one of:
 
 Always include the PR URL, current head SHA, reviewed head SHA (or `none` when
 watching without a review manifest), review mode, check summary, changes made
-during this run, and the next safe action.
+during this run, and the next safe action. When watching multiple PRs, report
+one result per PR.
 
 Arguments: $ARGUMENTS
