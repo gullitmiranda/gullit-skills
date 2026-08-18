@@ -5,6 +5,13 @@ description: Prevent sensitive, private, or context-specific information from le
 
 # Data Boundary Guard
 
+## Rules
+
+- Fail closed when in doubt.
+- Prefer omission over speculative sanitization.
+- Keep reusable behavior separate from context-specific configuration.
+- Do not assume that public availability makes copying or republishing authorized.
+
 ## Purpose
 
 Keep information in the context where it is authorized to exist. Classify the destination before writing and fail closed when ownership, privacy, or publication scope is unclear.
@@ -53,9 +60,3 @@ Before committing to a public personal repository:
 
 A private personal archive may contain transferable notes or workflows only when their retention is authorized and they contain no secrets or restricted data. Keep work-specific mappings, defaults, and sensitive operational details in a separate private configuration or organization-controlled repository.
 
-## Rules
-
-- Fail closed when in doubt.
-- Prefer omission over speculative sanitization.
-- Keep reusable behavior separate from context-specific configuration.
-- Do not assume that public availability makes copying or republishing authorized.
