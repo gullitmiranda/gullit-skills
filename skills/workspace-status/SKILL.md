@@ -2,90 +2,28 @@
 name: workspace-status
 description: Multi-repository workspace status overview and analysis. Use when checking workspace state, understanding repo boundaries, or before running git operations in multi-repo workspaces.
 ---
-# Workspace Status Command
 
-## Description
+# Workspace Status
 
-Multi-repository workspace status overview with comprehensive analysis.
+Show git state for every repository in a multi-repo workspace, respecting
+each repo as an independent unit.
 
-## Workflow
+## Procedure
 
-1. Always check current working directory and understand repository boundaries
-2. Never assume single git repository when working in multi-repo workspace
-3. Always verify which repository operations are targeting
-4. Identify which specific repository changes belong to
-5. Navigate to correct repository directory before running git operations
-6. Treat each repository as separate entity with its own git state
+1. Identify all git repositories in the workspace (check for `.git` dirs).
+2. For each repo, report: path, branch, status (clean/dirty), staged/modified
+   counts, last commit time, remote tracking branch.
+3. When a `WORKSPACE.md` exists in the workspace root or any ancestor, consult
+   it to confirm each repo belongs there. Report repos whose location conflicts
+   with the applicable rules (e.g. a primary clone inside a reserved worktree
+   area). See the `workspace-topology` skill for hierarchical rule resolution.
+4. Highlight cross-repository dependencies or conflicts when found.
 
-## Multi-Repository Handling
+## Hard Rules
 
-- When working with staged changes, identify which specific repository they belong to
-- Provide clear indication of repository boundaries
-- Show status for each repository found in workspace
-- Highlight any cross-repository dependencies or conflicts
-
-## Error Prevention
-
-- Always ask for clarification when workspace structure is unclear
-- Confirm target repository before running git commands
-- Use non-destructive git commands first (git stash, git log) to understand situation
-
-## Topology Integration
-
-- When a `WORKSPACE.md` exists in the workspace root or any ancestor, consult it to confirm that each git repository in the workspace actually belongs there. Coordinate with the `workspace-topology` skill for hierarchical rule resolution.
-- Report repositories whose location conflicts with the applicable `WORKSPACE.md` rules (e.g. a primary clone inside a reserved worktree area) instead of assuming the layout is intentional.
-
-## Output Format
-
-```
-Workspace: /path/to/workspace
-Repositories: 3
-
-Repository 1: /path/to/repo1
-  Branch: main
-  Status: clean
-  Last commit: 2 hours ago
-  Remote: origin/main
-
-Repository 2: /path/to/repo2
-  Branch: feature/new-feature
-  Status: dirty
-  Staged: 2 files
-  Modified: 1 file
-  Last commit: 1 hour ago
-  Remote: origin/feature/new-feature
-
-Repository 3: /path/to/repo3
-  Branch: develop
-  Status: clean
-  Last commit: 3 hours ago
-  Remote: origin/develop
-```
-
-## Examples
-
-```bash
-# Check workspace status
-/workspace-status
-
-# Check specific workspace
-/workspace-status /path/to/workspace
-
-# Detailed status with file changes
-/workspace-status --detailed
-```
-
-## Features
-
-- Multi-repository detection
-- Cross-repository dependency analysis
-- Conflict detection and reporting
-- Workspace boundary identification
-- Git state analysis per repository
-
-## Integration
-
-- Works with all git commands
-- Integrates with PR workflow
-- Supports GitHub Issue tracking (Linear when explicitly referenced)
-- Compatible with branch management
+- Never assume a single git repository in a multi-repo workspace.
+- Always verify which repository a git operation targets before running it.
+- Navigate to the correct repository directory before running git commands.
+- Ask for clarification when workspace structure is unclear.
+- Use non-destructive git commands first (`git stash`, `git log`) to
+  understand the situation.
