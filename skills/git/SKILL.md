@@ -23,15 +23,14 @@ When on main/master without `--main`, create a branch named by change type befor
 
 ## Trunk-backed Commit Safety
 
-When the repository uses Trunk git hooks, agent-driven commits must avoid hanging on hook stdin:
+When the repository has Trunk configured (`.trunk/trunk.yaml` exists), agent-driven commits must not hang on interactive hook prompts:
 
-1. Run the final `git commit` with stdin closed by appending `</dev/null`. This is the default, low-impact mitigation.
-2. Optional preflight checks may be run without stopping the daemon:
-   - `trunk check --ci --upstream HEAD --no-progress`
-   - `trunk fmt --ci --upstream HEAD --no-progress`
-3. Use `trunk daemon shutdown` only as fallback recovery when the commit/check still hangs with closed stdin, or Trunk reports `Socket closed`, `Connection refused`, `Daemon stopped`, or another daemon/GRPC error.
-
-This prevents the Trunk-generated hook from blocking on `cat` while waiting for EOF in AI-agent pseudo-terminals, without disrupting the daemon during normal commits.
+1. **Always run Trunk first, before committing** — fix findings before the hook ever runs:
+   - `trunk fmt --ci --upstream HEAD --no-progress </dev/null`
+   - `trunk check --ci --upstream HEAD --no-progress </dev/null`
+   The `--ci` flag makes Trunk fail fast instead of prompting `Continue anyway? (Y/n)` — an interactive prompt in a non-interactive terminal hangs the commit indefinitely.
+2. **Commit with stdin closed and a timeout**: append `</dev/null` to `git commit` and set `timeout_ms`. The Trunk hook saves stdin via `cat`, which waits forever for EOF in agent pseudo-terminals. If the commit hangs, the hook is waiting for input — never leave it hanging.
+3. **Escape hatch: `--no-verify`** when the hook still blocks after a clean `trunk check`. Always declare it explicitly in the response ("committed with `--no-verify` because …") — a visible bypass, never a silent one. Do not use `trunk daemon shutdown` as a commit workaround.
 
 ## Safety Checks
 
