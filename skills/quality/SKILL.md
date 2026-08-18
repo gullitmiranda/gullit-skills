@@ -1,6 +1,6 @@
 ---
 name: quality
-description: Code quality, commit standards, quality gates, PR standards, and output character hygiene (gremlin characters). Use when writing code, committing, creating PRs, generating any text, or when the user runs /gremlin-clean.
+description: Quality gates, native file-edit safety, commit and PR standards, and output character hygiene. Use when writing code, editing files, committing, creating PRs, generating text, or when the user runs /gremlin-clean.
 ---
 
 # Quality Rules
@@ -23,6 +23,12 @@ Use only **U+0020** (space) and **LF/CRLF**. Avoid:
 When pasting or referencing external text, rewrite it as clean text instead of copying raw content that may contain gremlins.
 
 **/gremlin-clean:** follow the `gremlin-clean` skill: run its bundled `scripts/strip-gremlins.py` on the target file(s) and report. The script skips binary files (`.db`, `.sqlite`, images, archives, fonts, compiled files, etc.).
+
+## File Operations
+
+- Use the harness's native file tools (`edit_file`, `write_file`, `save_file`, `move_path`, `copy_path`, `delete_path`, `create_directory`) when available for file operations inside project roots.
+- Do not edit files via shell (`sed -i`, `python3 << EOF`, heredocs, `cat >`, `mv`, `cp`) inside project roots.
+- Shell file edits are allowed only outside all project roots (for example, an unadded worktree or `~/.agents/skills/`); state the exception before using them.
 
 ## Commit Standards
 
