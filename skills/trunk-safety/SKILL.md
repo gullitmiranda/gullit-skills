@@ -37,6 +37,9 @@ attacks like the Trivy compromise (March 2026).
    ```bash
    trunk actions enable trunk-check-pre-push trunk-check-pre-commit trunk-fmt-pre-commit
    ```
+
+For a repo that already has Trunk configured, verify the same three hooks
+are enabled (`trunk actions list`) and enable any that are missing.
 4. Pin all versions — finds every `@version` entry in `.trunk/trunk.yaml`, appends `!` (skipping already-pinned), shows a before/after diff:
    ```bash
    bash <skill-dir>/scripts/trunk-pin-versions.sh
@@ -63,10 +66,12 @@ attacks like the Trivy compromise (March 2026).
 
 ## Workflow 3: Enable New Tool
 
-1. `trunk check enable <tool>`
-2. Immediately pin its version with `!` in `.trunk/trunk.yaml`
-3. Check `references/compromised-versions.md` for that tool
+1. Check `references/compromised-versions.md` for the tool BEFORE enabling it.
+2. `trunk check enable <tool>`
+3. Immediately pin its version with `!` in `.trunk/trunk.yaml`
 4. Verify: `trunk check --sample 2`
+
+A compromised tool must never be enabled, even briefly.
 
 ## Workflow 4: Agent-safe Git Hooks
 
