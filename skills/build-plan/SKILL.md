@@ -10,6 +10,18 @@ reads the plan context, applies relevant domain skills, uses subagents where
 useful, commits each completed block by default, and closes with reviews and
 validation.
 
+## Hard Rules
+
+- Never implement directly on `main`/`master` unless explicitly requested;
+  create or switch to a feature branch first.
+- Do not commit ignored files or local-only planning artifacts unless the user
+  asks and the repository versions them.
+- Do not push or open/update a PR without `--pr` or an explicit user ask.
+- Do not expand a slice stub by inference; route through `plan` or the user.
+- With `--single-commit`, validate per block but commit once after final review.
+- PR or publication text must not reference local-only files, ignored files,
+  raw sensitive output, or unpushed artifacts.
+
 ## Invocation Model
 
 Accept natural language and referenced/attached files, issues, PRs, handoffs,
@@ -112,18 +124,6 @@ path, source artifacts and scope, expected output, and validation commands.
   apply.
 - Verify commits match the intended block boundaries.
 - If a required check cannot run, state why and what evidence remains missing.
-
-## Hard Rules
-
-- Never implement directly on `main`/`master` unless explicitly requested;
-  create or switch to a feature branch first.
-- Do not commit ignored files or local-only planning artifacts unless the user
-  asks and the repository versions them.
-- Do not push or open/update a PR without `--pr` or an explicit user ask.
-- Do not expand a slice stub by inference; route through `plan` or the user.
-- With `--single-commit`, validate per block but commit once after final review.
-- PR or publication text must not reference local-only files, ignored files,
-  raw sensitive output, or unpushed artifacts.
 
 ## Output
 
