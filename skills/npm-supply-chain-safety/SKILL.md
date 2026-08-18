@@ -29,9 +29,15 @@ bypass the Socket check just to keep moving.
 npm install -g @socketregistry/socket
 ```
 
-### 2. Check publish age before installing (minimum-release-age guard)
+### 2. Enforce minimum publish age (native config first)
 
-Before updating to any new version, run:
+The project's package manager config is the primary mechanism — verify it is
+configured (see "Minimum-release-age guard — native package manager config"
+below); if missing, add it. The native gate blocks too-new packages at install
+time with no manual step.
+
+Use the script only as a fallback: projects on package managers without support
+(e.g. npm 10), or a one-off manual check outside the install flow:
 ```bash
 ~/.agents/skills/npm-supply-chain-safety/scripts/check-pkg-age.sh <pkg> <version>
 ```
