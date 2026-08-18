@@ -12,7 +12,7 @@ Turn a large implementation into a sequence of small increments, each with clear
 - Branch safety absolute rules (source branch is read-only; create a new delivery branch/worktree from the agreed base before editing; never execute the mission on the source branch) live in `safety/SKILL.md` and apply unconditionally.
 - If the execution branch/worktree does not exist yet, **stop and create it before any planning or implementation continues** — even analysis for increment 1 happens on the new branch.
 - Build each increment by cherry-picking or reapplying only the commits that belong to that slice. Treat each slice as an independent rebuild from the base, not a subtraction from a mixed source branch.
-- One increment per PR. Commits are per change block; a PR is per delivery — do not open one PR per commit, and do not bundle multiple increments into one PR. Exceptions need explicit user approval.
+- One increment per PR. Commits are per change block; a PR is per delivery. A small delivery may be a single commit and a single PR — that's fine. What to avoid: opening a PR per commit within the same delivery, and bundling multiple increments into one PR. Exceptions need explicit user approval.
 - No increment is done with failing tests/lint/typecheck.
 - Never introduce mise into a repo that does not already use it.
 
