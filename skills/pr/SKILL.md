@@ -16,6 +16,7 @@ description: Pull request lifecycle - create and update PRs with gh CLI, validat
 - Always include URLs when reporting GitHub PR/issue references; markdown links or compact raw URLs are fine, never bare `#123`.
 - Apply the `zeropath` skill only for PRs that already mention ZeroPath in the prompt, commits, diff, PR body, comments, or linked evidence. Do not add ZeroPath sections to unrelated PRs.
 - If the current branch belongs to a `gh stack` stack (check `gh stack view --json`), delegate stack operations (submit, sync, merge, navigation) to the `gh-stack` skill; never use `gh pr merge` on a stacked PR — use `gh stack merge <target> --yes`.
+- Never pass a merge strategy flag (`--squash`, `--rebase`) unless the user asked for it. Default to plain `git merge`/`gh pr merge` — no flag — and let the user's git config (`merge.ff` = `no`, e.g. `--no-ff`) decide. Explicit flags override the user's own configuration.
 - Run quality checks before a standard PR is marked ready; `/pr draft` may open an early draft after an integrity preflight so remote checks can start.
 
 ## PR Information Quality Contract
