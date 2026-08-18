@@ -20,7 +20,7 @@ Apply `gh-profile` before GitHub and remote Git operations. Apply `pr` when sync
 - `--ready`: when green, convert from draft to ready for review.
 - `--merge`: when green, merge. Implies `--ready` (convert first, keep watching the same SHA — some required checks only run once ready — and merge only after they succeed). Never a default.
 - `--solo`: user is sole reviewer (solo repository). Waives only the human-review gate (review manifest); every other condition still applies. Report `solo` as review mode in the result so the bypass is auditable.
-- `--admin`: merge with `gh pr merge --admin`, bypassing branch protection (required reviews, required checks). Only valid with `--merge`; requires admin permission. Use only when the user is sole maintainer and protection cannot be satisfied otherwise (e.g. org-level required review with no other reviewer). Report `admin` in the result.
+- `--admin`: merge with `gh pr merge --admin`, bypassing branch protection (required reviews, required checks). Only valid with `--merge`; requires admin permission. **Never proactive**: use only on explicit user request — do not suggest it when protections block a merge; report the blocker and wait. Intended for sole-maintainer repos where protection cannot be satisfied otherwise. Report `admin` in the result.
 
 `--ready` and `--merge` are cumulative steps, not exclusive modes; with neither, the run only watches and repairs. They are allowed only when expected and reviewed SHAs match (in practice a `pr-delivery` handoff) or when `--solo` was passed. Watching multiple PRs without manifests and without `--solo` is watch-only for all of them.
 
