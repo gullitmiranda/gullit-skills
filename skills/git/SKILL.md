@@ -5,93 +5,41 @@ description: Safe Git workflow - commit with conventional format and branch safe
 
 # /commit - Smart Git Commit
 
-## Overview
-
-You are a git commit specialist that creates conventional commits with automatic type detection and safety checks.
-
 ## Steps
 
-1. **Branch Safety Check**:
-   - Check if currently on main/master branch
-   - If yes and using `/commit` (without `--main` flag), automatically create a feature branch based on the changes detected
-   - If using `/commit --main`, allow direct commit to main/master branch (emergency fixes only)
-
-2. **Analyze Changes**:
-   - Run `git status` and `git diff --cached` (or `git diff` for all changes if `--all` flag is used)
-   - Detect conventional commit type from changes:
-     - `feat`: New features, components, functionality
-     - `fix`: Bug fixes, error corrections
-     - `chore`: Dependencies, build, config, tooling
-     - `docs`: Documentation changes
-     - `style`: Code formatting, style changes
-     - `refactor`: Code restructuring without behavior change
-     - `test`: Adding or updating tests
-   - Check for issue references in commit message or staged changes (GitHub Issues by default; Linear `TEAM-123` IDs only when explicitly present)
-
-3. **Generate Commit Message**:
-   - Format: `<type>(<scope>): <description>`
-   - Scope should be component/area affected (optional)
-   - Description should be concise and clear
-   - Use present tense, imperative mood
-   - Include issue references for auto-linking only when present in the prompt or staged content. Default is GitHub Issues (`#123` or `owner/repo#123`); use Linear IDs (e.g., `TEAM-123`) only when explicitly referenced
-
-4. **Execute Commit**:
-   - Use heredoc format for multi-line commit messages
-   - Commit only staged changes (unless `--all` flag is used)
-   - If `--all` flag is used, stage and commit all changes (unstaged + staged)
-   - Confirm successful commit with git log
-
-5. **Validation**:
-   - Ensure commit follows conventional format
-   - Verify only intended changes were committed
+1. **Branch safety**: if on main/master and `/commit` was invoked without `--main`, automatically create a feature branch from the detected changes (see Auto Branch Creation) before committing. `--main` allows committing directly to main/master — emergency fixes only.
+2. **Analyze changes**: `git status` and `git diff --cached` (or `git diff` for all changes with `--all`). Detect the conventional commit type (`feat`, `fix`, `chore`, `docs`, `style`, `refactor`, `test`) and any issue references.
+3. **Generate message**: `<type>(<scope>): <description>` — concise, present tense, imperative. Include issue references only when present in the prompt or staged content: GitHub Issues by default (`#123` or `owner/repo#123`); Linear `TEAM-123` IDs only when explicitly referenced.
+4. **Commit**: heredoc for multi-line messages; commit staged changes only unless `--all` (stages everything). Confirm with `git log`.
 
 ## Auto Branch Creation
 
-When on main/master branch and using `/commit` (without `--main` flag):
+When on main/master without `--main`, create a branch named by change type before committing:
 
-1. **Analyze Changes**: Detect commit type from staged/unstaged changes
-2. **Generate Branch Name**:
-   - For features: `feature/<type>-<short-description>`
-   - For fixes: `fix/<short-description>`
-   - For chores: `chore/<short-description>`
-   - For docs: `docs/<short-description>`
-3. **Create Branch**: `git checkout -b <generated-branch-name>`
-4. **Proceed with Commit**: Continue with normal commit process
-
-**Example Branch Names**:
-
-- `feature/feat-user-auth` (for new authentication feature)
-- `fix/login-bug` (for login bug fix)
-- `chore/update-deps` (for dependency updates)
+- `feature/<type>-<short-description>` for features
+- `fix/<short-description>` for fixes
+- `chore/<short-description>` for chores
+- `docs/<short-description>` for docs
 
 ## Trunk-backed Commit Safety
 
-When the repository uses Trunk git hooks, agent-driven commits must avoid
-hanging on hook stdin:
+When the repository has Trunk configured (`.trunk/trunk.yaml` exists), agent-driven commits must not hang on interactive hook prompts:
 
-1. Run the final `git commit` with stdin closed by appending `</dev/null`.
-   This is the default, low-impact mitigation.
-2. Optional preflight checks may be run without stopping the daemon:
-   - `trunk check --ci --upstream HEAD --no-progress`
-   - `trunk fmt --ci --upstream HEAD --no-progress`
-3. Use `trunk daemon shutdown` only as fallback recovery when the commit/check
-   still hangs with closed stdin, or Trunk reports `Socket closed`,
-   `Connection refused`, `Daemon stopped`, or another daemon/GRPC error.
-
-This prevents the Trunk-generated hook from blocking on `cat` while waiting for
-EOF in AI-agent pseudo-terminals, without disrupting the daemon during normal
-commits.
+1. **Always run Trunk first, before committing** — fix findings before the hook ever runs:
+   - `trunk fmt --ci --upstream HEAD --no-progress </dev/null`
+   - `trunk check --ci --upstream HEAD --no-progress </dev/null`
+   The `--ci` flag makes Trunk fail fast instead of prompting `Continue anyway? (Y/n)` — an interactive prompt in a non-interactive terminal hangs the commit indefinitely.
+2. **Every `git commit` runs with stdin closed and a timeout** (`</dev/null` + `timeout_ms`), trunk or not — zero cost when healthy, and it prevents the pathological hang: hook stdin saved via `cat` waits forever for EOF in agent pseudo-terminals. If a commit hangs, a hook is waiting for input — never leave it hanging.
+3. **Escape hatch: `--no-verify`** when the hook still blocks after a clean `trunk check`. Always declare it explicitly in the response ("committed with `--no-verify` because …") — a visible bypass, never a silent one. Do not use `trunk daemon shutdown` as a commit workaround.
 
 ## Safety Checks
 
-- Never commit to main/master without explicit approval (unless using `--main` flag)
-- Never commit unstaged changes without being asked (unless using `--all` flag is used)
-- Never push automatically
-- Always validate conventional commit format
-- Always show what will be committed before executing
-- Include issue references for auto-linking only when explicitly provided (GitHub Issues by default; Linear only when referenced)
-- Automatically create feature branch when on main/master
-- `--main` flag bypasses main/master protection - use only for emergency fixes
+- Never commit to main/master without explicit approval (unless `--main`).
+- Never commit unstaged changes without being asked (unless `--all`).
+- Never push automatically.
+- Always show what will be committed before executing.
+- Automatically create a feature branch when on main/master.
+- `--main` bypasses main/master protection — emergency fixes only.
 
 ## Worktree Workflow
 
@@ -113,256 +61,47 @@ with `main` as a fresh base. NEVER merge the feature branch into `main`.
 - Initialize new Git projects on `main` by default.
 - Respect ignored files and explicitly mention ignored-file handling in action summaries.
 
-## Examples
+## Issue Linking
 
-With staged changes to authentication system:
-
-```bash
-git commit -m "$(cat <<'EOF'
-feat(auth): add JWT token validation middleware
-
-- Implement token verification for protected routes
-- Add error handling for expired tokens
-- Update authentication flow documentation
-
-Closes [#42: Add JWT validation](https://github.com/<owner>/<repo>/issues/42)
-EOF
-)"
-```
-
-With all changes (including unstaged):
-
-```bash
-# This will stage and commit all changes
-/commit --all
-```
-
-Emergency fix directly to main branch:
-
-```bash
-# This bypasses main/master branch protection for emergency fixes
-/commit --main
-```
-
-Emergency fix with all changes to main branch:
-
-```bash
-# This bypasses main/master branch protection and stages all changes
-/commit --main --all
-```
-
-Auto branch creation when on main/master:
-
-```bash
-# When on main branch with staged changes for new feature
-# Command automatically creates: feature/feat-user-auth
-# Then switches to new branch and commits
-/commit
-
-# When on main branch with bug fix changes
-# Command automatically creates: fix/login-validation
-# Then switches to new branch and commits
-/commit --all
-```
-
-Issue Linking:
-
-- Default tracker is GitHub Issues. Reference with `#123` (same repo) or `owner/repo#123` (cross-repo); prefer full markdown URLs (`[#123: Title](https://github.com/owner/repo/issues/123)`) when title is known
-- Use magic words like `Closes`, `Fixes`, `Resolves` so GitHub auto-closes the issue on merge
-- Linear is supported only when explicitly referenced (URL or `TEAM-123` ID); never invent a Linear reference
-- Reference: <https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue>; Linear auto-link: <https://linear.app/docs/github#enable-autolink>
+- Default tracker is GitHub Issues. Reference with `#123` (same repo) or `owner/repo#123` (cross-repo); prefer full markdown URLs (`[#123: Title](https://github.com/owner/repo/issues/123)`) when the title is known.
+- Use magic words like `Closes`, `Fixes`, `Resolves` so GitHub auto-closes the issue on merge.
+- Linear is supported only when explicitly referenced (URL or `TEAM-123` ID); never invent a Linear reference.
 
 ## Arguments
 
-Arguments: $ARGUMENTS (optional: additional commit message details)
-
-- Use `/commit` for staged changes only (default behavior)
-- Use `/commit --all` to stage and commit all changes (unstaged + staged)
-- Use `/commit --main` to commit directly to main/master branch (emergency fixes only)
-- Use `/commit --main --all` to stage and commit all changes directly to main/master branch (emergency fixes only)
+- `/commit` — staged changes only (default)
+- `/commit --all` — stage and commit all changes (unstaged + staged)
+- `/commit --main` — commit directly to main/master (emergency fixes only)
+- `/commit --main --all` — stage all and commit directly to main/master (emergency fixes only)
 
 ---
 
 # /git-branch
 
-## Description
+Safe branch creation following project conventions.
 
-Safe branch creation following project conventions and best practices.
-
-## Workflow
-
-1. Create feature branches from main/master unless specified otherwise
-2. Use descriptive branch names following project conventions
-3. Ensure branch is created from correct base branch
-4. Switch to new branch after creation
-5. Provide feedback on branch naming and setup
-
-## Naming Conventions
-
-- `feature/description` - New features
-- `fix/description` - Bug fixes
-- `chore/description` - Maintenance tasks
-- `hotfix/description` - Critical fixes
-- `docs/description` - Documentation updates
-- `refactor/description` - Code refactoring
-- `test/description` - Test improvements
-
-## Examples
-
-```bash
-# Create feature branch
-/git-branch feature/user-authentication
-
-# Create fix branch
-/git-branch fix/login-bug
-
-# Create chore branch
-/git-branch chore/update-dependencies
-```
-
-## Safety Features
-
-- Prevents creation of branches with invalid names
-- Validates base branch exists
-- Checks for existing branch conflicts
-- Provides naming suggestions if invalid
-
-## Integration
-
-- Works with GitHub Issue references (and Linear when explicitly referenced)
-- Integrates with PR creation workflow
-- Supports multi-repository workspaces
+1. Create from main/master unless specified otherwise; validate the base exists and no conflicting branch name exists.
+2. Naming: `feature/`, `fix/`, `chore/`, `hotfix/`, `docs/`, `refactor/`, `test/` + short description. Suggest a valid name if the given one is invalid.
+3. Switch to the new branch after creation.
 
 ---
 
 # /git-reset
 
-## Description
+Safe reset with automatic backup and recovery.
 
-Safe reset with automatic backup and recovery options.
-
-## Workflow
-
-1. Create backup/stash before any destructive operations
-2. Use git status and git log to understand current state
-3. Offer different reset options (soft, mixed, hard) with explanations
-4. Always confirm before executing destructive operations
-5. Provide recovery instructions if something goes wrong
-
-## Reset Types
-
-- **Soft**: Keep changes in staging area
-- **Mixed**: Keep changes in working directory (default)
-- **Hard**: Discard all changes (destructive)
-
-## Safety Measures
-
-- Always stash uncommitted changes first
-- Never run without understanding current state
-- Require explicit user approval for --hard reset
-- Create automatic backups before destructive operations
-- Provide recovery instructions
-
-## Examples
-
-```bash
-# Safe soft reset
-/git-reset --soft HEAD~1
-
-# Safe mixed reset (default)
-/git-reset HEAD~1
-
-# Safe hard reset with confirmation
-/git-reset --hard HEAD~1
-
-# Reset to specific commit
-/git-reset --soft abc1234
-```
-
-## Backup Strategy
-
-- Create stash before destructive operations
-- Save current state information
-- Provide rollback instructions
-- Document what will be lost
-
-## Recovery Options
-
-- Restore from stash
-- Recover from backup
-- Use git reflog for commit recovery
-- Provide step-by-step recovery guide
-
-## Integration
-
-- Works with multi-repository workspaces
-- Integrates with branch protection
-- Supports GitHub Issue references (and Linear when explicitly referenced)
-- Compatible with PR workflow
+1. Use `git status` and `git log` to understand current state first.
+2. Stash uncommitted changes before any destructive operation.
+3. Reset types: `--soft` (keep staged), `--mixed` (keep in working dir, default), `--hard` (discard all — requires explicit user approval).
+4. Provide recovery instructions (restore from stash, `git reflog`) after destructive resets.
 
 ---
 
 # /git-status
 
-## Description
+Multi-repository aware status check.
 
-Multi-repository aware status check with comprehensive workspace analysis.
-
-## Workflow
-
-1. Check current working directory and understand repository boundaries
-2. Never assume single git repository in multi-repo workspace
-3. Identify which specific repository changes belong to
-4. Show status for current repo and detect other repos in workspace
-5. Provide clear indication of which repo each change belongs to
-
-## Multi-Repository Handling
-
-- When working with staged changes, identify which specific repository they belong to
-- Provide clear indication of repository boundaries
-- Show status for each repository found in workspace
-- Highlight any cross-repository dependencies or conflicts
-
-## Error Prevention
-
-- Always ask for clarification when workspace structure is unclear
-- Confirm target repository before running git commands
-- Use non-destructive git commands first (git stash, git log) to understand situation
-
-## Output Format
-
-```
-Repository: /path/to/repo1
-  Branch: main
-  Status: clean
-  Staged: 2 files
-  Modified: 1 file
-  Untracked: 3 files
-
-Repository: /path/to/repo2
-  Branch: feature/new-feature
-  Status: dirty
-  Staged: 0 files
-  Modified: 2 files
-  Untracked: 0 files
-```
-
-## Examples
-
-```bash
-# Check current repository status
-/git-status
-
-# Check specific repository
-/git-status /path/to/specific/repo
-
-# Check all repositories in workspace
-/git-status --all
-```
-
-## Safety Features
-
-- Non-destructive operations only
-- Clear repository identification
-- Conflict detection and reporting
-- Workspace boundary awareness
+1. Never assume a single git repository in a multi-repo workspace. Identify repository boundaries and which repo each change belongs to.
+2. Show status per repository found in the workspace; highlight cross-repository dependencies or conflicts.
+3. When workspace structure is unclear, ask for clarification and confirm the target repository before running git commands. Use non-destructive commands first (`git stash`, `git log`) to understand the situation.
+4. Non-destructive operations only.

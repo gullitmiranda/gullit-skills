@@ -9,6 +9,17 @@ Resolve where a repo should live by reading `WORKSPACE.md` files that document
 the user's personal directory contexts. `WORKSPACE.md` is local (outside any
 git repo); per-repo rules stay in `AGENTS.md`.
 
+## Hard Rules
+
+- Never clone into a directory reserved for worktrees, even temporarily.
+- Never infer context from the GitHub org or repo name alone.
+- Never commit `WORKSPACE.md` files that live outside repositories.
+- Never relocate or `git worktree move` existing worktrees to match a
+  documented pattern without explicit instruction.
+- Do not create `WORKSPACE.md` inside cloned repos — that is `AGENTS.md`'s job.
+- Do not centralize worktrees into one root; each repo keeps its configured
+  placement (GIT_DIR, conditionals, hooks).
+
 Editor workspaces (Cursor `.code-workspace`, Zed multi-root) are views over
 the tree, not the source of truth.
 
@@ -30,17 +41,6 @@ convention before falling back to the `git-worktree` skill's default.
 
 For opening a workspace (Cursor/Zed): read the relevant `WORKSPACE.md` first
 so the workspace mirrors the tree instead of guessing.
-
-## Hard Rules
-
-- Never clone into a directory reserved for worktrees, even temporarily.
-- Never infer context from the GitHub org or repo name alone.
-- Never commit `WORKSPACE.md` files that live outside repositories.
-- Never relocate or `git worktree move` existing worktrees to match a
-  documented pattern without explicit instruction.
-- Do not create `WORKSPACE.md` inside cloned repos — that is `AGENTS.md`'s job.
-- Do not centralize worktrees into one root; each repo keeps its configured
-  placement (GIT_DIR, conditionals, hooks).
 
 ## Template
 

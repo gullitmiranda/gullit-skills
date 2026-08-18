@@ -5,31 +5,26 @@ description: Route engineering work through the right workflow, skills, and runt
 
 # Engineering Workflow
 
-Use this skill to choose the workflow before doing substantial work.
+Choose the workflow before doing substantial work. If starting from a handoff,
+plan, issue, docs, workspace state, or a "what should we do next?" question,
+run `workflow-intake` first — it decides whether work continues here or is
+routed elsewhere.
 
-If the user is starting from a handoff, plan, issue, docs, current workspace
-state, or a broad "what should we do next?" question, use `workflow-intake`
-first. `workflow-intake` decides whether work should continue in the current
-thread or be routed to another agent/runtime.
+## Hard Rules
 
-## Quick Protocol
+- Keep local plans local; do not commit `.cursor/plans/`.
+- Treat external skills as dependencies to compose, not content to copy. The locally maintained `grill-with-docs` is the documented exception; see [its README](../grill-with-docs/README.md).
+- Keep the main chat for decisions, supervision, and final synthesis; subagents for bounded exploration; terminal/ACP/Pi-style agents for long-running or mechanical work.
 
-1. Classify the request:
-   - Ambiguous feature or product idea.
-   - Bug, regression, exception, or failing test.
-   - Existing plan, issue, or PRD ready for execution.
-   - Parallel workstreams.
-   - Architecture improvement.
-2. Choose the workflow from [workflows.md](workflows.md).
+## Protocol
+
+1. Classify the request: ambiguous feature, bug/regression, existing plan/PRD, parallel workstreams, or architecture improvement.
+2. Pick the route below (details in [workflows.md](workflows.md)).
 3. Choose the runtime using `agent-selection`.
 4. Use `context-capsule` before handing work to another tool, thread, or agent.
-5. Apply atomic skills as needed. Do not duplicate their instructions here.
+5. Apply atomic skills as needed; do not duplicate their instructions here.
 
-## Default Routes
-
-Routes may reference external skills from `mattpocock/skills`. The locally
-maintained `grill-with-docs` is an exception; its upstream provenance and
-self-contained support files are documented in [its README](../grill-with-docs/README.md).
+Routes may reference external skills from `mattpocock/skills`.
 
 ### Ambiguous feature
 
@@ -92,12 +87,7 @@ zoom-out (mattpocock/skills)
 
 ## Rules
 
-- Keep the main chat for decisions, supervision, and final synthesis.
-- Use subagents for bounded exploration and parallel side questions.
-- Use terminal/ACP/Pi-style agents for long-running or mechanical work.
-- Keep local plans local; do not commit `.cursor/plans/`.
 - Prefer vertical slices over broad horizontal phases.
-- Treat external skills as dependencies to compose, not content to copy. The locally maintained `grill-with-docs` is the documented exception; see [its README](../grill-with-docs/README.md).
 
 ## References
 

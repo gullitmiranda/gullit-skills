@@ -4,31 +4,19 @@ description: Pull request lifecycle - create and update PRs with gh CLI, validat
 ---
 # Pull Request Management
 
-<task>
-You are a pull request management specialist that handles the complete PR lifecycle: creation, validation, preparation, and readiness management using GitHub CLI and comprehensive quality gates.
-</task>
+## Rules
 
-<context>
-PR Management Rules:
-- Always use `gh` CLI for GitHub operations
-- Ensure branch has been created and changes committed before PR creation
-- Generate conventional commit format titles: `<type>(<scope>): <summary>`
-- Run quality checks before a standard PR is marked ready; `/pr draft` may open an early draft after an integrity preflight so remote checks can start
-- Treat PR title, description, linked issues, and test plan as living metadata that must match the current branch diff
-- Whenever new commits or edits materially change scope, behavior, testing, or linked issues, re-check the existing PR info and update it if it became stale
-- Validate PR completeness and readiness for review
-- Default issue tracker is GitHub Issues; only include Linear references when they are explicitly present in the commit message or prompt (URL or `TEAM-123` ID)
-- Never claim tests/checks passed unless they were actually executed in the current session
-- Prefer reviewer-oriented PR bodies that explain problem, change, risk, and validation evidence
-- Keep PR title and body grounded in `git diff <base>...HEAD`, not only commit message wording
-- Before creating or updating a PR, check for existing related PRs/issues with overlapping scope and include cross-references when they help reviewers understand duplication, dependency, or alternatives
-- Always include URLs when reporting GitHub PR and issue references in chat and generated content. Markdown links are fine when title or context improves readability; compact raw URLs are also acceptable and often preferred over label-only references.
-- Apply the `zeropath` skill only for PRs that already mention ZeroPath in the prompt, commits, diff, existing PR body, comments, or linked evidence
-- Do not add ZeroPath sections, scans, or references to unrelated PRs
-- If the current branch belongs to a `gh stack` stack (check `gh stack view --json`), delegate stack operations (submit, sync, merge, navigation) to the `gh-stack` skill; never use `gh pr merge` on a stacked PR — use `gh stack merge <target> --yes`
-</context>
-
-<pr_information_quality>
+- Always use `gh` CLI for GitHub operations.
+- Generate conventional commit format titles: `<type>(<scope>): <summary>`, under 72 chars.
+- Treat PR title, description, linked issues, and test plan as living metadata that must match the current branch diff. Re-check and update after any material change.
+- Keep PR title and body grounded in `git diff <base>...HEAD`, not only commit message wording.
+- Before creating or updating a PR, check for existing related PRs/issues with overlapping scope and cross-reference when it helps reviewers.
+- Issues are created on GitHub (native sync sends them to Linear), but Linear has the richer integration — especially status changes. When linking an issue, check the GitHub issue for its synced Linear ID (the sync adds it to the issue) and link BOTH: the GitHub issue (auto-close on merge) and the Linear issue (status tracking). Use Linear alone only when a Linear URL/ID was given with no GitHub counterpart. Never invent an ID.
+- Never claim tests/checks passed unless they were actually executed in the current session.
+- Always include URLs when reporting GitHub PR/issue references; markdown links or compact raw URLs are fine, never bare `#123`.
+- Apply the `zeropath` skill only for PRs that already mention ZeroPath in the prompt, commits, diff, PR body, comments, or linked evidence. Do not add ZeroPath sections to unrelated PRs.
+- If the current branch belongs to a `gh stack` stack (check `gh stack view --json`), delegate stack operations (submit, sync, merge, navigation) to the `gh-stack` skill; never use `gh pr merge` on a stacked PR — use `gh stack merge <target> --yes`.
+- Run quality checks before a standard PR is marked ready; `/pr draft` may open an early draft after an integrity preflight so remote checks can start.
 
 ## PR Information Quality Contract
 
@@ -39,660 +27,109 @@ Every PR body should contain, when applicable:
 3. **Risk & impact**: user impact, operational risk, migrations, breaking changes
 4. **Validation**: exact commands executed and short outcomes
 5. **Rollout/Backout**: only when deployment risk is non-trivial
-6. **Linked issues**: GitHub Issue references supported by branch context (Linear only if explicitly referenced)
+6. **Linked issues**: GitHub Issue references supported by branch context, plus the synced Linear ID when the issue has one (see Rules)
 
 Hard rules:
 
-- Do not include placeholders like "TODO", "N/A", or template hints in final body
-- Do not include "tests passed" without command evidence
-- Remove stale sections when scope changes (do not append contradictory notes)
-- Prefer short factual bullets over marketing text
+- No placeholders like "TODO", "N/A", or template hints in the final body.
+- No "tests passed" without command evidence.
+- Remove stale sections when scope changes; do not append contradictory notes.
+- Prefer short factual bullets over marketing text.
 
-</pr_information_quality>
+## Routes
 
-<workflow>
-## Main Command Routes
+### `/pr` — Create Pull Request
 
-### `/pr` - Create Pull Request
+1. Pre-flight: on a feature branch (not main/master), commits ahead of base, branch pushed, `gh` authenticated. If uncommitted changes exist, use `/commit` first.
+2. Analyze `git log <base>..HEAD` and `git diff <base>...HEAD`; identify change type, scope, and issue references.
+3. Build the body from `.github/pull_request_template.md` if present, else the Quality Contract above. Test Plan lists only commands actually run. If the PR addresses ZeroPath findings, include each as a complete visible URL, e.g. `Addresses ZeroPath finding: https://zeropath.com/app/issues/<uuid>`.
+4. `gh pr create` with heredoc body; return the PR URL as a markdown link.
 
-1. **Pre-flight Checks**:
+### `/pr draft` — Early Draft PR
 
-   - Verify we're on a feature branch (not main/master)
-   - Check that branch has commits ahead of base branch, if not use the `/commit` command to commit the changes
-   - Ensure branch is pushed to remote repository
-   - Confirm GitHub CLI is authenticated
+Use only when a parent workflow (e.g. `pr-delivery`) needs remote checks running before final local validation.
 
-2. **Analyze Changes**:
+1. Run the integrity preflight (branch, commits, push, auth, diff/title/body/issues, `publish-safe-links` on the body).
+2. Create or reuse a **draft** PR. Do not request reviewers, mark ready, or enable merging.
+3. State that checks are in progress; never claim they passed.
+4. Defer full quality gates to the final reviewed revision; `/pr` and `/pr ready` still require them.
 
-   - Run `git log main..HEAD` or `git log master..HEAD` to see commits
-   - Run `git diff main...HEAD` to see all changes
-   - Identify primary change type (feat, fix, chore, etc.)
-   - Determine scope from affected components
-   - Check for issue references in commits (GitHub Issues by default; Linear only if explicitly mentioned)
+### Continuous PR Sync — after any material change
 
-3. **Generate PR Title**:
-
-   - Format: `<type>(<scope>): <summary>`
-   - Use conventional commit format
-   - Summarize the overall change, not individual commits
-   - Keep under 72 characters
-
-4. **Build PR Description**:
-
-   - Check for `.github/pull_request_template.md`
-   - If template exists, use as base structure
-   - Generate a structured body with: Why, What changed, Risk/Impact, Test Plan, Linked issues
-   - Build "What changed" from `git diff <base>...HEAD` grouped by component/area
-   - Add Test Plan using commands actually run in the session
-   - Include GitHub Issue links when present in commits/prompt; include Linear links only if explicitly referenced
-   - If the PR addresses ZeroPath findings, include each known finding as a
-     complete visible URL, e.g.
-     `Addresses ZeroPath finding: https://zeropath.com/app/issues/<uuid>`
-   - Remove template placeholders if no data available
-
-5. **Create PR**:
-   - Use `gh pr create` with title and body
-   - Use heredoc for proper formatting
-   - Set base branch (usually main)
-   - Return PR URL for user as a markdown link
-
-### `/pr draft` - Create An Early Draft PR
-
-Use this route only when a parent workflow, such as `pr-delivery`, needs remote
-PR checks to begin before isolated review and final local validation complete.
-
-1. Run the integrity preflight:
-   - verify a non-main source branch with committed changes ahead of base;
-   - confirm the branch is pushed and GitHub authentication is routed correctly;
-   - inspect the diff, title, body, linked issues, and PR template; and
-   - apply `publish-safe-links` before publishing the body.
-2. Create or reuse a **draft** PR. Do not request reviewers, mark it ready, or
-   enable merging.
-3. Keep validation claims factual. State that checks are in progress rather than
-   claiming that local or remote checks passed.
-4. Defer full quality gates to the final reviewed revision. The normal `/pr`
-   and `/pr ready` routes still require their quality and readiness checks.
-
-### Continuous PR Sync - Applies After Any Material Change
-
-1. **Detect Existing PR**:
-
-   - Check whether the current branch already has an open PR using `gh pr view`
-   - If no PR exists, skip sync and follow the create flow instead
-
-2. **Check For Metadata Drift**:
-
-   - Compare current PR title/body against `git diff <base>...HEAD`, recent commits, and executed validations
-   - Look for drift in:
-     - scope or primary change type
-     - summary bullets
-     - test plan
-     - risk/impact notes
-     - linked issues
-     - draft/ready status notes that no longer reflect reality
-
-3. **Update PR When Drift Exists**:
-
-   - If the current PR information no longer matches the actual changes, update it immediately with `gh pr edit`
-   - Refresh the title if the main scope or change type shifted
-   - Refresh the body if the summary, rollout notes, risks, or test plan changed
-   - Remove stale claims rather than piling on contradictory notes
-   - If ZeroPath references are present, keep them as complete visible URLs and
-     remove stale claims that ZeroPath confirmed resolution unless the CLI or
-     user-supplied evidence confirms it
-   - Prefer editing the canonical PR body over leaving corrections only in chat replies
-
-4. **Before Finishing The Task**:
-
-   - Do not end a PR-related task while the PR metadata is known to be stale
-   - If changes were made, prefer `gh pr edit --title ... --body-file ...` to keep body canonical and reproducible
-   - In the final response, mention that the PR information was updated when a sync was required
+1. Check for an existing open PR with `gh pr view`; if none, follow the create flow.
+2. Compare PR title/body against the current diff, commits, and executed validations for drift (scope, bullets, test plan, risks, linked issues, draft/ready status).
+3. If drift exists, update immediately with `gh pr edit --title ... --body-file ...`. Remove stale claims rather than piling on corrections. Keep ZeroPath references as complete visible URLs; never claim ZeroPath confirmed resolution without CLI or user-supplied evidence.
+4. Do not end a PR-related task while metadata is known stale; mention the sync in the final response.
 
 ### Review Comment Resolution
 
-- When the user asks to resolve PR review comments, inspect each targeted unresolved thread/comment instead of handling only a subset
-- For comments from automated review agents, address every targeted comment individually
-- If a targeted comment concerns ZeroPath, use the `zeropath` skill and prefer
-  CLI-backed evidence for finding status or scan state
-- In replies about ZeroPath findings, include known finding URLs as complete
-  visible URLs, not UUID-only references or hidden markdown labels
-- Do not say a ZeroPath finding is resolved unless the CLI or user-supplied
-  ZeroPath evidence confirms it; otherwise say the change addresses the finding
-  pattern and is awaiting re-scan
-- After addressing each targeted comment, mark the GitHub review thread/comment as resolved before finishing the task
-- Do not report the review-comment task as complete while any targeted bot comment remains unresolved
-- If a comment cannot be safely resolved without user input, stop and ask the user instead of leaving it silently unresolved
+- Inspect every targeted unresolved thread/comment, not a subset. For automated review agents, address each targeted comment individually.
+- For ZeroPath comments, use the `zeropath` skill and prefer CLI-backed evidence. Include finding URLs as complete visible URLs. Do not say a finding is resolved unless the CLI or user-supplied evidence confirms it; otherwise say the change addresses the pattern and is awaiting re-scan.
+- Mark each addressed GitHub thread as resolved before finishing. Do not report the task complete while any targeted bot comment remains unresolved. If a comment cannot be safely resolved without user input, stop and ask.
 
 #### Severity triage (especially for bot reviewers)
 
-Bot reviewers — particularly `elrond-cw[bot]` — tend to over-flag stylistic
-nits and to push back on intentional design decisions. Do **not** mechanically
-"fix" every comment. Triage first, then act:
+Bot reviewers — particularly `elrond-cw[bot]` — over-flag stylistic nits and push back on intentional design decisions. Do **not** mechanically "fix" every comment. Triage first:
 
-1. **Critical / relevant — fix the code**
+1. **Critical / relevant — fix the code.** Real bugs, security issues, regressions, broken builds, wrong API usage, missing required fields, breaking-change risk, incorrect business logic, data-loss risk, broken user-facing docs.
+2. **Important quality — fix or reply with explicit rationale.** Maintainability concerns with real impact (missing error handling on a hot path, racey concurrency, leaky abstractions, untested edge case the diff introduces). Fix when cheap; otherwise reply with rationale and resolve.
+3. **Trivial nits — won't-fix by default.** Pure preference/style with no functional impact. Reply briefly why, mark resolved.
+4. **Bot undoing an intentional decision — always won't-fix.** When the PR description, commit message, plan, linked issue, or prior chat makes intent explicit and the bot suggests reverting it, reply pointing at where the intent is documented, then resolve.
 
-   Real bugs, security issues, regressions, broken builds, wrong API usage,
-   missing required fields, breaking-change risk, incorrect business logic,
-   data-loss risk, broken docs that ship to users.
+When uncertain whether something is critical vs. nit, ask the user — do not silently downgrade a real concern.
 
-2. **Important quality — fix or reply with explicit rationale**
-
-   Maintainability concerns with real impact (missing error handling on a hot
-   path, racey concurrency, leaky abstractions, untested edge case the diff
-   actually introduces). Fix when cheap; otherwise reply with the rationale
-   and resolve.
-
-3. **Trivial nits — won't-fix by default**
-
-   Pure preference/style with no functional impact (alternate naming, prose
-   wording, optional refactors, suggestions to extract a helper that is used
-   once, "consider" comments without a concrete bug). Reply briefly explaining
-   why we are leaving it as-is, mark resolved.
-
-4. **Bot trying to undo an intentional decision — always won't-fix**
-
-   When the PR description, commit message, plan, linked issue, or prior chat
-   makes the intent explicit (e.g. "intentionally remove X", "we are migrating
-   away from Y", "keeping Z mutable on purpose") and the bot suggests reverting
-   that decision, the answer is **won't-fix**. Reply pointing at where the
-   intent is documented, then resolve.
-
-When uncertain whether something is critical vs. nit, ask the user — do not
-silently downgrade a real concern to won't-fix.
-
-#### Won't-fix reply template
-
-Keep the reply short, neutral, and grounded in the documented intent. Example:
+Won't-fix replies: short, neutral, grounded in documented intent. Example:
 
 ```text
 Won't fix — intentional. <one-line rationale, e.g. "this is the migration
 target documented in the PR description / linked issue / plan #N">.
 ```
 
-Do not argue with the bot, do not list pros/cons, do not promise follow-ups
-that are not real. State the rationale once and resolve the thread.
+Do not argue with the bot, list pros/cons, or promise follow-ups that are not real.
 
-### `/pr check` or `/pr validate` or `/pr review` - PR Validation
+### `/pr check` / `/pr validate` / `/pr review` — Validation
 
-1. **Quality Gate Checks**:
+1. Run the project's quality gates (see below) and verify they pass.
+2. Get PR details with `gh pr view`; if none exists, suggest `/pr`.
+3. Validate title format, body completeness against the Quality Contract, and that the body still matches the current diff.
+4. Check metadata (assignee, labels, reviewers, milestone if applicable) and CI/CD check status; report failing checks with reasons.
 
-   - Run project tests (detect test framework automatically)
-   - Run linting and formatting checks
-   - Run build/compilation if applicable
-   - Check for security vulnerabilities
-   - Verify all quality gates pass
+### `/pr ready` — Mark Ready for Review
 
-2. **PR Detection**:
+1. Confirm the PR exists, is draft, and is not merged/closed.
+2. **Quality validation is `pr-delivery`'s job.** If this PR came from a
+   `pr-delivery` run, its fixed-revision review already covered this — do not
+   re-run a parallel gate. If not, delegate the full review to `pr-delivery`
+   rather than running an ad-hoc validation here.
+3. Verify required checks pass and no merge conflicts exist.
+4. Request reviewers (CODEOWNERS, changed-file patterns, prior reviewers) and assign the author.
+5. Remove draft status. Do not apply status labels — draft→ready is the native GitHub signal; repo-specific labels belong to that repo's own rules.
 
-   - Check if current branch has an associated PR
-   - Get PR details using `gh pr view`
-   - If no PR exists, suggest creating one with `/pr`
+## Quality Gates
 
-3. **Title Validation**:
+Find quality commands from `CONTRIBUTING.md` (root or `.github/`), else `README.md`, else auto-detect from project config files (`package.json`, `Cargo.toml`, `go.mod`, `pyproject.toml`, etc.). Run tests, lint/format, build, and security checks as applicable.
 
-   - Verify title follows conventional commit format
-   - Check title length (recommended: under 72 characters)
-   - Ensure title accurately summarizes the changes
+## Issue Tracking
 
-4. **Description Completeness**:
+Issues live on GitHub by default and sync to Linear. When an issue has a synced Linear ID (check the issue body/comments), link both: `Closes [#123: Title](github-url)` for auto-close plus the Linear link for status tracking. Linear alone only when a Linear URL/ID was provided without a GitHub issue. Never invent an ID; do not fabricate links.
 
-   - Check for required template sections (Summary, Test Plan)
-   - Verify description provides sufficient context
-   - Verify the description still matches the current diff and recent commits
-   - Look for linked issues or related work
-   - Ensure test plan is actionable
-
-5. **Metadata Check**:
-
-   - Verify assignees are set (usually the author)
-   - Check for appropriate labels based on change type
-   - Review milestone assignment if applicable
-   - Confirm reviewers are requested
-
-6. **CI/CD Status**:
-   - Check status of required checks (tests, linting, build)
-   - Identify any failing checks that block merge
-   - Show check details and failure reasons
-   - Suggest fixes for common check failures
-
-### `/pr ready` - Mark PR Ready for Review
-
-1. **PR Status Check**:
-
-   - Get current PR details using `gh pr view`
-   - Check if PR is in draft status
-   - Verify PR is associated with current branch
-   - Confirm PR has not been merged or closed
-
-2. **Quality Validation**:
-
-   - Run validation checks to ensure completeness
-   - Ensure all required template sections are filled
-   - Verify conventional commit title format
-   - Check that description provides adequate context
-
-3. **CI/CD Verification**:
-
-   - Check status of all required checks
-   - Wait for in-progress checks to complete (with timeout)
-   - Identify any failing checks that block review
-   - Ensure no merge conflicts exist
-
-4. **Reviewer Assignment**:
-
-   - Detect appropriate reviewers based on:
-     - Code owners (CODEOWNERS file)
-     - Changed file patterns
-     - Team assignments
-     - Previous reviewers on similar changes
-   - Request reviews from selected team members
-   - Assign PR to author if not already assigned
-
-5. **Ready Status Update**:
-   - Remove draft status if currently draft
-   - Apply "ready-for-review" label
-   - Add change-type labels (feature, bugfix, etc.)
-   - Update PR status to ready for review
-     </workflow>
-
-<quality_gates>
-
-## Project Quality Checks
-
-### Documentation-Based Quality Gates
-
-1. **Check for CONTRIBUTING.md**:
-
-   - Look for `.github/CONTRIBUTING.md` or `CONTRIBUTING.md` in project root
-   - Parse quality check commands from documentation
-   - Extract test, lint, build, and security commands
-   - Follow project-specific guidelines
-
-2. **Fallback to README.md**:
-
-   - If no CONTRIBUTING.md found, check `README.md`
-   - Look for development setup and testing sections
-   - Extract available quality check commands
-   - Use common patterns for different project types
-
-3. **Auto-Detection Fallback**:
-   - If no documentation found, auto-detect based on project structure
-   - Check for common config files (package.json, Cargo.toml, go.mod, etc.)
-   - Use standard commands for detected project types
-
-### Quality Check Execution
-
-```bash
-# 1. Check for project documentation
-if [ -f "CONTRIBUTING.md" ]; then
-  # Parse commands from CONTRIBUTING.md
-elif [ -f ".github/CONTRIBUTING.md" ]; then
-  # Parse commands from .github/CONTRIBUTING.md
-elif [ -f "README.md" ]; then
-  # Parse commands from README.md
-else
-  # Auto-detect based on project structure
-fi
-
-# 2. Execute quality checks in order
-# - Tests (from documentation or auto-detected)
-# - Linting (from documentation or auto-detected)
-# - Build (from documentation or auto-detected)
-# - Security (from documentation or auto-detected)
-```
-
-### Documentation Parsing
-
-Look for common patterns in documentation:
-
-- **Test commands**: `npm test`, `yarn test`, `pytest`, `cargo test`, `go test`
-- **Lint commands**: `npm run lint`, `flake8`, `cargo clippy`, `gofmt`
-- **Build commands**: `npm run build`, `cargo build`, `go build`, `mvn compile`
-- **Security commands**: `npm audit`, `pip-audit`, `cargo audit`
-
-### Project Type Detection
-
-```bash
-# Detect project type for fallback commands
-if [ -f "package.json" ]; then
-  # Node.js project
-elif [ -f "Cargo.toml" ]; then
-  # Rust project
-elif [ -f "go.mod" ]; then
-  # Go project
-elif [ -f "pom.xml" ]; then
-  # Maven project
-elif [ -f "build.gradle" ]; then
-  # Gradle project
-elif [ -f "requirements.txt" ] || [ -f "pyproject.toml" ]; then
-  # Python project
-fi
-```
-
-</quality_gates>
-
-<validation_checks>
-
-## PR Quality Gates
-
-### ✅ Title Format
-
-- Follows conventional commit format
-- Under 72 characters
-- Clear and descriptive
-- Matches primary change type
-
-### ✅ Description Quality
-
-- Has summary of changes
-- Includes test plan with checkboxes
-- Lists concrete validation commands and outcomes
-- Includes risk/impact when relevant
-- Links to related issues
-- Provides sufficient context
-- Matches the current branch diff and recent commits
-- No template placeholders left unfilled
-- No unverifiable claims
-
-### ✅ Metadata Complete
-
-- Author assigned to PR
-- Appropriate labels applied
-- Reviewers requested
-- Milestone set (if required)
-
-### ✅ CI/CD Passing
-
-- All required checks pass
-- No merge conflicts
-- Branch is up to date with base
-- Build succeeds
-
-### ✅ Content Quality
-
-- Commits follow conventional format
-- No WIP or debugging commits
-- Logical commit structure
-- Changes are focused and related
-  </validation_checks>
-
-<issue_tracking>
-
-## Issue Tracking Integration
-
-GitHub Issues is the default issue tracker. Linear is supported only when the user explicitly references a Linear issue (URL or `TEAM-123` ID) in the prompt, branch name, or commit message. Never invent or suggest a Linear issue when none was provided.
-
-### When to Link an Issue
-
-- A linked issue is mentioned in the prompt, branch name, or any commit message on the branch
-- The PR description should reflect those references; do not fabricate issue links
-
-### Default: GitHub Issues
-
-Use full markdown URL format for GitHub Issue references:
+Use full markdown URLs with closing keywords so GitHub auto-closes on merge:
 
 ```markdown
-# Same repo
 Closes [#123: Issue Title](https://github.com/<owner>/<repo>/issues/123)
-
-# Cross-repo
-Closes [<owner>/<repo>#123: Issue Title](https://github.com/<owner>/<repo>/issues/123)
 ```
 
-When a GitHub Issue number is detected, fetch details with `gh`:
+Fetch unknown titles with `gh issue view 123 --json number,title,url` (or `linearis issues read TEAM-123` for a Linear ID). Check the GitHub issue for a synced Linear identifier and include both links when present.
 
-```bash
-gh issue view 123 --json number,title,url
-```
+## Safety
 
-Use the response to build the full markdown URL with title. Use closing keywords (`Closes`, `Fixes`, `Resolves`) so GitHub auto-closes the issue on merge.
+- Never create a PR from main/master, without committed changes, or without pushing the branch first.
+- Never push to main/master directly.
+- Run an integrity preflight before every PR creation; run full quality checks before marking a PR ready or mergeable.
 
-### Conditional: Linear
+## Arguments
 
-Only when a Linear reference is explicitly present (URL or `TEAM-123` ID):
-
-```markdown
-Closes [TEAM-123: Issue Title](https://linear.app/<workspace>/issue/TEAM-123/issue-slug)
-```
-
-If only the ID is provided, fetch the title to build the full link:
-
-```bash
-linearis issues read TEAM-123
-```
-
-Reference: <https://linear.app/docs/github#enable-autolink>
-
-### Commit Message Format
-
-```bash
-feat(auth): add JWT token validation middleware
-
-- Implement token verification for protected routes
-- Add error handling for expired tokens
-- Update authentication flow documentation
-
-Closes [#42: Add JWT validation](https://github.com/<owner>/<repo>/issues/42)
-```
-
-### PR Description Format
-
-```markdown
-## Related Issues
-
-Closes [#42: Add JWT validation](https://github.com/<owner>/<repo>/issues/42)
-
-## Summary
-
-- Add JWT authentication middleware for API routes
-- Implement token validation and error handling
-- Update authentication flow documentation
-
-## Test Plan
-
-- [ ] Verify protected routes require valid JWT
-- [ ] Test expired token error handling
-- [ ] Confirm authentication flow works end-to-end
-- [ ] Run existing authentication test suite
-```
-
-</issue_tracking>
-
-<safety_checks>
-
-- ❌ Never create PR from main/master branch
-- ❌ Never create PR without committed changes
-- ❌ Never push to main/master directly
-- ✅ Always verify branch is ahead of base
-- ✅ Always push branch before PR creation
-- ✅ Always use conventional commit format for title
-- ✅ Include issue references for auto-linking (GitHub Issues by default; Linear only when explicitly referenced)
-- ✅ Run an integrity preflight before every PR creation; run full quality checks before marking a PR ready or mergeable
-  </safety_checks>
-
-<output_formats>
-
-## Command Output Formats
-
-### GitHub PR Reference Format
-
-- When reporting a PR, include the URL. Use `[<repo>#<number>: <title>](<url>) by @<author>` when title and author add useful context.
-- Compact raw URLs are acceptable and often preferred over label-only references.
-- Avoid reporting PRs only as `#<number>` or `<repo>#<number>` when a URL is available.
-
-### GitHub Issue Reference Format
-
-- When reporting an issue, include the URL. Use `[<repo>#<number>: <title>](<url>) by @<author>` when title and author add useful context.
-- Compact raw URLs are acceptable and often preferred over label-only references.
-- Avoid reporting issues only as `#<number>` or `<repo>#<number>` when a URL is available.
-
-### `/pr` - PR Creation Report
-
-```markdown
-# 🚀 PR Created Successfully
-
-**PR**: [<repo>#<number>: <title>](github-pr-url) by @<author>
-**Branch**: [feature-branch] → [base-branch]
-**URL**: [github-pr-url]
-**Status**: [Draft | Open]
-
-## 📝 Changes Summary
-
-- [x] commits ahead of base branch
-- [x] files changed
-- Primary change type: [feat/fix/chore/etc.]
-
-## 🎯 Next Steps
-
-- [ ] Run `/pr check` to validate quality
-- [ ] Run `/pr ready` when ready for review
-- [ ] Monitor CI/CD checks
-```
-
-### `/pr check` - Validation Report
-
-```markdown
-# 🔍 PR Validation Report
-
-**PR**: [<repo>#<number>: <title>](github-pr-url) by @<author>
-**Branch**: [feature-branch] → [base-branch]
-**Author**: @[username]
-**Status**: [Draft|Open|Ready for Review]
-**URL**: [github-pr-url]
-
-## ✅ Quality Gates
-
-- **Tests**: [✅ Pass | ❌ Fail] ([X/Y] passed)
-- **Linting**: [✅ Pass | ❌ Fail]
-- **Build**: [✅ Pass | ❌ Fail]
-- **Security**: [✅ Pass | ❌ Warn | ❌ Fail]
-
-## 📊 Validation Results
-
-- **Title Format**: [✅/❌] Conventional commit format
-- **Description**: [✅/❌] Complete and informative
-- **Metadata**: [✅/❌] Assignees, labels, reviewers
-- **CI/CD**: [✅/❌] All checks passing
-
-## 🚨 Issues Found
-
-- [List specific issues that need fixing]
-
-## 💡 Recommendations
-
-- [Specific improvements to make]
-```
-
-### `/pr ready` - Ready for Review Report
-
-```markdown
-# 🎯 PR Ready for Review
-
-**PR**: [<repo>#<number>: <title>](github-pr-url) by @<author>
-**Branch**: [feature-branch] → [base-branch]
-**Author**: @[username]
-**URL**: [github-pr-url]
-
-## ✅ Readiness Validation
-
-- **Content Quality**: [✅ Ready | ⚠️ Needs attention]
-- **CI/CD Status**: [✅ All passing | ⚠️ Some failing | 🔄 In progress]
-- **Review Setup**: [✅ Reviewers assigned | ⚠️ Needs reviewers]
-- **Draft Status**: [✅ Ready for review | 🔄 Converted from draft]
-
-## 👥 Reviewers Assigned
-
-**Required** (CODEOWNERS):
-
-- @[required-reviewer1] - [ownership reason]
-
-**Suggested**:
-
-- @[suggested-reviewer1] - [domain expertise]
-
-## 🏷️ Labels Applied
-
-- `ready-for-review`
-- `[change-type]` (feature/bugfix/chore)
-- `[area]` (frontend/backend/docs)
-
-## 🔗 PR Details
-
-**URL**: [github-pr-url]
-**Estimated Review Time**: [based on change size]
-```
-
-</output_formats>
-
-<example_usage>
-
-## Basic Usage
-
-### Create PR
-
-```bash
-# Create PR with auto-detected title and description
-/pr
-
-# Create PR with custom title
-/pr "feat(auth): add OAuth2 integration"
-
-# Create PR with specific base branch
-/pr --base develop
-```
-
-### Validate PR
-
-```bash
-# Run all quality checks and validation
-/pr check
-
-# Alternative commands (same functionality)
-/pr validate
-/pr review
-```
-
-### Mark Ready for Review
-
-```bash
-# Mark PR as ready for review
-/pr ready
-
-# Mark ready with specific reviewers
-/pr ready --reviewers @user1,@user2
-
-# Mark ready with priority
-/pr ready --priority high
-```
-
-## Complete Workflow
-
-```bash
-# 1. Create and commit changes
-git add .
-git commit -m "feat(auth): add JWT validation
-
-- Implement token verification
-- Add error handling
-- Update documentation
-
-Closes [#42: Add JWT validation](https://github.com/<owner>/<repo>/issues/42)"
-
-# 2. Create PR
-/pr
-
-# 3. Validate quality
-/pr check
-
-# 4. Mark ready for review
-/pr ready
-```
-
-</example_usage>
-
-Arguments: $ARGUMENTS
-
-- `/pr` - Create pull request (optional: title override, base branch)
-- `/pr draft` - Create or reuse a draft PR after integrity preflight; intended for `pr-delivery`
-- `/pr check|validate|review` - Run quality checks and validation
-- `/pr ready` - Mark PR ready for review (optional: reviewers, priority)
+- `/pr` — Create pull request (optional: title override, base branch)
+- `/pr draft` — Create or reuse a draft PR after integrity preflight; intended for `pr-delivery`
+- `/pr check|validate|review` — Run quality checks and validation
+- `/pr ready` — Mark PR ready for review (optional: reviewers, priority)
