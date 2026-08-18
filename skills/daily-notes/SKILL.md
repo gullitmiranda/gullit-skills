@@ -5,32 +5,29 @@ description: Create or improve personal daily work notes in Portuguese. Use when
 
 # Daily Notes
 
-## Goal
-
 Create a concise Markdown daily note for SessionApp, focused on what was actually done and what remains pending.
 
-Default destination:
+- Default destination: `/Users/guma/Library/CloudStorage/GoogleDrive-gullitmiranda@gmail.com/My Drive/Documents/Daily Notes`
+- Default filename: `daily-note-YYYY-MM-DD.md`
 
-`/Users/guma/Library/CloudStorage/GoogleDrive-gullitmiranda@gmail.com/My Drive/Documents/Daily Notes`
+## Hard Rules
 
-Default filename:
-
-`daily-note-YYYY-MM-DD.md`
+- Write in Portuguese (BR).
+- No unsupported claims. If a source was unavailable, either omit it or state the limitation briefly. Do not invent PR status; verify when status matters.
+- Use Slack only when authentication is already available or the user explicitly wants Slack included.
+- If the note file already exists, read it first and preserve user edits; preserve a good existing structure instead of rewriting the whole document.
+- No invisible/gremlin characters.
 
 ## Date handling
 
-- `/daily` means today in the user's local timezone.
-- `/daily YYYY-MM-DD` uses that date.
-- `/daily ontem` uses the previous calendar day.
+- `/daily` means today in the user's local timezone; `/daily YYYY-MM-DD` uses that date; `/daily ontem` uses the previous calendar day.
 - If the user is editing an existing daily note, update that file instead of creating a new one.
 
 ## Workflow
 
 1. Gather activity evidence from GitHub, local commits, existing notes, and current conversation context.
-2. Use Slack only when authentication is already available or the user explicitly wants Slack included.
-3. If the note file already exists, read it first and preserve user edits.
-4. Write or update the Markdown file in the Daily Notes directory.
-5. Keep the final response short and mention the file path.
+2. Write or update the Markdown file in the Daily Notes directory.
+3. Keep the final response short and mention the file path.
 
 ## Structure
 
@@ -70,17 +67,8 @@ Use this structure unless the user asks otherwise:
 
 ## Writing style
 
-- Write in Portuguese (BR).
 - Prefer first person past tense: "Corrigi", "Avancei", "Investiguei", "Aumentei".
-- Keep bullets short, but not vague.
-- Explain impact or scope: prefer "Aumentei a capacidade do node pool de GPU T4 em `prd-1`" over "Mergeei capacidade GPU T4".
+- Keep bullets short, but not vague. Explain impact or scope: prefer "Aumentei a capacidade do node pool de GPU T4 em `prd-1`" over "Mergeei capacidade GPU T4".
 - Group related work into one coherent front when it belongs to the same initiative.
 - Avoid turning the note into a changelog. Use links for important PRs, but keep the prose readable.
 - If pending work is risky after hours, note that it will be handled in business hours.
-- Preserve a good existing structure instead of rewriting the whole document unnecessarily.
-
-## Quality checks
-
-- No invisible/gremlin characters.
-- No unsupported claims. If a source was unavailable, either omit it or state the limitation briefly.
-- Do not invent PR status; verify when status matters.
