@@ -11,7 +11,7 @@ description: Pull request lifecycle - create and update PRs with gh CLI, validat
 - Treat PR title, description, linked issues, and test plan as living metadata that must match the current branch diff. Re-check and update after any material change.
 - Keep PR title and body grounded in `git diff <base>...HEAD`, not only commit message wording.
 - Before creating or updating a PR, check for existing related PRs/issues with overlapping scope and cross-reference when it helps reviewers.
-- Default issue tracker is GitHub Issues; only include Linear references when explicitly present in the commit message or prompt (URL or `TEAM-123` ID). Never invent one.
+- Issues are created on GitHub (native sync sends them to Linear), but Linear has the richer integration — especially status changes. When linking an issue, check the GitHub issue for its synced Linear ID (the sync adds it to the issue) and link BOTH: the GitHub issue (auto-close on merge) and the Linear issue (status tracking). Use Linear alone only when a Linear URL/ID was given with no GitHub counterpart. Never invent an ID.
 - Never claim tests/checks passed unless they were actually executed in the current session.
 - Always include URLs when reporting GitHub PR/issue references; markdown links or compact raw URLs are fine, never bare `#123`.
 - Apply the `zeropath` skill only for PRs that already mention ZeroPath in the prompt, commits, diff, PR body, comments, or linked evidence. Do not add ZeroPath sections to unrelated PRs.
@@ -27,7 +27,7 @@ Every PR body should contain, when applicable:
 3. **Risk & impact**: user impact, operational risk, migrations, breaking changes
 4. **Validation**: exact commands executed and short outcomes
 5. **Rollout/Backout**: only when deployment risk is non-trivial
-6. **Linked issues**: GitHub Issue references supported by branch context (Linear only if explicitly referenced)
+6. **Linked issues**: GitHub Issue references supported by branch context, plus the synced Linear ID when the issue has one (see Rules)
 
 Hard rules:
 
@@ -100,7 +100,7 @@ Do not argue with the bot, list pros/cons, or promise follow-ups that are not re
 2. Run the validation route above; all quality gates must pass.
 3. Verify required checks pass and no merge conflicts exist.
 4. Request reviewers (CODEOWNERS, changed-file patterns, prior reviewers) and assign the author.
-5. Remove draft status and apply `ready-for-review` plus change-type labels.
+5. Remove draft status. Do not apply status labels — draft→ready is the native GitHub signal; repo-specific labels belong to that repo's own rules.
 
 ## Quality Gates
 
@@ -108,7 +108,7 @@ Find quality commands from `CONTRIBUTING.md` (root or `.github/`), else `README.
 
 ## Issue Tracking
 
-GitHub Issues is the default tracker. Linear only when explicitly referenced (URL or `TEAM-123` ID) in prompt, branch name, or commit message — never invent one. Link issues mentioned in the prompt, branch name, or commits; do not fabricate links.
+Issues live on GitHub by default and sync to Linear. When an issue has a synced Linear ID (check the issue body/comments), link both: `Closes [#123: Title](github-url)` for auto-close plus the Linear link for status tracking. Linear alone only when a Linear URL/ID was provided without a GitHub issue. Never invent an ID; do not fabricate links.
 
 Use full markdown URLs with closing keywords so GitHub auto-closes on merge:
 
@@ -116,7 +116,7 @@ Use full markdown URLs with closing keywords so GitHub auto-closes on merge:
 Closes [#123: Issue Title](https://github.com/<owner>/<repo>/issues/123)
 ```
 
-Fetch unknown titles with `gh issue view 123 --json number,title,url` (or `linearis issues read TEAM-123` for an explicitly referenced Linear ID).
+Fetch unknown titles with `gh issue view 123 --json number,title,url` (or `linearis issues read TEAM-123` for a Linear ID). Check the GitHub issue for a synced Linear identifier and include both links when present.
 
 ## Safety
 
