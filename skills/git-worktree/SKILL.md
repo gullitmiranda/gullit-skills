@@ -5,61 +5,40 @@ description: 'Enforce git worktree discipline. Use whenever the user asks to cre
 
 # Git Worktree Rules
 
-## CRITICAL — Read This First
-
-When the user explicitly asks to create a git worktree, **you MUST create it before touching any file**.
-
-Do NOT:
-- Conclude that "the branch is already checked out so it's fine"
-- Assume a previous session already handled it
-- Start implementing anything before the worktree exists and is confirmed
-- Rationalize any shortcut
-
-This is a hard constraint. Breaking it means working in the wrong directory, potentially overwriting changes made by other agents or sessions on the same branch.
+When the user explicitly asks for a worktree, **create it before touching any
+file**. Do not conclude "the branch is already checked out so it's fine", do
+not assume a previous session handled it, do not rationalize shortcuts.
+Breaking this means working in the wrong directory and potentially overwriting
+changes from other agents or sessions.
 
 ## When This Skill Applies
 
-Trigger on any of these signals:
-- "crie uma worktree"
-- "nova worktree"
-- "worktree separada"
-- "a partir do branch X"
-- "git worktree add"
-- "trabalhe em uma worktree"
-- Any explicit instruction to isolate work in a separate worktree
+Trigger on explicit worktree requests ("nova worktree", "worktree separada",
+"a partir do branch X", "git worktree add", etc.).
 
-Do not create a worktree proactively when the primary repository is already on
-an up-to-date `main` branch and the working tree is clean. In that case, create
-the feature branch in the primary repository unless the user explicitly asks for
-worktree isolation or there is a parallel-work reason to isolate the task.
+Do not create a worktree proactively when the primary repo is on an up-to-date
+`main` and the tree is clean — create the feature branch in place unless the
+user asks for isolation or there's a parallel-work reason.
 
-## Mandatory Protocol
+## Procedure
 
-### Step 1 — Determine worktree path
+### 1. Determine the path
 
-If the user explicitly provided a path, use it.
+If the user provided a path, use it. Otherwise check `WORKSPACE.md` and the
+repo's `AGENTS.md` for a worktree convention (see `workspace-topology` skill).
+If neither defines one, use:
 
-If the user did not provide a path, first check whether an applicable
-`WORKSPACE.md` or the repo's `AGENTS.md` defines a worktree convention for this
-repo; if so, follow that (see the `workspace-topology` skill). Otherwise derive
-one using this user's convention:
 ```
 ../worktrees/<repo>-<topic>
 ```
 
-Where:
-- `<repo>` is the current repository directory name
-- `<topic>` is a short kebab-case slug derived from the branch name or task intent
+`<repo>` is the current repo directory name; `<topic>` is a short kebab-case
+slug from the branch or task intent. Report the chosen path before creating.
 
-Report the chosen path before creating the worktree. Do not stop to ask for
-confirmation unless required inputs are missing or ambiguous enough that the
-path cannot be derived safely.
+### 2. Create the worktree
 
-### Step 2 — Create the worktree
-
-Before creating a new branch or worktree, update the base branch from the remote
-(`git fetch` followed by a fast-forward update of `main`/`master` when possible)
-so the new branch starts from the latest base.
+Fetch and fast-forward the base branch first so the worktree starts from the
+latest base.
 
 ```bash
 git worktree add <path> <branch>
@@ -67,27 +46,17 @@ git worktree add <path> <branch>
 git worktree add -b <new-branch> <path> <base-branch>
 ```
 
-Verify it was created:
-```bash
-git worktree list
-```
+Verify with `git worktree list`.
 
-### Step 3 — Confirm to the user
+### 3. Confirm and work inside it
 
-Report back:
-- Worktree path
-- Branch it is on
-- Output of `git worktree list`
-
-Only after this confirmation proceed with any implementation work.
-
-### Step 4 — All work happens inside the worktree
-
-Every file edit, every `helm template`, every commit must happen inside `<path>`, not in the primary worktree.
+Report the path, branch, and `git worktree list` output. Only then proceed.
+Every edit, every command, every commit must happen inside the worktree path.
 
 ## Finishing a Worktree
 
-When the user says "finalizar worktree", "remover worktree", or "trazer para a main worktree":
+When the user says "finalizar worktree", "remover worktree", or "trazer para
+a main worktree":
 
 1. In the primary worktree: `git pull` to update main
 2. Switch to the feature branch: `git checkout <branch>`
@@ -97,17 +66,9 @@ When the user says "finalizar worktree", "remover worktree", or "trazer para a m
 
 **Never merge the feature branch into main.**
 
-## Why This Matters
+## Hard Rules
 
-Working in the wrong worktree causes:
-- Commits landing on a branch another agent is actively using
-- Overwriting changes the user explicitly isolated
-- Corruption of parallel work streams
-
-## Self-Check Before Any Work
-
-Before writing a single file, ask yourself:
-
-> "Did the user ask for a worktree? If yes — have I created it, confirmed it, and am I inside it?"
-
-If the answer to any part is no — stop and create the worktree first.
+- Never skip worktree creation when the user explicitly asked for one.
+- Never work in the primary worktree when a secondary worktree was created
+  for the task.
+- Never merge the feature branch into main during worktree cleanup.
