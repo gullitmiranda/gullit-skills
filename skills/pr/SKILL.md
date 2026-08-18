@@ -92,7 +92,7 @@ Do not argue with the bot, list pros/cons, or promise follow-ups that are not re
 1. Run the project's quality gates (see below) and verify they pass.
 2. Get PR details with `gh pr view`; if none exists, suggest `/pr`.
 3. Validate title format, body completeness against the Quality Contract, and that the body still matches the current diff.
-4. Check metadata (assignee, labels, reviewers) and CI/CD check status; report failing checks with reasons.
+4. Check metadata (assignee, labels, reviewers, milestone if applicable) and CI/CD check status; report failing checks with reasons.
 
 ### `/pr ready` — Mark Ready for Review
 
