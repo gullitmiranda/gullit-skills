@@ -31,7 +31,7 @@ If a question can be answered by exploring the codebase, explore the codebase in
 └── docs/adr/                   ← ADRs
 ```
 
-Prefer the repo's existing spec location. In multi-context repos, context-specific specs and ADRs live under each context directory (e.g. `src/ordering/specs/`, `src/ordering/docs/adr/`); system-wide ones stay at root. `CONTEXT-MAP.md` is discovery (points to per-context docs); the per-context docs are the authority — they complement each other, never override.
+Prefer the repo's existing spec location. In multi-context repos, context-specific specs and ADRs live under each context directory (e.g. `src/ordering/specs/`, `src/ordering/docs/adr/`); system-wide ones stay at root. `CONTEXT-MAP.md` points to per-context docs; the per-context docs are authoritative.
 
 Formats: [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md), [ADR-FORMAT.md](./ADR-FORMAT.md).
 
