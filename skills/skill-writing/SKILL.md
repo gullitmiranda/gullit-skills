@@ -18,7 +18,10 @@ Zed's built-in `create-skill`. This skill governs content quality.
   (what slop is, how to review code, how to write a plan). Your job is scope,
   procedure, and limits — not tutorials or taxonomies.
 - **Description is the trigger.** It decides whether the skill loads. Make it
-  specific: what it does + when to use. No marketing.
+  specific: what it does + when to use. No marketing. Never reference other
+  skills in the description — it pollutes the activation decision and breaks
+  on renames. Cross-references between skills belong in the body, and only
+  when territories genuinely overlap.
 - **Procedure in 3-5 steps.** Scope → act → report. If it needs more, the skill
   is doing two jobs; split it.
 - **Hard Rules section for limits.** What to never touch, what to do when in
