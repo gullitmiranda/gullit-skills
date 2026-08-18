@@ -1,227 +1,65 @@
 ---
 name: quality
-description: Code quality, commit standards, quality gates, PR standards, documentation, performance, security, and output character hygiene (gremlin characters). Use when writing code, committing, creating PRs, generating any text, or when the user runs /gremlin-clean.
+description: Code quality, commit standards, quality gates, PR standards, and output character hygiene (gremlin characters). Use when writing code, committing, creating PRs, generating any text, or when the user runs /gremlin-clean.
 ---
 
 # Quality Rules
 
-**MANDATORY — Output hygiene:** Never use gremlin/invisible characters in any generated text. Use only standard space (U+0020) and normal line breaks (LF/CRLF). No zero-width (U+200B, U+200D, U+200C), no non-breaking space (U+00A0) unless required, no control or separator characters (U+2028, U+2029). Rewrite pasted content as clean text instead of copying raw.
-
-## Code Quality
-
-### Commit Standards
-
-- Use conventional commit format: `<type>(<scope>): <description>`
-- Types: feat, fix, chore, docs, style, refactor, test
-- Present tense, imperative mood
-- **Always write commit messages in English**
-- Include issue references when applicable: GitHub Issues by default (`#123` / `owner/repo#123`); Linear `TEAM-123` only when explicitly referenced
-- Keep descriptions concise but descriptive
-
-### Code Style
-
-- Follow project-specific linting rules
-- Maintain consistent code style across the project
-- Use meaningful variable and function names
-- Include proper error handling
-- Write clear, self-documenting code
-- Add comments for complex logic
-
-### Lint and format fix workflow (Trunk)
-
-When fixing lint, format, or style issues in a project that uses Trunk:
-
-1. **First:** Run `trunk check --fix` to auto-fix everything Trunk can fix.
-2. **Then:** Address any remaining issues manually (what Trunk reports but could not auto-fix).
-3. Re-run `trunk check` (or `trunk check --fix`) to confirm all issues are resolved.
-
-Do not manually fix what Trunk can fix; let Trunk do it first, then the agent resolves the rest.
-
-### Code Organization
-
-- Keep functions small and focused
-- Use appropriate design patterns
-- Maintain clear separation of concerns
-- Follow DRY (Don't Repeat Yourself) principles
-- Organize imports and dependencies properly
-
-## Quality Gates
-
-### Pre-commit Checks
-
-- All tests must pass before committing
-- Linting must pass without errors
-- Build must succeed
-- Security scans must pass
-- No sensitive data in commits
-
-### Draft PR Opening Checks
-
-A draft PR may be opened early by `pr-delivery` to start remote checks before
-isolated review and final local validation finish. Before doing so, verify the
-source branch, committed diff, PR metadata, and publishable links. Keep the PR
-draft and do not claim unexecuted validation as passing.
-
-### Ready Or Merge Checks
-
-Before a PR is marked ready or merged:
-
-- All applicable quality gates must pass
-- Code review requirements must be met
-- Documentation must be updated when needed
-- Tests must cover new functionality
-- Performance impact must be assessed
-- The final remote head must be the reviewed revision
-- For ZeroPath-related changes, include relevant local validation and use the
-  `zeropath` skill for any ZeroPath scan or finding-status evidence
-
-### Pull Request Standards
-
-- **Always write PR titles and descriptions in English**
-- Use descriptive and clear PR titles
-- Include comprehensive descriptions with context
-- Reference issues when applicable: GitHub Issues by default; Linear only when explicitly referenced in commits or prompt
-- Follow conventional commit format for PR titles
-- When referencing PRs or issues, always use full GitHub URLs (e.g., `https://github.com/org/repo/pull/123`), never shorthand like `repo #123` or `repo#number`
-- When a PR references ZeroPath, include known findings as complete visible URLs
-  like `https://zeropath.com/app/issues/<uuid>` and do not add ZeroPath content
-  to unrelated PRs
-- Do not claim "ZeroPath confirmed resolved" unless confirmed by the ZeroPath
-  CLI or explicit ZeroPath evidence supplied by the user; otherwise say the
-  change addresses the finding pattern and is awaiting re-scan
-- **Before publishing any text with file paths or links** (PR body, issue body, comments, Slack/Linear messages, versioned docs), follow the `publish-safe-links` skill to avoid linking to gitignored, untracked, or unpushed files such as `.cursor/plans/`, `.factory/`, `wt-*/`, or absolute machine paths
-
-### Testing Requirements
-
-- All commands must be testable
-- Include edge case testing
-- Verify safety mechanisms work
-- Test error handling paths
-- Maintain test coverage standards
-
-## Documentation Quality
-
-### Content Standards
-
-- Clear and concise explanations
-- Practical examples and use cases
-- Consistent formatting and structure
-- Regular updates and maintenance
-- Avoid redundant information
-- Avoid overly complex explanations
-
-### Structure Requirements
-
-- Use proper markdown formatting
-- Include table of contents for long documents
-- Add code examples with syntax highlighting
-- Include troubleshooting sections
-- Provide clear navigation
-
-### Maintenance
-
-- Keep documentation up to date
-- Review and update regularly
-- Remove outdated information
-- Add new features to documentation
-- Solicit feedback from users
-
-## Performance Quality
-
-### Efficiency Standards
-
-- Optimize for performance when possible
-- Avoid unnecessary operations
-- Use appropriate data structures
-- Monitor resource usage
-- Profile critical paths
-
-### Scalability Considerations
-
-- Design for growth
-- Consider multi-repository scenarios
-- Plan for increased usage
-- Optimize for large codebases
-- Handle edge cases gracefully
-
-## Security Quality
-
-### Data Protection
-
-- Never commit sensitive information
-- Use environment variables for secrets
-- Validate all inputs
-- Sanitize user data
-- Follow security best practices
-
-### Access Control
-
-- Implement proper authentication
-- Use least privilege principle
-- Audit access patterns
-- Monitor for suspicious activity
-- Regular security reviews
-
-## Integration Quality
-
-### API Design
-
-- Use consistent naming conventions
-- Provide clear error messages
-- Include proper status codes
-- Document all endpoints
-- Version APIs appropriately
-
-### External Services
-
-- Handle service failures gracefully
-- Implement proper retry logic
-- Monitor external dependencies
-- Provide fallback mechanisms
-- Log integration issues
-
-## Monitoring and Observability
-
-### Logging Standards
-
-- Use appropriate log levels
-- Include relevant context
-- Avoid logging sensitive data
-- Structure logs for analysis
-- Implement log rotation
-
-### Metrics and Monitoring
-
-- Track key performance indicators
-- Monitor error rates
-- Set up alerts for critical issues
-- Regular health checks
-- Performance monitoring
-
----
-
 ## Output / Character Hygiene (Gremlin Characters)
 
-**Known Cursor/LLM issue:** Models sometimes emit invisible Unicode despite instructions. Use the `gremlin-clean` skill when cleanup is needed.
-
-The AI must ensure that all generated text—including code, comments, documentation, and user-facing messages—is free from "gremlin characters" (invisible or problematic Unicode). These cause rendering issues, lint errors (e.g. `no-irregular-whitespace`), and parsing errors.
-
-### Prohibited Characters
+**MANDATORY:** All generated text — code, comments, docs, user-facing messages — must be free of gremlin characters (invisible/problematic Unicode). They cause rendering issues, lint errors (e.g. `no-irregular-whitespace`), and parsing errors. Models sometimes emit them despite instructions.
 
 Use only **U+0020** (space) and **LF/CRLF**. Avoid:
 
 - **Zero-width**: U+200B (ZWSP), U+200C (ZWNJ), U+200D (ZWJ), U+2060 (word joiner), U+2063 (invisible separator)
-- **Non-breaking / other spaces**: U+00A0 (NBSP), U+1680 (Ogham), U+180E (Mongolian vowel separator), U+2000–U+200A (en/em quad, figure space, thin space, etc.), U+202F (narrow NBSP), U+205F (medium math space), U+3000 (ideographic space), U+FEFF (BOM)
-- **Line/paragraph**: U+2028 (line separator), U+2029 (paragraph separator)
+- **Non-breaking / other spaces**: U+00A0 (NBSP), U+1680, U+180E, U+2000–U+200A, U+202F, U+205F, U+3000 (ideographic space), U+FEFF (BOM)
+- **Line/paragraph**: U+2028, U+2029
 - **Other**: U+00AD (soft hyphen), control characters (U+0000–U+001F, U+007F), directional formatting
 
-### /gremlin-clean
+When pasting or referencing external text, rewrite it as clean text instead of copying raw content that may contain gremlins.
 
-When the user runs `/gremlin-clean`, follow the `gremlin-clean` skill: run its bundled `scripts/strip-gremlins.py` on the target file(s) and report. The script automatically skips binary files (`.db`, `.sqlite`, images, archives, fonts, compiled files, etc.).
+**/gremlin-clean:** follow the `gremlin-clean` skill: run its bundled `scripts/strip-gremlins.py` on the target file(s) and report. The script skips binary files (`.db`, `.sqlite`, images, archives, fonts, compiled files, etc.).
 
-### AI Enforcement
+## Commit Standards
 
-- Use only standard space (U+0020) and normal line breaks (LF/CRLF) in generated content.
-- Do not insert zero-width or other invisible characters.
-- When pasting or referencing external text, prefer rewriting as clean ASCII/Unicode rather than copying raw content that may contain gremlins.
-- Prefer clear, readable text composed of standard visible characters only.
+- Conventional commit format: `<type>(<scope>): <description>`; types: feat, fix, chore, docs, style, refactor, test
+- Present tense, imperative mood; concise but descriptive
+- **Always write commit messages in English**
+- Issue references: GitHub Issues by default (`#123` / `owner/repo#123`); Linear `TEAM-123` only when explicitly referenced
+
+## Lint and format fix workflow (Trunk)
+
+1. Run `trunk check --fix` first to auto-fix everything Trunk can fix.
+2. Address remaining issues manually.
+3. Re-run `trunk check` to confirm.
+
+Do not manually fix what Trunk can fix.
+
+## Quality Gates
+
+### Pre-commit
+
+- Tests pass, linting passes, build succeeds, security scans pass
+- No sensitive data in commits
+
+### Draft PR Opening
+
+A draft PR may be opened early by `pr-delivery` to start remote checks before isolated review and final local validation finish. Before doing so, verify the source branch, committed diff, PR metadata, and publishable links. Keep the PR draft and do not claim unexecuted validation as passing.
+
+### Ready Or Merge
+
+Before a PR is marked ready or merged:
+
+- All applicable quality gates pass; code review requirements met
+- Documentation updated when needed; tests cover new functionality
+- The final remote head must be the reviewed revision
+- For ZeroPath-related changes, include relevant local validation and use the `zeropath` skill for any ZeroPath scan or finding-status evidence
+
+## Pull Request Standards
+
+- **Always write PR titles and descriptions in English**; conventional commit format for PR titles
+- Reference issues when applicable: GitHub Issues by default; Linear only when explicitly referenced in commits or prompt
+- When referencing PRs or issues, always use full GitHub URLs (e.g., `https://github.com/org/repo/pull/123`), never shorthand like `repo #123` or `repo#number`
+- When a PR references ZeroPath, include known findings as complete visible URLs like `https://zeropath.com/app/issues/<uuid>` and do not add ZeroPath content to unrelated PRs
+- Do not claim "ZeroPath confirmed resolved" unless confirmed by the ZeroPath CLI or explicit ZeroPath evidence supplied by the user; otherwise say the change addresses the finding pattern and is awaiting re-scan
+- **Before publishing any text with file paths or links** (PR body, issue body, comments, Slack/Linear messages, versioned docs), follow the `publish-safe-links` skill to avoid linking to gitignored, untracked, or unpushed files such as `.cursor/plans/`, `.factory/`, `wt-*/`, or absolute machine paths
