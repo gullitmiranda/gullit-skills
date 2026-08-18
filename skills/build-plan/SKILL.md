@@ -44,6 +44,9 @@ Recognize these optional controls when present:
 - `--no-worktree`: force the current worktree if safe.
 - `--base <branch>`: use the named base branch when creating a branch/worktree.
 - `--plan-only`: produce or refine the execution plan, then stop before edits.
+- `--pr`: after review and plan updates, use the `pr` skill to open or update
+  PR(s) for the completed work. Without `--pr`, stop with build, commits, and
+  plan/skill updates ready and leave PR creation out of scope.
 
 By default, `build-plan` means implementation is requested and commits are
 authorized per block. If the user's wording asks only for analysis, planning, or
@@ -69,7 +72,30 @@ Before implementation, compose with the skills that fit the task:
 - Domain skills relevant to the repository, language, platform, or source
   finding type.
 
+- `pr`: only when `--pr` is present, to open or update PR(s) at the end.
+
 Do not duplicate those skills. Load and follow them when their triggers apply.
+
+## Aggregator Plans And Slice Workflow
+
+Some plans are aggregators: a main plan that tracks the status of multiple
+slices and embeds a slice workflow convention (e.g. a note describing how each
+slice is built, reviewed, and marked complete). When the referenced plan
+exposes such a convention, follow it explicitly instead of improvising:
+
+1. Build the slice from the correct base branch (per the plan's convention or
+   `--base`).
+2. Run validation for the slice.
+3. Open a review loop with review agents and the user.
+4. Update the aggregator plan at the end: mark the slice completed, record
+   PR/merge references, and make the next slice explicit.
+5. Update consuming skills when the changed surface affects them.
+6. Do not open a PR by default; only with `--pr`.
+
+If the aggregator contains only a stub summary of the slice (no real contract:
+scope, files, acceptance criteria), do not infer the full contract yourself.
+Recommend a prior step with the `plan` skill to expand the stub, or ask the
+user, before building.
 
 ## Execution Protocol
 
@@ -174,7 +200,9 @@ If `--no-commit` is present, stop after validation with changes left uncommitted
 If `--single-commit` is present, validate per block but commit only once after the
 final review.
 
-Do not push or open/update a PR unless the user explicitly asks.
+Do not push or open/update a PR unless the user explicitly asks or passes
+`--pr`. With `--pr`, after the final review and plan updates, load the `pr`
+skill and open or update the PR(s) for the completed scope.
 
 ### 6. Final Review And Checks
 
@@ -199,7 +227,11 @@ During execution, keep the user updated at block boundaries. At the end, report:
 - Worktree/branch used
 - Commits created, grouped by block
 - Validation commands and outcomes
-- Reviews performed
+- Reviews performed (agents and user loop, when applicable)
+- Plan and consuming-skill updates made (for aggregator plans: slice status,
+  PR/merge refs, next slice)
+- Whether a PR was created or intentionally left pending (default without
+  `--pr`)
 - Files or plan items intentionally not completed
 - Remaining risks or source-platform rescans still pending
 
