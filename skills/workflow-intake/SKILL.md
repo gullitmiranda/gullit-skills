@@ -37,7 +37,7 @@ Accept any combination of: handoff document, plan/PRD, issue/PR, project docs, c
 
 1. Identify source context: read provided artifacts; inspect repo, branch, worktree, and local changes when relevant. Treat missing evidence as uncertainty, not proof.
 2. Identify active workstreams (feature, bug, architecture, cleanup, open questions); mark each active, blocked, done, stale, or needs-user-decision.
-3. Choose the workflow via `engineering-workflow`; use external workflow skills only when installed.
+3. Choose the workflow via `engineering-workflow`; use external workflow skills only when installed. Detect by checking the session's available-skills list or the skill directories (`~/.agents/skills/`, `~/.cursor/skills/`).
 4. Choose execution mode via `agent-selection` (continue here, subagent, fork/new thread, Zed, or terminal/ACP/Pi-style agent); prefer autonomous implementation when ready and safe, collaborative discovery when questions remain.
 5. Prepare transfer context with `context-capsule` when handing work elsewhere; prefer capsules over full transcripts.
 6. Stop before implementation unless the user explicitly asked to continue.
