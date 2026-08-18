@@ -30,6 +30,11 @@ Multi-repository workspace status overview with comprehensive analysis.
 - Confirm target repository before running git commands
 - Use non-destructive git commands first (git stash, git log) to understand situation
 
+## Topology Integration
+
+- When a `WORKSPACE.md` exists in the workspace root or any ancestor, consult it to confirm that each git repository in the workspace actually belongs there. Coordinate with the `workspace-topology` skill for hierarchical rule resolution.
+- Report repositories whose location conflicts with the applicable `WORKSPACE.md` rules (e.g. a primary clone inside a reserved worktree area) instead of assuming the layout is intentional.
+
 ## Output Format
 
 ```

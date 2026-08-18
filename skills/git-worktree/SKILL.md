@@ -39,7 +39,10 @@ worktree isolation or there is a parallel-work reason to isolate the task.
 
 If the user explicitly provided a path, use it.
 
-If the user did not provide a path, derive one using this user's convention:
+If the user did not provide a path, first check whether an applicable
+`WORKSPACE.md` or the repo's `AGENTS.md` defines a worktree convention for this
+repo; if so, follow that (see the `workspace-topology` skill). Otherwise derive
+one using this user's convention:
 ```
 ../worktrees/<repo>-<topic>
 ```
