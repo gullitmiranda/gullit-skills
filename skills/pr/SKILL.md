@@ -97,7 +97,10 @@ Do not argue with the bot, list pros/cons, or promise follow-ups that are not re
 ### `/pr ready` — Mark Ready for Review
 
 1. Confirm the PR exists, is draft, and is not merged/closed.
-2. Run the validation route above; all quality gates must pass.
+2. **Quality validation is `pr-delivery`'s job.** If this PR came from a
+   `pr-delivery` run, its fixed-revision review already covered this — do not
+   re-run a parallel gate. If not, delegate the full review to `pr-delivery`
+   rather than running an ad-hoc validation here.
 3. Verify required checks pass and no merge conflicts exist.
 4. Request reviewers (CODEOWNERS, changed-file patterns, prior reviewers) and assign the author.
 5. Remove draft status. Do not apply status labels — draft→ready is the native GitHub signal; repo-specific labels belong to that repo's own rules.
