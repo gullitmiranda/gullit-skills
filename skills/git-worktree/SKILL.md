@@ -11,6 +11,13 @@ not assume a previous session handled it, do not rationalize shortcuts.
 Breaking this means working in the wrong directory and potentially overwriting
 changes from other agents or sessions.
 
+## Hard Rules
+
+- Never skip worktree creation when the user explicitly asked for one.
+- Never work in the primary worktree when a secondary worktree was created
+  for the task.
+- Never merge the feature branch into main during worktree cleanup.
+
 ## When This Skill Applies
 
 Trigger on explicit worktree requests ("nova worktree", "worktree separada",
@@ -65,10 +72,3 @@ a main worktree":
 5. Confirm with `git worktree list`
 
 **Never merge the feature branch into main.**
-
-## Hard Rules
-
-- Never skip worktree creation when the user explicitly asked for one.
-- Never work in the primary worktree when a secondary worktree was created
-  for the task.
-- Never merge the feature branch into main during worktree cleanup.

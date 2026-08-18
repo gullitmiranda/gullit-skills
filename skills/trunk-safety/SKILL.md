@@ -9,258 +9,114 @@ description: >-
 
 # Trunk Safety
 
-Hardened workflows for installing and upgrading Trunk tools, preventing
-supply-chain attacks like the Trivy compromise (March 2026).
+Hardened install/upgrade workflows for Trunk tools, preventing supply-chain
+attacks like the Trivy compromise (March 2026).
 
-## Principles
+## Hard Rules
 
-1. **Lock the CLI** -- always use `--lock` so sha256 hashes are in `trunk.yaml`
-2. **Pin every version** -- append `!` to all linter/runtime versions to block silent upgrades
-3. **Never blind-upgrade** -- always dry-run, review, then apply
-4. **Minimal surface** -- only enable tools the project actually needs
+- **Always** init with `--lock` so sha256 hashes for the CLI binary land in `trunk.yaml`; keep them there.
+- **Always** pin every linter/runtime version with a trailing `!` to block silent upgrades; re-pin after any upgrade or tool change.
+- **Never** run `trunk upgrade` without `--dry-run` first and explicit user confirmation.
+- **Never** remove `!` pins without explicit user request.
+- **Never** enable tools blindly — check `references/compromised-versions.md` first.
+- **Never** put path/rule ignores in `trunk.yaml`'s `lint.ignore` — it is typically gitignored (single-player mode), so ignores won't be shared. Use each tool's own committed config file (see Linter Ignore Configuration).
+- Only enable tools the project actually needs.
 
 ## Workflow 1: Fresh Setup
 
-Run when the user wants to set up Trunk in a repo (new or existing).
+1. Initialize:
+   ```bash
+   trunk init --single-player-mode --force --lock -n
+   ```
+   - `--single-player-mode` — config is gitignored: personal, not shared
+   - `--force` — overwrites existing `trunk.yaml`; required because `--lock` only writes the sha256 block during a fresh init (`--allow-existing` skips it). Lost custom config is visible in `git diff` and easy to restore.
+   - `--lock` — sha256 hashes for the CLI binary per platform
+   - `-n` — no to all prompts: minimal install
+2. If the repo already had a `trunk.yaml`, review `git diff .trunk/trunk.yaml` and restore lost custom config (ignore paths, disabled linters).
+3. Enable recommended actions:
+   ```bash
+   trunk actions enable trunk-check-pre-push trunk-check-pre-commit trunk-fmt-pre-commit
+   ```
 
-### Step 1: Initialize
-
-```bash
-trunk init --single-player-mode --force --lock -n
-```
-
-| Flag | Purpose |
-|------|---------|
-| `--single-player-mode` | Config is gitignored -- personal, not shared |
-| `--force` | Overwrites existing `trunk.yaml` -- needed to generate sha256 block |
-| `--lock` | Adds sha256 hashes for the CLI binary per platform |
-| `-n` | Answers no to all prompts -- minimal install |
-
-> **Why `--force` instead of `--allow-existing`?**
-> `--lock` only writes the sha256 block during a fresh init. Using
-> `--allow-existing` on a repo that already has `trunk.yaml` skips the sha256
-> generation. Since the skill re-applies actions and pins in subsequent steps,
-> and the trunk.yaml is version-controlled, any lost custom config (e.g. ignore
-> paths) is visible in `git diff` and easy to restore.
-
-### Step 2: Review changes
-
-If the repo already had a `trunk.yaml`, review `git diff .trunk/trunk.yaml` to
-check for lost custom config (ignore paths, disabled linters, etc.) and restore
-what's needed before continuing.
-
-### Step 3: Enable recommended actions
-
-```bash
-trunk actions enable trunk-check-pre-push trunk-check-pre-commit trunk-fmt-pre-commit
-```
-
-### Step 4: Pin all versions
-
-Run the pinning script to append `!` to every versioned entry:
-
-```bash
-bash <skill-dir>/scripts/trunk-pin-versions.sh
-```
-
-Where `<skill-dir>` is the absolute path to this skill's directory. The script:
-- Finds all `@version` entries in `.trunk/trunk.yaml`
-- Appends `!` to each (skipping already-pinned ones)
-- Shows a before/after diff
-
-### Step 5: Verify
-
-```bash
-trunk check --sample 5
-```
-
-Run a small sample to confirm everything resolves correctly with pinned versions.
-
-### Step 6: Disable known-risky tools
-
-Check `references/compromised-versions.md` for tools with known supply-chain
-incidents. If any are enabled, warn the user and suggest disabling:
-
-```bash
-trunk check disable <tool>
-```
+For a repo that already has Trunk configured, verify the same three hooks
+are enabled (`trunk actions list`) and enable any that are missing.
+4. Pin all versions — finds every `@version` entry in `.trunk/trunk.yaml`, appends `!` (skipping already-pinned), shows a before/after diff:
+   ```bash
+   bash <skill-dir>/scripts/trunk-pin-versions.sh
+   ```
+5. Verify: `trunk check --sample 5`
+6. Check `references/compromised-versions.md`; if any enabled tool has a known incident, warn the user and suggest `trunk check disable <tool>`.
 
 ## Workflow 2: Safe Upgrade
 
-Run when the user wants to upgrade Trunk tools.
-
-### Step 1: Dry-run
-
-```bash
-trunk upgrade --dry-run 2>&1
-```
-
-Show the output to the user. Highlight which tools have version changes.
-
-### Step 2: Check advisories
-
-Cross-reference each tool being upgraded with `references/compromised-versions.md`.
-If any tool has a history of compromise, flag it explicitly.
-
-### Step 3: Confirm with user
-
-Present a summary:
-- Tools being upgraded (old version -> new version)
-- Any flagged tools
-- Ask for explicit confirmation before proceeding
-
-### Step 4: Apply
-
-```bash
-trunk upgrade
-```
-
-### Step 5: Re-lock CLI (if CLI version changed)
-
-`trunk upgrade` does not regenerate sha256 hashes. If the CLI version was
-bumped, re-run init to refresh them:
-
-```bash
-trunk init --force --lock -n
-```
-
-Then review `git diff .trunk/trunk.yaml` to restore any custom config that was
-overwritten (ignore paths, disabled linters, etc.). If only linters/runtimes
-were upgraded (not the CLI), skip this step -- the existing sha256 block
-remains valid.
-
-### Step 6: Re-pin versions
-
-Run the pinning script again after upgrade:
-
-```bash
-bash <skill-dir>/scripts/trunk-pin-versions.sh
-```
-
-### Step 7: Smoke test
-
-```bash
-trunk check --sample 5
-```
+1. Dry-run and show the user which tools have version changes:
+   ```bash
+   trunk upgrade --dry-run 2>&1
+   ```
+2. Cross-reference each tool being upgraded with `references/compromised-versions.md`; flag any with a history of compromise.
+3. Present old -> new versions plus flagged tools; get explicit confirmation.
+4. Apply: `trunk upgrade`
+5. If the CLI version changed, re-lock — `trunk upgrade` does not regenerate sha256 hashes:
+   ```bash
+   trunk init --force --lock -n
+   ```
+   Then review `git diff .trunk/trunk.yaml` to restore overwritten custom config. If only linters/runtimes changed, skip — the existing sha256 block remains valid.
+6. Re-pin: `bash <skill-dir>/scripts/trunk-pin-versions.sh`
+7. Smoke test: `trunk check --sample 5`
 
 ## Workflow 3: Enable New Tool
 
-When the user wants to add a linter or formatter:
+1. Check `references/compromised-versions.md` for the tool BEFORE enabling it.
+2. `trunk check enable <tool>`
+3. Immediately pin its version with `!` in `.trunk/trunk.yaml`
+4. Verify: `trunk check --sample 2`
 
-1. Enable it: `trunk check enable <tool>`
-2. Immediately pin its version with `!` in `.trunk/trunk.yaml`
-3. Check `references/compromised-versions.md` for that tool
-4. Run `trunk check --sample 2` to verify
+A compromised tool must never be enabled, even briefly.
 
 ## Workflow 4: Agent-safe Git Hooks
 
-Use this workflow when `git commit` appears to hang while Trunk hooks are
-running, especially from an AI agent or pseudo-terminal.
+Use when `git commit` appears to hang while Trunk hooks run, especially from an AI agent or pseudo-terminal.
 
-### Symptom
+Root causes:
 
-- `git commit` does not return success or failure.
-- Output stops around Trunk hook execution.
-- Manual `trunk check` may pass, or logs may show daemon or GRPC errors.
+1. **Hook stdin waiting for EOF** (most common). Trunk-generated hooks save stdin with `cat` into a tempfile before redirecting stdin to `/dev/tty` or `/dev/null`. In agent-run commands stdin can stay open, so `cat` waits indefinitely.
+2. **Stopped or crashed daemon** (fallback case, not the default assumption). Symptoms: `GRPC Failed`, `Socket closed`, `Connection refused`, `Daemon stopped`.
 
-### Root causes to check
+Default behavior: leave the daemon alone and run the final commit with stdin explicitly closed by appending `</dev/null`. For multi-line messages, write to a temp file and use `git commit -F <message-file> </dev/null`.
 
-1. **Hook stdin waiting for EOF.** Trunk-generated git hooks save hook stdin
-   with `cat` into a tempfile before they redirect stdin to `/dev/tty` or
-   `/dev/null`. In agent-run commands, stdin can remain open, so `cat` waits
-   indefinitely and the hook never reaches the actual success or error path.
-2. **Stopped or crashed daemon.** Trunk may report internal errors such as
-   `GRPC Failed`, `Socket closed`, `Connection refused`, or `Daemon stopped`.
-   This is a fallback recovery case, not the default assumption.
-
-### Default agent behavior
-
-For commits in a repo that uses Trunk hooks, keep the daemon alone and run the
-final `git commit` with stdin explicitly closed by appending `</dev/null`.
-This is the least disruptive mitigation and should resolve the most common
-agent hang, where the generated hook is waiting for EOF.
-
-For multi-line messages, prefer writing the message to a temporary file and
-running `git commit -F <message-file> </dev/null`.
-
-### Optional preflight checks
-
-If you want to validate before committing, run explicit checks without stopping
-the daemon:
+Optional preflight (without stopping the daemon):
 
 - `trunk check --ci --upstream HEAD --no-progress`
 - `trunk fmt --ci --upstream HEAD --no-progress`
 
-### Fallback recovery
-
-Only run `trunk daemon shutdown` when one of these is true:
-
-- The commit or check still hangs even with `</dev/null`.
-- Trunk logs or output show `Socket closed`, `Connection refused`,
-  `Daemon stopped`, or another daemon/GRPC internal error.
-- The daemon is confirmed unhealthy with `trunk daemon status`.
-
-Recovery sequence:
+Fallback recovery — only when the commit still hangs with `</dev/null`, output shows daemon/GRPC errors, or `trunk daemon status` confirms unhealthy:
 
 1. Stop the stuck command.
-2. Run `trunk daemon shutdown`.
-3. Re-run `trunk check --ci --upstream HEAD --no-progress --print-failures`.
-4. Inspect repo-specific logs under `~/.cache/trunk/repos/*/logs/cli.log` and
-   `daemon.log` for `Socket closed`, `Connection refused`, `Daemon stopped`, or
-   the linter name that was running last.
+2. `trunk daemon shutdown`
+3. `trunk check --ci --upstream HEAD --no-progress --print-failures`
+4. Inspect `~/.cache/trunk/repos/*/logs/cli.log` and `daemon.log` for `Socket closed`, `Connection refused`, `Daemon stopped`, or the linter that was running last.
 5. Retry the commit with `</dev/null`.
 
-### Optional mitigation
-
-If one linter repeatedly crashes the daemon in a personal repo, prefer a
-repo-specific tool ignore or disable over repeatedly stopping the daemon. Broad
-IaC/security linters such as `checkov` may be too noisy for personal dotfiles
-unless scoped carefully.
+Optional mitigation: if one linter repeatedly crashes the daemon in a personal repo, prefer a repo-specific ignore/disable over repeated daemon stops. Broad IaC/security linters such as `checkov` may be too noisy for personal dotfiles unless scoped carefully.
 
 ## Workflow 5: Check Advisories
-
-Periodically check for new vulnerabilities affecting enabled tools.
-
-### Manual run
 
 ```bash
 bash <skill-dir>/scripts/check-advisories.sh
 ```
 
-The script queries OSV.dev and (if `gh` is available) the GitHub Advisory
-Database for each tool in its registry. It filters out IDs already documented
-in `compromised-versions.md` and flags supply-chain / malware findings.
+Queries OSV.dev and (if `gh` is available) the GitHub Advisory Database for each tool in its registry; filters out IDs already documented in `compromised-versions.md`; flags supply-chain / malware findings. `--update` bumps the "Last updated" date in `compromised-versions.md`.
 
-Pass `--update` to bump the "Last updated" date in `compromised-versions.md`.
+Automation:
 
-### Automating
+- **GitHub Actions (recommended):** add `.github/workflows/trunk-advisory-check.yml` — runs weekly, creates/updates a GitHub issue on critical or supply-chain advisories, manual trigger via `workflow_dispatch`.
+- **Cron:** `0 9 * * 1  bash <skill-dir>/scripts/check-advisories.sh --update >> ~/trunk-advisory-check.log 2>&1`
 
-**Option A — GitHub Actions** (recommended): add the
-`.github/workflows/trunk-advisory-check.yml` workflow to your repo. Runs
-weekly, creates/updates a GitHub issue when critical or supply-chain
-advisories are found. Trigger manually via `workflow_dispatch`.
-
-**Option B — Cron**: run weekly and log results locally:
-
-```bash
-# crontab -e
-0 9 * * 1  bash <skill-dir>/scripts/check-advisories.sh --update >> ~/trunk-advisory-check.log 2>&1
-```
-
-### Adding tools to the registry
-
-Edit the `TOOLS` array in `scripts/check-advisories.sh`. Format:
-
-```
-name|osv_ecosystem|osv_package|gh_advisory_ecosystem
-```
+Add tools via the `TOOLS` array in `scripts/check-advisories.sh`. Format: `name|osv_ecosystem|osv_package|gh_advisory_ecosystem`
 
 ## Linter Ignore Configuration
 
-`.trunk/trunk.yaml` is typically gitignored (especially in `--single-player-mode`).
-**Never** put path/rule ignores inside `trunk.yaml`'s `lint.ignore` section — they won't be shared via git.
-
-Instead, always configure ignores in each tool's own standard config file, committed at the repo root:
+Configure ignores in each tool's own standard config file, committed at the repo root:
 
 | Linter | Config file | Ignore mechanism |
 |--------|-------------|-----------------|
@@ -271,20 +127,12 @@ Instead, always configure ignores in each tool's own standard config file, commi
 | golangci-lint | `.golangci.yml` | `issues.exclude-rules[].path` |
 | shellcheck | `.shellcheckrc` | `disable=SC2312` or `external-sources=true` |
 
-For **actionlint** on Go template files (`.yaml.tpl`) there is no path exclusion in its
-config file. Options (in preference order):
+For **actionlint** on Go template files (`.yaml.tpl`) there is no path exclusion in its config file. Options, in preference order:
+
 1. Add `# trunk-ignore-all(actionlint)` at the top of each template file
 2. Keep the ignore in `trunk.yaml` as a last resort, with a comment explaining it can't be shared
 
-## Safety Rules
-
-- **Never** run `trunk upgrade` without `--dry-run` first
-- **Never** remove `!` pins without explicit user request
-- **Never** enable tools blindly -- always check the compromised versions list
-- **Always** re-pin after any upgrade or tool change
-- **Always** keep `--lock` sha256 hashes in trunk.yaml
-
-## Additional Resources
+## Resources
 
 - Known compromised versions: [references/compromised-versions.md](references/compromised-versions.md)
 - Pinning script: [scripts/trunk-pin-versions.sh](scripts/trunk-pin-versions.sh)

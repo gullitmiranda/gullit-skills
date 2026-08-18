@@ -6,10 +6,10 @@ disable-model-invocation: true
 
 # PR Delivery
 
-Use this skill as the explicit, end-to-end PR delivery action. It opens a draft
-PR early so remote checks can run while a clean-context reviewer examines the
-fixed diff. It does not make a PR mergeable until every review agent has
-returned and the final head revision has been checked.
+End-to-end PR delivery: open a draft PR early so remote checks run while a
+clean-context reviewer examines the fixed diff. The PR does not become
+mergeable until every review agent has returned and the final head revision
+has been checked.
 
 Apply `gh-profile` before every GitHub or remote Git operation, `pr` for PR
 metadata and lifecycle rules, `quality` for validation, and `publish-safe-links`
@@ -27,23 +27,23 @@ Defaults:
 
 - Base branch: the repository default branch.
 - `--review-mode auto`: resolve to `strict` only when the runtime can verify an
-  independently enforced no-mutation child boundary; otherwise resolve to
-  `guarded`. Announce and record the resolved mode before spawning a reviewer.
-  In native Zed, `auto` resolves to `guarded`.
-- `--review-mode guarded`: force a clean-context reviewer with a no-mutation
-  policy and parent-side integrity verification.
+  independently enforced no-mutation child boundary; otherwise `guarded`.
+  Announce and record the resolved mode before spawning a reviewer. In native
+  Zed, `auto` resolves to `guarded`.
+- `--review-mode guarded`: clean-context reviewer with a no-mutation policy and
+  parent-side integrity verification.
 - `--review-mode strict`: require a runtime that technically enforces a
   separate read-only child boundary. If unavailable, stop rather than claim
   strict isolation.
 - `--ready` (default): after all gates pass for the final reviewed revision,
   `pr-babysit` converts the draft to ready for review.
 - `--merge`: after all gates pass, `pr-babysit` merges the PR. Implies
-  `--ready`. It is never a default.
-- `--solo`: the user is the sole reviewer (solo repository). Passes through to
-  `pr-babysit`, waiving the review-manifest gate for readiness and merge.
-- `--admin`: merge with `gh pr merge --admin`, bypassing GitHub branch
-  protection. Only valid with `--merge`. Requires admin permission on the
-  repository. Passes through to `pr-babysit`.
+  `--ready`. Never a default.
+- `--solo`: the user is the sole reviewer. Passes through to `pr-babysit`,
+  waiving the review-manifest gate for readiness and merge.
+- `--admin`: merge with `gh pr merge --admin`, bypassing branch protection.
+  Only valid with `--merge`; requires admin permission. Passes through to
+  `pr-babysit`.
 
 `--ready` and `--merge` are user-facing pass-throughs to `pr-babysit`. The
 standalone `pr-babysit` default remains watch-only because monitoring a PR
@@ -91,9 +91,8 @@ explicit user direction.
 4. Keep the PR draft. Do not request reviewers, mark it ready, start
    `pr-babysit`, or merge at this stage.
 
-The remote checks may now run in parallel with the local review. The draft body
-may state that validation is in progress, but it must not use placeholders or
-claim passing results without evidence.
+The draft body may state that validation is in progress, but must not use
+placeholders or claim passing results without evidence.
 
 ### 2. Run A Fixed-Revision Review
 
@@ -102,45 +101,36 @@ Create a concise context capsule using the inputs in
 explicitly; the reviewer examines only that fixed diff and returns the
 structured result in the template.
 
-#### Resolve the review mode
+Review modes:
 
-For `auto`, select `strict` only from a verified runtime capability boundary,
-not from a profile name or prompt. Otherwise select `guarded`. Record the
-resolved mode in the reviewer capsule, completion manifest, and final report
-before the reviewer starts.
+- **Resolve `auto`:** select `strict` only from a verified runtime capability
+  boundary, not from a profile name or prompt; otherwise `guarded`. Record the
+  resolved mode in the reviewer capsule, completion manifest, and final report
+  before the reviewer starts.
+- **`guarded`:** native Zed subagents inherit the parent's capabilities. Tell
+  the reviewer not to edit files, use write-capable tools, stage, commit, push,
+  reset, checkout, mutate branches, or mutate GitHub resources. Require a
+  text-only report. This is a policy guardrail, not technical isolation; the
+  integrity gate below detects local Git and PR-head changes but cannot prove
+  no other external mutation was attempted.
+- **`strict`:** only when the calling runtime can technically remove the
+  child's write and GitHub mutation capabilities and the integrity gate can run
+  before and after the session. If either is unavailable, stop after the draft
+  PR with a clear explanation. A native Zed `spawn_agent` child does not
+  satisfy this mode. In Zed, a separate top-level thread is strict only if its
+  no-mutation capability boundary has been explicitly verified; a named profile
+  alone is not sufficient evidence.
 
-#### Fixed-revision integrity gate
+Fixed-revision integrity gate:
 
-Before spawning any reviewer, verify that the local `HEAD` and remote PR head
-both equal the fixed review head SHA. Also require a clean worktree and index,
-and record a snapshot containing those values, the branch, and fixed base/head
-SHAs. If either head is already different, return `stale-head` and stop.
-
-After every reviewer returns, verify again that the local `HEAD` and remote PR
-head both equal the fixed review head SHA, and that the worktree/index status
-still equals the snapshot. If any check differs, return
-`review-integrity-unknown`, stop, and do not create a manifest or start
-`pr-babysit`. A concurrent actor can cause the same result; do not attribute it
-without evidence.
-
-#### `guarded` mode
-
-Native Zed subagents inherit the parent's capabilities. Tell the reviewer not
-to edit files, use write-capable tools, stage, commit, push, reset, checkout,
-mutate branches, or mutate GitHub resources. Require a text-only report. This
-is a policy guardrail, not technical isolation. The fixed-revision integrity
-gate above detects local Git and PR-head changes, but cannot prove that no other
-external mutation was attempted.
-
-#### `strict` mode
-
-Use this only when the calling runtime can technically remove the child's write
-and GitHub mutation capabilities and the fixed-revision integrity gate can be
-performed before and after the session. If either condition is unavailable,
-stop after the draft PR with a clear explanation. A native Zed `spawn_agent`
-child does not satisfy this mode. In Zed, a separate top-level thread is strict
-only if its no-mutation capability boundary has been explicitly verified; a
-named profile alone is not sufficient evidence.
+- **Before spawning any reviewer:** verify local `HEAD` and remote PR head both
+  equal the fixed review head SHA, require a clean worktree and index, and
+  record a snapshot of those values, the branch, and fixed base/head SHAs. If
+  either head differs, return `stale-head` and stop.
+- **After every reviewer returns:** verify the same values against the
+  snapshot. If any differ, return `review-integrity-unknown`, stop, and do not
+  create a manifest or start `pr-babysit`. A concurrent actor can cause the
+  same result; do not attribute it without evidence.
 
 Track every review session and wait for all of them to complete. Never start
 `pr-babysit` concurrently with a reviewer. After a successful review set,
@@ -176,8 +166,8 @@ For autonomous repairs:
 6. Record the new final head SHA.
 7. Run a new fixed-revision delta review in the selected mode from the
    previously reviewed SHA to the new final head SHA. Wait for every delta
-   reviewer and replace the serialized
-   review completion manifest only after they all succeed.
+   reviewer and replace the serialized review completion manifest only after
+   they all succeed.
 
 Repeat this repair and delta-review cycle when a reviewer finds another clear,
 autonomous issue. Stop when a decision is needed, review evidence is invalid,

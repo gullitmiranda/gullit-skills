@@ -5,13 +5,9 @@ description: Strip gremlin/invisible Unicode characters from files. Use when lin
 
 # Gremlin Clean
 
-Strip gremlin/invisible Unicode characters from files.
-
-## When to Use
-
-- Linter reports `no-irregular-whitespace` or similar
-- Invisible characters suspected in AI-generated text
-- File content looks correct but tooling fails on hidden characters
+Strip gremlin/invisible Unicode characters from files. Corrective cleanup of
+existing files — `quality` governs not generating them; `deslop` cleans up
+visible AI slop in prose and comments.
 
 ## Procedure
 
@@ -29,20 +25,10 @@ Strip gremlin/invisible Unicode characters from files.
 
 ## What It Does NOT Do
 
-The script intentionally leaves typographic dashes untouched:
-
-- `--` U+2013 en dash
-- `-` U+2014 em dash
-
-These are valid Unicode and can appear in legitimate prose. If the user reports
-them as gremlins (common in AI-generated Markdown tables or range notation in
-infrastructure code), replace them manually with ASCII hyphens:
-
-```python
-content.replace('\u2014', '-').replace('\u2013', '-')
-```
-
-Or run inline:
+The script intentionally leaves typographic dashes (U+2013 en dash, U+2014 em
+dash) untouched — they are valid Unicode in legitimate prose. If the user
+reports them as gremlins (common in AI-generated Markdown tables or range
+notation in infrastructure code), replace them manually:
 
 ```bash
 python3 -c "

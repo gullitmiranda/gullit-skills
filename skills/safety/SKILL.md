@@ -2,92 +2,52 @@
 name: safety
 description: Git, command, Kubernetes, data, workspace, and temporary files safety rules. Use when committing, pushing, using kubectl, handling multi-repo workspaces, or performing destructive operations.
 ---
+
 # Safety Rules
 
-## Git Safety
+## Hard Rules
 
-### Absolute Rules (Cannot be broken)
+- Do not commit unless explicitly requested.
+- Do not push unless explicitly requested; never push directly to main/master.
+- Never commit to main/master unless explicitly requested.
+- Never run `git reset --hard` without explicit user approval.
+- Never add gitignored files to git (`git add`) — at most, show the command for the user to run themselves.
+- Never commit files under `.cursor/plans/` — they are local-only/gitignored; this breaks the user's setup and has been corrected multiple times.
+- Never execute `kubectl delete` or `kubectl apply`.
+- Do not change git stage without being asked; never commit unstaged changes without explicit request.
+- When splitting, stacking, or consolidating work from an existing feature/draft branch, never execute the mission on the source branch. Create a new working branch (or worktree) from the agreed base and treat the source branch as read-only input.
 
-- Do not commit unless explicitly requested
-- Do not push unless explicitly requested
-- Never commit to main/master branch unless explicitly requested
-- Never run `git reset --hard` without explicit user approval
-- Never add gitignored files to git (`git add`) — at most, show the command for the user to run themselves
-- **Never commit files under `.cursor/plans/`** — they are local-only/gitignored; this breaks the user's setup and has been corrected multiple times
-- When splitting, stacking, or consolidating work from an existing feature/draft
-  branch, **never execute the mission on the source branch**. First create a new
-  working branch (or worktree) from the agreed base and treat the source branch
-  as read-only input.
+## Git
 
-### Core Safety Guidelines
+- In repos with Trunk git hooks, close stdin on `git commit` by appending `</dev/null` to prevent hook hangs in pseudo-terminals. If Trunk still appears stuck or logs `Socket closed`, `Connection refused`, or `Daemon stopped`, use `trunk daemon shutdown` only as fallback recovery before retrying the commit.
+- Always create feature branches for changes; use `/git-branch` for safe branch creation. `/commit` automatically creates a feature branch when on main/master.
+- For incremental delivery, branch-split, or PR-stack work, create the delivery branch/worktree before editing anything (see `incremental-delivery/SKILL.md` for the full protocol — slice mapping, cherry-picking, validation per increment).
+- Verify branch before committing; validate conventional commit format; show what will be committed before execution.
+- Always create pull requests for main branch changes; use `/pr-create` for safe PR creation; verify the remote branch exists before pushing.
 
-- In repos with Trunk git hooks, agent commits must close stdin on the `git commit` command by appending `</dev/null` to prevent hook hangs in pseudo-terminals
-- If Trunk still appears stuck with closed stdin or logs `Socket closed`, `Connection refused`, or `Daemon stopped`, use `trunk daemon shutdown` only as fallback recovery before retrying the commit
-- Do not change git stage without being asked
-- Do not make commits without reviews unless explicitly requested
-- Always create feature branches for changes
-- Use `/git-branch` command for safe branch creation
-- `/commit` command automatically creates feature branch when on main/master
-- For incremental delivery, branch-split, or PR-stack work, create the delivery
-  branch/worktree before editing anything (see `incremental-delivery/SKILL.md`
-  for the full protocol — slice mapping, cherry-picking, validation per
-  increment)
-- Verify branch before committing
-- Never commit unstaged changes without explicit request
-- Always validate conventional commit format
-- Create backups before destructive operations
-- Show what will be committed before execution
-- Never push directly to main/master
-- Always create pull requests for main branch changes
-- Use `/pr-create` command for safe PR creation
-- Verify remote branch exists before pushing
+## Destructive Operations & Backups
 
-## Command Safety
+- Always create backups before destructive operations; use git stash for uncommitted changes.
+- Use `/git-reset` for safe reset with backup.
+- Document recovery procedures and test backup restoration.
 
-### Shell Safety
+## Kubernetes
 
-- Prefer terminal commands over GUI operations when possible
+- Use `/k8s-check` for safe inspection, `/k8s-validate` for manifest validation, `/k8s-diff` for change preview.
 
-### Kubernetes Safety
+## Commands
 
-- Never execute `kubectl delete` or `kubectl apply`
-- Use `/k8s-check` for safe inspection
-- Use `/k8s-validate` for manifest validation
-- Use `/k8s-diff` for change preview
+- Prefer terminal commands over GUI operations when possible.
 
-### Git Destructive Operations
+## Multi-Repository Workspaces
 
-- Never run `git reset --hard` without explicit approval
-- Use `/git-reset` for safe reset with backup
-- Always create stash before destructive operations
-- Provide recovery instructions
+- Always check the current working directory and understand repository boundaries; never assume a single git repository in a multi-repo workspace.
+- Verify which repository an operation targets before execution; navigate to the correct repository directory before running git operations.
+- When working with staged changes, identify which specific repository they belong to.
+- Treat each repository as a separate entity with its own git state.
+- Use non-destructive commands first (`git stash`, `git log`) to understand the situation.
+- Ask for clarification when workspace structure is unclear; confirm the target repository before running git commands.
 
-## Data Safety
+## Temporary Files
 
-- Always create backups before destructive operations
-- Use git stash for uncommitted changes
-- Document recovery procedures
-- Test backup restoration
-
-## Workspace Safety
-
-### Multi-Repository Handling
-
-- Always check current working directory and understand repository boundaries
-- Never assume single git repository when working in multi-repo workspace
-- Always verify which repository operations are targeting before execution
-- When working with staged changes, identify which specific repository they belong to
-- Navigate to correct repository directory before running git operations
-- Treat each repository as separate entity with its own git state
-
-### Error Prevention
-
-- Always ask for clarification when workspace structure is unclear
-- Confirm target repository before running git commands
-- Use non-destructive commands first (git stash, git log) to understand situation
-
-## Temporary Files Safety
-
-- When creating temporary files, use temporary directories (`./tmp` or system tmp)
-- Automatically clean up temporary files after use
-- Never commit temporary files to version control
+- Use temporary directories (`./tmp` or system tmp); clean up temporary files after use; never commit them to version control.

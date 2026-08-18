@@ -27,8 +27,6 @@ address ZeroPath issues, explicit scan requests, and any text that references
 - The default job is to evaluate, fix, document, or discuss existing ZeroPath
   findings supplied by the user, a PR body/comment, commit context, CLI output,
   SARIF, or another existing scan result.
-- Do not add ZeroPath scans to unrelated work, normal PR creation, or generic
-  security review tasks.
 - Do not run a new scan just because a PR or document mentions ZeroPath.
 - Run a ZeroPath scan only when:
   - The user explicitly asks for a scan.
