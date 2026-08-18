@@ -44,7 +44,8 @@ Use for decisions, user interviews, prioritization, and final synthesis.
 
 ### Subagent
 
-Use for bounded side quests that should return a distilled result.
+Use for bounded side quests that should return a distilled result. Before
+recommending one, apply the availability gate below.
 
 ### Fork or new thread
 
@@ -62,6 +63,21 @@ execution.
 ### Full transcript transfer
 
 Use only when exact history matters. Prefer `context-capsule` for normal handoff.
+
+## Subagent availability gate (mandatory)
+
+Before recommending or using a subagent, check whether the current runtime
+actually exposes a subagent tool (e.g. `spawn_agent`, Task tool, background
+agent). If it does not:
+
+- Say clearly that subagents are not supported in this runtime/profile.
+- Recommend a manual alternative: new agent thread, ACP agent, terminal
+  agent, or a `context-capsule` the user pastes into another session.
+- Never run the requested work in the current thread proactively. Wait for
+  the user to pick an alternative.
+
+Rationale: "run in background" executed in the parent thread blocks the
+conversation and duplicates work the user expected to happen elsewhere.
 
 ## Required Recommendation Format
 
