@@ -5,6 +5,10 @@ description: Code quality, commit standards, quality gates, PR standards, and ou
 
 # Quality Rules
 
+This skill is preventive — it governs what you generate. To clean up existing
+AI-generated text, use `deslop`; to strip gremlin characters from existing
+files, use `gremlin-clean`.
+
 ## Output / Character Hygiene (Gremlin Characters)
 
 **MANDATORY:** All generated text — code, comments, docs, user-facing messages — must be free of gremlin characters (invisible/problematic Unicode). They cause rendering issues, lint errors (e.g. `no-irregular-whitespace`), and parsing errors. Models sometimes emit them despite instructions.

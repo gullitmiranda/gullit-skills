@@ -1,11 +1,15 @@
 ---
 name: gremlin-clean
-description: Strip gremlin/invisible Unicode characters from files. Use when linters report no-irregular-whitespace or when you suspect invisible characters in AI-generated text.
+description: Strip gremlin/invisible Unicode characters from files. Corrective cleanup of
+existing files — `quality` governs not generating them; `deslop` cleans up
+visible AI slop in prose and comments. Use when linters report no-irregular-whitespace or when you suspect invisible characters in AI-generated text.
 ---
 
 # Gremlin Clean
 
-Strip gremlin/invisible Unicode characters from files.
+Strip gremlin/invisible Unicode characters from files. Corrective cleanup of
+existing files — `quality` governs not generating them; `deslop` cleans up
+visible AI slop in prose and comments.
 
 ## When to Use
 
