@@ -5,83 +5,50 @@ description: Build referenced plans into committed, validated implementation wor
 
 # Build Plan
 
-Use this skill to turn one or more planning artifacts into completed implementation
-work. The skill is an orchestrator: it reads the plan context, chooses the safest
-execution shape, applies relevant domain skills, uses subagents where useful,
-commits each completed block by default, and closes with reviews and validation.
+Orchestrator that turns planning artifacts into completed implementation work:
+reads the plan context, applies relevant domain skills, uses subagents where
+useful, commits each completed block by default, and closes with reviews and
+validation.
 
 ## Invocation Model
 
-Accept natural language first. The user may reference files directly instead of
-using flags:
-
-```text
-/build-plan @plans/main.plan.md @plans/slice-11.plan.md
-Execute only the dependency and scanner blocks.
-```
-
-Treat referenced files, attached files, open files, issues, PRs, handoffs, and
-chat context as candidate source artifacts. Identify their roles:
-
-- Primary plan
-- Related plan or handoff
-- Scope constraint
-- Acceptance criteria
-- Reference documentation
-
-Ask only when ambiguity blocks safe execution. Otherwise infer a reasonable
-primary plan and scope from the user's wording.
+Accept natural language and referenced/attached files, issues, PRs, handoffs,
+and chat context as source artifacts. Infer a primary plan and scope from the
+user's wording; ask only when ambiguity blocks safe execution.
 
 ## Options
-
-Recognize these optional controls when present:
 
 - `--scope <text>`: limit execution to a slice, section, task range, checklist
   item, or natural-language subset.
 - `--no-commit`: implement without committing; leave changes in the working tree.
 - `--single-commit`: commit once at the end instead of per block.
-- `--worktree`: force a separate worktree.
-- `--no-worktree`: force the current worktree if safe.
+- `--worktree` / `--no-worktree`: force a separate worktree / force the current
+  one if safe.
 - `--base <branch>`: use the named base branch when creating a branch/worktree.
 - `--plan-only`: produce or refine the execution plan, then stop before edits.
 - `--pr`: after review and plan updates, use the `pr` skill to open or update
-  PR(s) for the completed work. Without `--pr`, stop with build, commits, and
-  plan/skill updates ready and leave PR creation out of scope.
-
-By default, `build-plan` means implementation is requested and commits are
-authorized per block. If the user's wording asks only for analysis, planning, or
-review, do not edit or commit.
+  PR(s). Without `--pr`, leave PR creation out of scope.
 
 ## Related Skills
 
-Before implementation, compose with the skills that fit the task:
+Compose with, do not duplicate:
 
-- `workflow-intake`: when resuming from plans, handoffs, issues, or unclear next
-  steps.
-- `engineering-workflow`: to classify feature, bug, existing plan, architecture,
-  or parallel workstreams.
-- `agent-selection`: to choose main chat, subagents, worktrees, terminal agents,
-  or a new thread.
-- `incremental-delivery`: for block sequencing, acceptance criteria, and quality
-  gates per increment.
-- `safety`: before git operations, commits, worktrees, destructive commands, or
-  multi-repository work.
-- `git`: for branch and commit workflow.
-- `quality`: for checks, commit standards, PR-quality expectations, and output
-  hygiene.
-- Domain skills relevant to the repository, language, platform, or source
-  finding type.
-
-- `pr`: only when `--pr` is present, to open or update PR(s) at the end.
-
-Do not duplicate those skills. Load and follow them when their triggers apply.
+- `workflow-intake`: resuming from plans, handoffs, issues, unclear next steps.
+- `engineering-workflow`: classify feature, bug, existing plan, architecture,
+  parallel workstreams.
+- `agent-selection`: main chat vs subagents vs worktrees vs new thread.
+- `incremental-delivery`: block sequencing, acceptance criteria, quality gates.
+- `safety`: git operations, commits, worktrees, destructive commands, multi-repo.
+- `git`: branch and commit workflow.
+- `quality`: checks, commit standards, output hygiene.
+- `pr`: only when `--pr` is present.
+- Domain skills relevant to the repository, language, platform, or finding type.
 
 ## Aggregator Plans And Slice Workflow
 
-Some plans are aggregators: a main plan that tracks the status of multiple
-slices and embeds a slice workflow convention (e.g. a note describing how each
-slice is built, reviewed, and marked complete). When the referenced plan
-exposes such a convention, follow it explicitly instead of improvising:
+Some plans are aggregators: a main plan tracking the status of multiple slices
+with an embedded slice workflow convention. When the referenced plan exposes
+such a convention, follow it explicitly instead of improvising:
 
 1. Build the slice from the correct base branch (per the plan's convention or
    `--base`).
@@ -90,138 +57,77 @@ exposes such a convention, follow it explicitly instead of improvising:
 4. Update the aggregator plan at the end: mark the slice completed, record
    PR/merge references, and make the next slice explicit.
 5. Update consuming skills when the changed surface affects them.
-6. Do not open a PR by default; only with `--pr`.
 
-If the aggregator contains only a stub summary of the slice (no real contract:
-scope, files, acceptance criteria), do not infer the full contract yourself.
-Recommend a prior step with the `plan` skill to expand the stub, or ask the
-user, before building.
+If the aggregator contains only a stub summary of the slice (no scope, files,
+or acceptance criteria), do not infer the full contract yourself. Recommend a
+prior step with the `plan` skill to expand the stub, or ask the user, before
+building.
 
 ## Execution Protocol
 
 ### 1. Intake
 
-Read the source artifacts first. Then inspect enough repository state to know:
+Read the source artifacts, then inspect repository state: current branch, base
+branch, dirty tree, commits ahead of base, project rules, and validation
+commands.
 
-- Current repository and branch
-- Base branch, if known
-- Dirty working tree and staged files
-- Existing commits ahead of base
-- Relevant local project rules, skills, and validation commands
-- Whether referenced plans are local-only inputs or versioned deliverables
+### 2. Worktree
 
-Do not commit ignored files or local-only planning artifacts unless the user
-explicitly requests that and the repository expects them to be versioned.
+Default to the current worktree when safe. Use a separate one only with a
+concrete reason: source branch that must stay read-only, unrelated local
+changes, parallel work, high-risk plan, or `--worktree`.
 
-### 2. Decide Current Worktree vs Separate Worktree
+### 3. Execution Blocks
 
-Use the current worktree by default when it is safe.
+Preserve useful plan blocks; otherwise create independently reviewable and
+testable blocks. For each block define: objective, files/surfaces likely to
+change, in/out of scope, dependencies, relevant skills/subagents, minimum
+validation, commit boundary, and acceptance evidence.
 
-Stay in the current worktree when:
+### 4. Subagents
 
-- The current branch is already an appropriate implementation branch, or a new
-  branch can be created in place before editing.
-- Local changes are clean or clearly part of this work.
-- The plan is not expected to run in parallel with other active work.
-- Tooling limitations make a separate worktree unnecessarily costly.
-
-Use a separate worktree when there is a concrete reason:
-
-- Current branch is a source branch that must remain read-only.
-- Current working tree has unrelated or conflicting local changes.
-- The work should run in parallel with ongoing edits.
-- The plan is high-risk, broad, or likely to need rollback isolation.
-- The user passes `--worktree`.
-
-If the user passes `--no-worktree`, stay in the current worktree unless doing so
-would violate safety rules. Explain the blocker and ask before continuing.
-
-Never implement directly on `main` or `master` unless the user explicitly
-requests that exact behavior. Create or switch to a feature branch first.
-
-### 3. Build The Execution Blocks
-
-If the plan already has useful blocks, preserve them. If not, create blocks that
-are independently reviewable and testable.
-
-For each block, define:
-
-- Objective
-- Files or surfaces likely to change
-- In-scope and out-of-scope work
-- Dependencies
-- Relevant skills/subagents
-- Minimum validation
-- Commit boundary
-- Acceptance evidence
-
-Prefer vertical blocks that produce coherent behavior. Avoid mixing unrelated
-refactors, dependency changes, docs, and feature behavior unless the plan makes
-that coupling necessary.
-
-### 4. Use Subagents Deliberately
-
-Use subagents for bounded work that can return a distilled result:
-
-- Codebase exploration
-- Finding inventory
-- Source validation
-- Architecture or design review
-- Test and validation investigation
-- Independent implementation blocks
-- Final review of a non-trivial diff
-
-Keep the main agent as orchestrator. It owns scope, safety decisions, commit
-boundaries, final synthesis, and user-facing claims.
-
-When delegating, pass a compact context that includes:
-
-- Repository path
-- Branch/worktree path
-- Source artifacts and scope
-- Expected output
-- Sensitive-output restrictions, if any
-- Validation commands or evidence required
-
-Do not use subagents when the task is small and linear.
+Delegate bounded work that returns a distilled result: exploration, finding
+inventory, source validation, design review, test investigation, independent
+implementation blocks, final review of a non-trivial diff. The main agent stays
+orchestrator and owns scope, safety decisions, commit boundaries, and
+user-facing claims. When delegating, pass repository path, branch/worktree
+path, source artifacts and scope, expected output, and validation commands.
 
 ### 5. Implement And Commit Per Block
-
-For each block:
 
 1. Mark the block in progress.
 2. Make focused changes only for that block.
 3. Run targeted validation for the changed surface.
-4. Inspect the diff and exclude unrelated, ignored, sensitive, or local-only files.
+4. Inspect the diff and exclude unrelated, ignored, sensitive, or local-only
+   files.
 5. Commit the block with a conventional commit message.
 6. Record validation evidence and remaining risk.
 
-If `--no-commit` is present, stop after validation with changes left uncommitted.
-If `--single-commit` is present, validate per block but commit only once after the
-final review.
-
-Do not push or open/update a PR unless the user explicitly asks or passes
-`--pr`. With `--pr`, after the final review and plan updates, load the `pr`
-skill and open or update the PR(s) for the completed scope.
-
 ### 6. Final Review And Checks
 
-Before finishing:
-
 - Review the full diff against the requested scope.
-- Run relevant final checks from project rules or package conventions.
-- Use domain-specific review skills or review subagents when their trigger
-  conditions are met.
-- Re-run failed focused checks after fixes.
+- Run final checks from project rules or package conventions; re-run after
+  fixes.
+- Use domain-specific review skills or review subagents when their triggers
+  apply.
 - Verify commits match the intended block boundaries.
-- Check that PR or publication text, if created, does not reference local-only
-  files, ignored files, raw sensitive output, or unpushed artifacts.
+- If a required check cannot run, state why and what evidence remains missing.
 
-If a required check cannot run, state why and what evidence remains missing.
+## Hard Rules
+
+- Never implement directly on `main`/`master` unless explicitly requested;
+  create or switch to a feature branch first.
+- Do not commit ignored files or local-only planning artifacts unless the user
+  asks and the repository versions them.
+- Do not push or open/update a PR without `--pr` or an explicit user ask.
+- Do not expand a slice stub by inference; route through `plan` or the user.
+- With `--single-commit`, validate per block but commit once after final review.
+- PR or publication text must not reference local-only files, ignored files,
+  raw sensitive output, or unpushed artifacts.
 
 ## Output
 
-During execution, keep the user updated at block boundaries. At the end, report:
+Keep the user updated at block boundaries. At the end, report:
 
 - Scope completed
 - Worktree/branch used
@@ -234,5 +140,3 @@ During execution, keep the user updated at block boundaries. At the end, report:
   `--pr`)
 - Files or plan items intentionally not completed
 - Remaining risks or source-platform rescans still pending
-
-Do not over-report raw command output. Summarize the evidence that matters.
