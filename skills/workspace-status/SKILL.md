@@ -8,6 +8,15 @@ description: Multi-repository workspace status overview and analysis. Use when c
 Show git state for every repository in a multi-repo workspace, respecting
 each repo as an independent unit.
 
+## Hard Rules
+
+- Never assume a single git repository in a multi-repo workspace.
+- Always verify which repository a git operation targets before running it.
+- Navigate to the correct repository directory before running git commands.
+- Ask for clarification when workspace structure is unclear.
+- Use non-destructive git commands first (`git stash`, `git log`) to
+  understand the situation.
+
 ## Procedure
 
 1. Identify all git repositories in the workspace (check for `.git` dirs).
@@ -18,12 +27,3 @@ each repo as an independent unit.
    with the applicable rules (e.g. a primary clone inside a reserved worktree
    area). See the `workspace-topology` skill for hierarchical rule resolution.
 4. Highlight cross-repository dependencies or conflicts when found.
-
-## Hard Rules
-
-- Never assume a single git repository in a multi-repo workspace.
-- Always verify which repository a git operation targets before running it.
-- Navigate to the correct repository directory before running git commands.
-- Ask for clarification when workspace structure is unclear.
-- Use non-destructive git commands first (`git stash`, `git log`) to
-  understand the situation.
