@@ -13,89 +13,32 @@ If a question can be answered by exploring the codebase, explore the codebase in
 
 </what-to-do>
 
-<supporting-info>
+## Hard Rules
 
-## Domain awareness
+- `CONTEXT.md` is a glossary and nothing else — totally devoid of implementation details. Never use it as a spec, scratch pad, or decision log.
+- Specs are the default working document for evolving behavior, scenarios, requirements, constraints, open questions, implementation approach, and decision rationale.
+- Offer an ADR only when all three hold: (1) hard to reverse, (2) surprising without context, (3) the result of a real trade-off. Otherwise keep rationale in the spec.
+- Create files lazily — only when you have something to write.
+- Update docs inline as terms/decisions resolve. Don't batch.
 
-During codebase exploration, also look for existing documentation:
-
-### File structure
-
-Most repos have a single context and use specs as the default working documentation:
-
-```
-/
-├── CONTEXT.md
-├── specs/
-│   └── order-cancellation.md
-├── docs/
-│   └── adr/
-│       ├── 0001-event-sourced-orders.md
-│       └── 0002-postgres-for-write-model.md
-└── src/
-```
-
-If a `CONTEXT-MAP.md` exists at the root, the repo has multiple contexts. The map points to where each one lives:
+## Doc locations
 
 ```
 /
-├── CONTEXT-MAP.md
-├── specs/                            ← system-wide specs
-├── docs/
-│   └── adr/                          ← system-wide architectural decisions
-├── src/
-│   ├── ordering/
-│   │   ├── CONTEXT.md
-│   │   ├── specs/                    ← context-specific specs
-│   │   └── docs/adr/                 ← context-specific architectural decisions
-│   └── billing/
-│       ├── CONTEXT.md
-│       ├── specs/
-│       └── docs/adr/
+├── CONTEXT.md                  ← glossary (single-context repos)
+├── CONTEXT-MAP.md              ← if present, multi-context; points to per-context CONTEXT.md/specs/docs/adr
+├── specs/                      ← specs (also common: docs/specs/)
+└── docs/adr/                   ← ADRs
 ```
 
-Prefer the repository's existing spec location. Common locations are `specs/` and `docs/specs/`.
+Prefer the repo's existing spec location. In multi-context repos, context-specific specs and ADRs live under each context directory (e.g. `src/ordering/specs/`, `src/ordering/docs/adr/`); system-wide ones stay at root.
 
-Create files lazily — only when you have something to write. If no `CONTEXT.md` exists, create one when the first term is resolved. If no spec location exists, create `specs/` when the first behavior, requirement, scenario, or implementation plan needs durable capture. If no `docs/adr/` exists, create it only when the first ADR is needed.
+Formats: [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md), [ADR-FORMAT.md](./ADR-FORMAT.md).
 
 ## During the session
 
-### Challenge against the glossary
-
-When the user uses a term that conflicts with the existing language in `CONTEXT.md`, call it out immediately. "Your glossary defines 'cancellation' as X, but you seem to mean Y — which is it?"
-
-### Sharpen fuzzy language
-
-When the user uses vague or overloaded terms, propose a precise canonical term. "You're saying 'account' — do you mean the Customer or the User? Those are different things."
-
-### Discuss concrete scenarios
-
-When domain relationships are being discussed, stress-test them with specific scenarios. Invent scenarios that probe edge cases and force the user to be precise about the boundaries between concepts.
-
-### Cross-reference with code
-
-When the user states how something works, check whether the code agrees. If you find a contradiction, surface it: "Your code cancels entire Orders, but you just said partial cancellation is possible — which is right?"
-
-### Update CONTEXT.md inline
-
-When a term is resolved, update `CONTEXT.md` right there. Don't batch these up — capture them as they happen. Use the format in [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md).
-
-`CONTEXT.md` should be totally devoid of implementation details. Do not treat `CONTEXT.md` as a spec, a scratch pad, or a repository for implementation decisions. It is a glossary and nothing else.
-
-### Use specs as the default working document
-
-Capture evolving behavior, scenarios, requirements, constraints, open questions, implementation approach, and decision rationale in specs. If an active spec exists, update it inline as the conversation resolves details. If no active spec exists and the plan needs durable capture, create or propose a focused spec in the repo's existing spec location.
-
-Specs are the normal place for project decisions that are still being shaped or are primarily about product behavior, workflow, validation, rollout, or implementation details.
-
-### Offer ADRs sparingly
-
-Only offer to create an ADR, in addition to the spec, when all three are true:
-
-1. **Hard to reverse** — the cost of changing your mind later is meaningful
-2. **Surprising without context** — a future reader will wonder "why did they do it this way?"
-3. **The result of a real trade-off** — there were genuine alternatives and you picked one for specific reasons
-
-If any of the three is missing, skip the ADR and keep any useful rationale in the spec. Use the format in [ADR-FORMAT.md](./ADR-FORMAT.md).
-
-</supporting-info>
+- **Challenge against the glossary** — when the user's term conflicts with `CONTEXT.md`, call it out immediately: "Your glossary defines 'cancellation' as X, but you seem to mean Y — which is it?"
+- **Sharpen fuzzy language** — propose a precise canonical term for vague or overloaded words.
+- **Discuss concrete scenarios** — invent edge-case scenarios that force precision about boundaries between concepts.
+- **Cross-reference with code** — when the user states how something works, check the code; surface contradictions.
+- **Update docs inline** — resolved term → `CONTEXT.md` now; resolved behavior/plan → active spec now (create or propose a focused spec if none exists and the plan needs durable capture).
