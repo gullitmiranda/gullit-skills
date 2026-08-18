@@ -7,7 +7,7 @@ description: Safely migrate or rename a project path while preserving Cursor wor
 
 ## Hard Rules
 
-- `~/.cursor/projects/` is local workspace state keyed by path-derived identifiers. Never assume Cursor remaps old state to a new path automatically.
+- `~/.cursor/projects/` is local workspace state keyed by path-derived identifiers. Never assume Cursor remaps old state to a new path automatically — and never tell the user it does.
 - Repo files (`.cursor/plans/`, `.cursor/skills/`, notes) survive path moves; local Cursor state outside the repo does not.
 - Never delete the old project path or old Cursor state until verification is complete. Prefer reversible steps.
 - Do not recommend destructive cleanup as part of the first pass.
@@ -71,3 +71,8 @@ Only after the user confirms the new setup is stable: optionally remove the syml
 1. `move + symlink` — default when preserving local Cursor history matters.
 2. `copy + verify + switch later` — even safer, easy rollback.
 3. `move without symlink` — only when the user accepts the risk of Cursor treating it as a new workspace.
+
+## Response Contract
+
+For any migration plan, report: risk level, what is safe, what may be lost
+without backup, recommended approach, verification steps, and rollback path.
