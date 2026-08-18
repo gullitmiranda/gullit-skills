@@ -8,6 +8,23 @@ description: Verify that file links and path references in published content (PR
 Prevent links and path references in **publishable content** from pointing at
 local-only, gitignored, or unpushed files that a reader cannot access.
 
+## Hard Rules
+
+- These paths NEVER appear as links in publishable content, no verification
+  needed:
+  - `.cursor/plans/` — local-only plan files
+  - `.cursor/skills/` (when not part of the published repo)
+  - `.factory/` — internal research and scratch
+  - `wt-*/` — local git worktrees
+  - `agent-transcripts/` — chat history
+  - `/Users/...` or `~/...` — absolute machine paths
+  - `terminals/` from Cursor projects state
+- If the rough draft references one of these, either remove the link and
+  describe the content inline ("tracked in local plan", "see internal
+  research"), or replace with a public equivalent (a tracked design doc, an
+  issue, etc.).
+- If unsure whether content is publishable, treat it as publishable.
+
 ## When to apply
 
 Apply this skill BEFORE submitting any of:
@@ -31,36 +48,6 @@ Skip for:
   agent and can freely reference local paths.
 - The chat reply itself (the user can resolve any path they see).
 
-## Core principle
-
-Two categories of content with different rules:
-
-| Category              | Examples                                  | Link rule                            |
-| --------------------- | ----------------------------------------- | ------------------------------------ |
-| Agent-private context | `.cursor/plans/*`, `.factory/*`, scratch  | Local paths OK                       |
-| Publishable content   | PR/issue body, comments, docs, Slack/Linear | Every link must resolve for any reader |
-
-If unsure, treat as publishable.
-
-## Always-prohibited path patterns
-
-These paths NEVER appear as links in publishable content, with no verification
-needed:
-
-- `.cursor/plans/` — local-only plan files
-- `.cursor/skills/` (when not part of the published repo)
-- `.factory/` — internal research and scratch
-- `wt-*/` — local git worktrees
-- `agent-transcripts/` — chat history
-- `/Users/...` or `~/...` — absolute machine paths
-- `terminals/` from Cursor projects state
-
-If the rough draft references one of these, either:
-
-1. Remove the link and describe the content inline ("tracked in local plan",
-   "see internal research"), OR
-2. Replace with a public equivalent (a tracked design doc, an issue, etc.)
-
 ## Verification procedure for any other path
 
 For every relative path or filename that appears in the publishable draft, run
@@ -77,7 +64,7 @@ git check-ignore -v <path>
 
 # 3. Is it pushed?
 git log origin/<base-branch>..HEAD -- <path>
-# Empty output = pushed (safe). Any commits listed = local-only changes;
+# Empty output = no unpushed commits touch this path (safe). Any commits listed = local-only changes;
 # either push first or do not link to the unpublished state.
 ```
 

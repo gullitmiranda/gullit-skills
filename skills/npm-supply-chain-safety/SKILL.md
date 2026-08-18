@@ -29,9 +29,15 @@ bypass the Socket check just to keep moving.
 npm install -g @socketregistry/socket
 ```
 
-### 2. Check publish age before installing (minimum-release-age guard)
+### 2. Enforce minimum publish age (native config first)
 
-Before updating to any new version, run:
+The project's package manager config is the primary mechanism — verify it is
+configured (see "Minimum-release-age guard — native package manager config"
+below); if missing, add it. The native gate blocks too-new packages at install
+time with no manual step.
+
+Use the script only as a fallback: projects on package managers without support
+(e.g. npm 10), or a one-off manual check outside the install flow:
 ```bash
 ~/.agents/skills/npm-supply-chain-safety/scripts/check-pkg-age.sh <pkg> <version>
 ```
@@ -93,9 +99,9 @@ npm token list   # look for: "IfYouRevokeThisTokenItWillWipeTheComputerOfTheOwne
 
 ## Compromised package versions (Mini Shai-Hulud, 2026-05-11)
 
-For full list see: https://www.stepsecurity.io/blog/mini-shai-hulud-is-back-a-self-spreading-supply-chain-attack-hits-the-npm-ecosystem
+Source of truth (full list): https://www.stepsecurity.io/blog/mini-shai-hulud-is-back-a-self-spreading-supply-chain-attack-hits-the-npm-ecosystem
 
-Key packages to watch (versions that were compromised):
+Key compromised versions:
 - `@tanstack/react-router`: 1.169.5, 1.169.8
 - `@tanstack/router-core`: 1.169.5, 1.169.8
 - `@tanstack/router-plugin`: 1.167.38, 1.167.41
@@ -104,11 +110,9 @@ Key packages to watch (versions that were compromised):
 - `@opensearch-project/opensearch`: 3.6.2
 - `safe-action`: 0.8.3, 0.8.4
 
-Use the StepSecurity advisory above as the source of truth for the full list.
-
 ## Minimum-release-age guard — native package manager config
 
-All major package managers now support this natively. **When working on a project, verify it has this configured. If not, add it.**
+**When working on a project, verify it has this configured. If not, add it.**
 
 ### pnpm ≥ 10.16 (`pnpm-workspace.yaml` or `.npmrc`)
 ```yaml
@@ -142,8 +146,3 @@ minimumReleaseAge = "72h"
 | Development machine | 24h |
 | CI | 72h |
 | Production deploys | 7 days |
-
-For manual checks or projects on npm 10, use the bundled script:
-```bash
-~/.agents/skills/npm-supply-chain-safety/scripts/check-pkg-age.sh <pkg> <version>
-```

@@ -5,50 +5,29 @@ description: Persists agent constraints (what not to do) in the project's canoni
 
 # Persist Agent Constraints
 
-When the user states **constraints** (prohibitions, restrictions, things to avoid),
-persist them in the most relevant file so future sessions respect them.
+When the user states **constraints** (prohibitions, restrictions, things to avoid — including corrections like "stop doing X"), persist them in the most relevant file so future sessions respect them.
 
-## When to Apply
+## Hard Rules
 
-Apply when the user:
-
-- Says what **not** to do (e.g. "nao faca X", "don't do Y", "never Z")
-- Adds **restrictions** or **prohibitions** (e.g. "evite", "avoid", "nao quero que", "proibido")
-- Corrects behavior by stating what to **avoid** or **stop doing**
+- **One concern per bullet**: split long constraints into separate bullets.
+- **No duplication**: scan the section and related sections before adding; refine an equivalent existing rule instead of duplicating.
+- **Preserve file structure**: only add/update; do not remove or reorganize other sections.
+- **Character hygiene**: no gremlin/control characters in written text.
 
 ## Workflow
 
-1. **Parse** the constraint into one or more short, clear bullet lines (imperative).
-
+1. **Parse** the constraint into one or more short, clear imperative bullet lines.
 2. **Smart-route using the learn skill's logic** (see `learn/SKILL.md` Step 3):
-   - Identify the constraint's topic (git, safety, quality, k8s, etc.)
-   - Find the existing file that covers that topic
-   - Route to that file's constraints/safety section
-
-   Common routing examples:
-   - "don't push to main" -> `safety/SKILL.md` under Git Safety
-   - "don't use kubectl delete" -> `k8s/SKILL.md` or `safety/SKILL.md`
-   - "don't add emojis" -> `quality/SKILL.md` under Output hygiene
-   - "don't auto-commit" -> `safety/SKILL.md` under Absolute Rules
-
-   If no topical file matches, fall back to `AGENTS.md` (project scope)
-   or the constraint's appropriate scope target per learn skill rules.
-
+   - Identify the constraint's topic (git, safety, quality, k8s, etc.), find the existing file that covers that topic, route to that file's constraints/safety section.
+   - Examples: "don't push to main" -> `safety/SKILL.md` under Git Safety; "don't use kubectl delete" -> `k8s/SKILL.md` or `safety/SKILL.md`; "don't add emojis" -> `quality/SKILL.md` under Output hygiene; "don't auto-commit" -> `safety/SKILL.md` under Absolute Rules.
+   - If no topical file matches, fall back to `AGENTS.md` (project scope) or the appropriate scope target per learn skill rules.
 3. **Add or update the constraints section** in the target file:
-   - Use `## Constraints` or `## Don't / Avoid` as section heading (or the file's existing equivalent like `## Absolute Rules`, `## Safety Checks`)
-   - If the target file already has a section where constraints naturally fit (e.g., safety rules, prohibited operations), add there instead of creating a new section
-   - One bullet per constraint, concise and actionable
-   - De-duplicate: if an equivalent rule already exists, refine instead of duplicating
-
-4. **Cross-tool sync**: If the project has multiple instruction formats
-   (`.claude/skills/`, `.cursor/skills/`, `AGENTS.md`), update all that exist.
-   See learn skill Step 5.
-
-5. **Confirm**: Report what was added, where (exact path and section).
+   - Use `## Constraints` or `## Don't / Avoid`, or the file's existing equivalent (`## Absolute Rules`, `## Safety Checks`). If constraints naturally fit an existing section, add there instead of creating a new one.
+   - Match the language and heading style of the rest of the target file.
+4. **Cross-tool sync**: if the project has multiple instruction formats (`.claude/skills/`, `.cursor/skills/`, `AGENTS.md`), update all that exist. See learn skill Step 5.
+5. **Confirm**: report what was added, where (exact path and section).
 
 ## Section Format
-
-When creating a new constraints section:
 
 ```markdown
 ## Constraints
@@ -57,12 +36,3 @@ When creating a new constraints section:
 - Do not use Linear for this project (use GitHub Issues)
 - Do not add timelines or cronograms to plans
 ```
-
-Match the language and heading style of the rest of the target file.
-
-## Rules
-
-- **One concern per bullet**: Split long constraints into separate bullets
-- **No duplication**: Scan the section and related sections before adding
-- **Preserve file structure**: Only add/update; do not remove or reorganize other sections
-- **Character hygiene**: No gremlin/control characters in written text

@@ -8,12 +8,8 @@ description: Remove AI slop from code comments, docs, and generated text. Use wh
 Remove AI slop: comments that restate code, sycophantic or filler prose,
 buzzwords, decorative emoji, excessive emphasis. You know what slop looks like.
 
-## Procedure
-
-1. **Scope**: paths or diff from the user; otherwise the current working diff.
-2. **Edit surgically**: delete noise, rewrite verbose prose to its shortest
-   accurate form. Match surrounding style. Do not reformat or refactor.
-3. **Report**: what was removed/rewritten per file. If nothing was slop, say so.
+This skill is corrective — it cleans existing output. `quality` governs what
+you generate in the first place; `gremlin-clean` strips invisible Unicode.
 
 ## Hard Rules
 
@@ -21,3 +17,10 @@ buzzwords, decorative emoji, excessive emphasis. You know what slop looks like.
   context, or comments explaining *why* (constraints, workarounds, ticket refs).
 - Never change code behavior. Comments and prose only.
 - In doubt whether a comment carries information? Keep it and flag it.
+
+## Procedure
+
+1. **Scope**: paths or diff from the user; otherwise the current working diff.
+2. **Edit surgically**: delete noise, rewrite verbose prose to its shortest
+   accurate form. Match surrounding style. Do not reformat or refactor.
+3. **Report**: what was removed/rewritten per file. If nothing was slop, say so.
