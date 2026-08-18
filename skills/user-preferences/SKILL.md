@@ -22,6 +22,7 @@ Exception: during migrations, adapters and conversion shims between old and new 
 ## Tool defaults
 
 - When the user mentions "skill", default to creating/editing in `.claude/skills/` instead of `.cursor/rules/`, unless explicitly instructed otherwise.
+- Never create or edit files via shell heredocs (`cat > file << 'EOF'`, `echo > file`). Always use the platform's file tools (`write_file`/`edit_file`, `Write`/`Edit`, etc.). Shell heredocs bypass diff review, checkpoint tracking, and path validation, and are fragile with special characters. Exception: bulk scaffolding of many files, or piping output from another command.
 
 ## Shell environment (Cursor IDE)
 
