@@ -64,7 +64,7 @@ git check-ignore -v <path>
 
 # 3. Is it pushed?
 git log origin/<base-branch>..HEAD -- <path>
-# Empty output = pushed (safe). Any commits listed = local-only changes;
+# Empty output = no unpushed commits touch this path (safe). Any commits listed = local-only changes;
 # either push first or do not link to the unpublished state.
 ```
 
