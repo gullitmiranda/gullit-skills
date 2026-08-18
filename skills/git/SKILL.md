@@ -29,7 +29,7 @@ When the repository has Trunk configured (`.trunk/trunk.yaml` exists), agent-dri
    - `trunk fmt --ci --upstream HEAD --no-progress </dev/null`
    - `trunk check --ci --upstream HEAD --no-progress </dev/null`
    The `--ci` flag makes Trunk fail fast instead of prompting `Continue anyway? (Y/n)` — an interactive prompt in a non-interactive terminal hangs the commit indefinitely.
-2. **Commit with stdin closed and a timeout**: append `</dev/null` to `git commit` and set `timeout_ms`. The Trunk hook saves stdin via `cat`, which waits forever for EOF in agent pseudo-terminals. If the commit hangs, the hook is waiting for input — never leave it hanging.
+2. **Every `git commit` runs with stdin closed and a timeout** (`</dev/null` + `timeout_ms`), trunk or not — zero cost when healthy, and it prevents the pathological hang: hook stdin saved via `cat` waits forever for EOF in agent pseudo-terminals. If a commit hangs, a hook is waiting for input — never leave it hanging.
 3. **Escape hatch: `--no-verify`** when the hook still blocks after a clean `trunk check`. Always declare it explicitly in the response ("committed with `--no-verify` because …") — a visible bypass, never a silent one. Do not use `trunk daemon shutdown` as a commit workaround.
 
 ## Safety Checks
