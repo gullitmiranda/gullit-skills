@@ -89,11 +89,11 @@ echo "Age:       ${AGE_DAYS}d ${AGE_HOURS}h"
 
 if [[ "$AGE_HOURS" -lt 24 ]]; then
   echo -e "Risk:      ${RED}${BOLD}HIGH${NC} — published less than 24h ago"
-  echo "Action:    DO NOT install. Wait at least 24-72h and verify with: socket npm install ${PKG}@${VERSION}"
+  echo "Action:    DO NOT install. Wait at least 24-72h and verify with: sfw pnpm add ${PKG}@${VERSION}"
   exit 2
 elif [[ "$AGE_DAYS" -lt 7 ]]; then
   echo -e "Risk:      ${YELLOW}${BOLD}MEDIUM${NC} — published less than 7 days ago"
-  echo "Action:    Run socket check first: socket npm install ${PKG}@${VERSION}"
+  echo "Action:    Install through the firewall: sfw pnpm add ${PKG}@${VERSION}"
   exit 1
 else
   echo -e "Risk:      ${GREEN}${BOLD}LOW${NC} — ${AGE_DAYS} days old"
