@@ -43,7 +43,8 @@ Use these to implement changes with tight feedback loops.
 - `tdd` from `mattpocock/skills`: implement one behavior at a time with red-green-refactor.
 - `diagnose` from `mattpocock/skills`: debug with a reproducible feedback loop before hypothesizing.
 - `quality`: apply code, documentation, testing, performance, and security standards.
-- `npm-supply-chain-safety`: protect JS dependency installs and changes (sfw-wrapped installs, mise for global CLIs, minimum-release-age, IOC checks).
+- `supply-chain-safety`: universal rules for installing packages or global CLIs in any ecosystem (sfw-wrapped installs, mise for globals, minimum-release-age, pre-install inspection).
+- `js-supply-chain-safety`: JS-specific extension — PM detection, native release-age configs, forbidden package.json patterns, npm worm IOCs.
 - `trunk-safety`: protect Trunk setup and upgrades.
 
 ### Architecture
