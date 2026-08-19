@@ -1,35 +1,72 @@
 ---
 name: npm-supply-chain-safety
 description: >-
-  Safe npm dependency management to prevent supply chain attacks (e.g.
+  Safe JS dependency management to prevent supply chain attacks (e.g.
   Mini Shai-Hulud / TeamPCP worm). Use ALWAYS when adding, updating, or
-  installing npm packages; editing package.json dependencies; or running
-  npm install/update. Enforces socket CLI usage, minimum-release-age
-  checks, and detects known IOC patterns.
+  installing JS packages; editing package.json dependencies; running
+  npm/pnpm/bun/yarn install/update; or installing global CLI tools.
+  Enforces sfw (Socket Firewall) wrapping, mise for global installs,
+  minimum-release-age checks, and detects known IOC patterns.
 ---
 
-# npm Supply Chain Safety
+# JS Supply Chain Safety
 
 ## Mandatory rules
 
-### 1. Never run `npm install` directly
+### 1. Global CLI tools: install via mise, never `npm install -g`
 
-Always prefer `socket npm install` — it performs static analysis before any package touches disk:
-
+Global npm installs run postinstall scripts with your global tokens and leave no
+versioned trace. Install global CLIs via mise instead — versioned, reproducible,
+and tracked in `~/.config/mise/config.toml`:
 ```bash
-socket npm install              # drop-in replacement
-socket npm install <pkg>@<ver>  # adding/updating a dep
+mise use -g npm:<pkg>   # e.g. mise use -g npm:sfw
 ```
 
-`npm ci` is the only safe exception (uses lockfile exactly, no network resolution).
+Only exception: a tool that cannot install through mise (e.g. aube peer-dep
+resolution bugs) — then use `sfw npm install -g <pkg>` and leave a comment in
+the mise config explaining why.
 
-If `socket` is not installed, stop and ask the user to install it first. Do not
-bypass the Socket check just to keep moving.
+### 2. Project installs: `sfw <pm>`, defaulting to pnpm
+
+Never run bare `npm install` / `pnpm add` / `yarn add` — wrap with `sfw`
+(Socket Firewall), which filters package downloads at the network layer before
+any package touches disk (no API key needed):
+
 ```bash
-npm install -g @socketregistry/socket
+sfw pnpm install              # drop-in replacement
+sfw pnpm add <pkg>@<ver>      # adding/updating a dep
+sfw npm install               # when npm is the repo's PM
+sfw bun install               # when bun is the repo's PM
 ```
 
-### 2. Enforce minimum publish age (native config first)
+On guma's machine, `npm`/`pnpm` resolve to sfw wrappers from the dotfiles repo
+(`tools/mise/bin/`, symlinked into `~/.local/bin`) — bare `pnpm install` is safe
+there, and explicit `sfw pnpm install` does not double-wrap (the wrappers guard
+via `SFW_ACTIVE`). Explicit `sfw` matters in contexts without the wrappers: CI,
+containers, other machines.
+
+Choose the package manager in this order:
+1. `packageManager` field in `package.json`
+2. Existing lockfile (`pnpm-lock.yaml`, `package-lock.json`, `yarn.lock`, `bun.lock`)
+3. Default: `pnpm`
+
+When picking pnpm for a repo with no PM signal, suggest recording the choice
+(`"packageManager": "pnpm@x.y.z"`) so CI and teammates resolve the same PM.
+
+Local, non-resolving commands run directly: `pnpm run build`, `pnpm test`,
+`pnpm exec ...`.
+
+`npm ci` / `pnpm install --frozen-lockfile` / `bun install --frozen-lockfile`
+are the preferred CI mode (lockfile-exact, no version resolution) — still wrap
+with sfw when outside guma's machine, since fetches happen through the firewall.
+
+If `sfw` is not installed, stop and ask the user to install it first. Do not
+bypass the check just to keep moving.
+```bash
+mise use -g npm:sfw   # guma's machine
+```
+
+### 3. Enforce minimum publish age (native config first)
 
 The project's package manager config is the primary mechanism — verify it is
 configured (see "Minimum-release-age guard — native package manager config"
@@ -46,10 +83,10 @@ Risk thresholds:
 | Age | Risk | Action |
 |-----|------|--------|
 | < 24h | HIGH | Block — do not install |
-| < 7 days | MEDIUM | Warn user, verify with `socket` first |
+| < 7 days | MEDIUM | Warn user, verify with `sfw` first |
 | >= 7 days | LOW | Proceed normally |
 
-### 3. Inspect before installing any new or updated package
+### 4. Inspect before installing any new or updated package
 
 ```bash
 npm view <pkg>@<ver> dist.unpackedSize dist.integrity time
@@ -60,7 +97,7 @@ Red flags that warrant aborting:
 - `optionalDependencies` contains a `github:user/repo#commit-hash` URL
 - `prepare` or `postinstall` script runs an obfuscated `.js` file via Bun
 
-### 4. Pin exact versions in package.json
+### 5. Pin exact versions in package.json
 
 No `^` or `~` for direct dependencies:
 ```json
