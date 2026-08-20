@@ -11,6 +11,8 @@ Not an implementation step by default.
 ## Hard Rules
 
 - Do not implement during intake unless explicitly asked.
+- Do not move, promote, commit, or otherwise mutate a plan artifact during intake.
+- Read `.agents/AGENTS.md` before selecting `plan` or `build-plan` when it exists; it is authoritative for plan location, format, lifecycle, and versioning.
 - Do not claim checks, tests, PR status, or branch state unless verified.
 - Keep recommendations grounded in inspected evidence.
 - Do not assume the current tool can launch another agent; provide a ready-to-paste prompt when manual handoff is needed.
@@ -33,9 +35,19 @@ When autonomous is appropriate, recommend the most autonomous viable runtime plu
 
 Accept any combination of: handoff document, plan/PRD, issue/PR, project docs, current workspace state, branch/worktree, local changes, conversation context, user goal. If no explicit artifact is provided, inspect the current workspace enough to recommend the next step; prefer fast, read-only inspection first.
 
+## Plan Authority
+
+For every potential plan input, inspect the repository standard before interpreting the artifact. Record the source path, governing authority, and one type:
+
+- `tracked`: a lifecycle artifact in the authority's tracked plan tree; record its lifecycle state and parent.
+- `local`: a `.cursor/plans/` or repository-declared scratch draft; it can inform work but remains local and unchanged.
+- `non-plan`: a handoff, issue, PR, chat context, or other input with no plan lifecycle.
+
+Also record whether durable tracking is needed, whether the execution contract is ready, and the next route. Route an explicit implementation request for a tracked, executable plan to `build-plan`; route a stub to `plan` or the user. A local draft may support an independently executable request, but must never be promoted or synchronized implicitly.
+
 ## Process
 
-1. Identify source context: read provided artifacts; inspect repo, branch, worktree, and local changes when relevant. Treat missing evidence as uncertainty, not proof.
+1. Identify source context: read provided artifacts; inspect the repo, branch, worktree, and local changes when relevant. For a potential plan, read `.agents/AGENTS.md` first and produce its Plan Authority classification. Treat missing evidence as uncertainty, not proof.
 2. Identify active workstreams (feature, bug, architecture, cleanup, open questions); mark each active, blocked, done, stale, or needs-user-decision.
 3. Choose the workflow via `engineering-workflow`; use external workflow skills only when installed. Detect by checking the session's available-skills list or the skill directories (`~/.agents/skills/`, `~/.cursor/skills/`).
 4. Choose execution mode via `agent-selection` (continue here, subagent, fork/new thread, Zed, or terminal/ACP/Pi-style agent); prefer autonomous implementation when ready and safe, collaborative discovery when questions remain.
