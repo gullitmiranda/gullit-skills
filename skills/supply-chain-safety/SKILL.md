@@ -5,57 +5,33 @@ description: >-
   tools in ANY ecosystem (npm, pip, cargo, go, gem). Use ALWAYS when installing
   or updating packages, or installing global CLI tools. Enforces sfw (Socket
   Firewall) wrapping, mise for global installs, minimum-release-age, and
-  pre-install inspection. For JS-specific package manager rules, see
-  js-supply-chain-safety.
+  pre-install inspection.
 ---
 
-# Supply Chain Safety (universal)
+# Supply Chain Safety
 
-Principles that apply to any package ecosystem. Ecosystem-specific skills
-(e.g. `js-supply-chain-safety`) extend this one — when both apply, follow both.
+Universal rules for installing packages in any ecosystem.
 
-## Mandatory rules
+## Hard Rules
 
-### 1. Every package install goes through sfw
+- Always prefix install/update commands with `sfw` (Socket Firewall), in every
+  context: `sfw <pm> install`. If `sfw` is unavailable, stop and ask the user
+  to install it — never bypass to keep moving.
+- Global CLI tools: prefer `mise use -g <backend>:<pkg>` (npm:, pipx:, cargo:,
+  go:, gem:). If mise fails (e.g. resolver bugs), fall back to
+  `sfw <pm> install -g <pkg>` AND keep the tool as a commented line in
+  `~/.config/mise/config.toml` explaining why — the config stays the central
+  inventory either way.
+- Pin exact versions for direct dependencies. No floating ranges (`^`, `~`,
+  `>=`) in any manifest.
+- Abort and report when: the artifact is anomalously large vs. the previous
+  version, an install/build hook runs obfuscated code, or dependencies point
+  outside the official registry (git URLs, direct tarballs).
 
-`sfw` (Socket Firewall) filters package downloads at the network layer before
-anything touches disk — no API key needed, wraps any tool that fetches over
-HTTP:
+## Minimum release age
 
-```bash
-sfw <pm> install           # e.g. sfw pnpm install, sfw pip install -r reqs.txt
-```
-
-On guma's machine, common PMs already resolve to sfw wrappers from the dotfiles
-repo (`tools/mise/bin/`, symlinked into `~/.local/bin`) — bare `pnpm install`
-is safe there, and explicit `sfw <pm> install` does not double-wrap (guarded
-via `SFW_ACTIVE`). Explicit `sfw` matters in contexts without the wrappers:
-CI, containers, other machines.
-
-If `sfw` is not available in the context, stop and ask the user to install it
-first. Do not bypass the firewall just to keep moving.
-```bash
-mise use -g npm:sfw   # guma's machine
-```
-
-### 2. Global CLI tools: prefer mise, fallback is first-class
-
-Prefer mise so globals are versioned and reproducible:
-```bash
-mise use -g <backend>:<pkg>   # npm:, pipx:, cargo:, go:, gem:
-```
-
-Fallback is a normal path, not a shameful exception: if mise fails (e.g. aube
-resolver bugs on complex peer-dep graphs), install with
-`sfw <pm> install -g <pkg>` AND keep the tool listed in
-`~/.config/mise/config.toml` as a commented line explaining why it is
-installed manually. The config stays the central inventory either way.
-
-### 3. Minimum release age
-
-Fresh releases are the highest-risk window for hijacked packages. Enforce a
-minimum publish age using the ecosystem's native mechanism when one exists
-(see ecosystem skills); where none exists, rely on sfw plus manual inspection.
+Enforce a minimum publish age via the ecosystem's native mechanism when one
+exists; where none exists, rely on sfw plus manual inspection.
 
 | Context | Age |
 |---|---|
@@ -63,21 +39,8 @@ minimum publish age using the ecosystem's native mechanism when one exists
 | CI | 72h |
 | Production deploys | 7 days |
 
-### 4. Inspect before installing any new or updated package
+## Pre-install inspection
 
-Whatever the ecosystem, check before install: the package's release date,
-artifact size vs. the previous version, install/build scripts it will run,
-and whether dependencies come from the official registry (not git URLs or
-direct tarball links).
-
-Abort and report when the artifact is anomalously large, an install hook runs
-obfuscated code, or dependencies point outside the official registry.
-
-### 5. Pin exact versions for direct dependencies
-
-No floating ranges (`^`, `~`, `>=`) for direct dependencies in any manifest.
-
-## Ecosystem-specific skills
-
-- `js-supply-chain-safety` — npm/pnpm/yarn/bun: PM detection, native
-  release-age configs, package.json forbidden patterns, npm worm IOCs.
+Before installing any new or updated package, check: release date, artifact
+size vs. previous version, install/build scripts it will run, and whether all
+dependencies come from the official registry.
