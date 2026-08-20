@@ -24,6 +24,9 @@ description: >-
   files.
 - Red flags that abort an install: artifact 3x+ larger than the previous
   version; `optionalDependencies` with git URLs; obfuscated install scripts.
+- Provenance is not authorization: packages with valid SLSA/OIDC trusted
+  publishing can still be malicious (ChainDrop, Aug 2026). Do not treat
+  provenance as a safety signal.
 
 ## Minimum publish age
 
@@ -49,5 +52,5 @@ npm view <pkg>@<ver> dist.unpackedSize dist.integrity time
 
 ## Worm IOCs
 
-When compromise is suspected, check the artifacts and compromised versions in
-`references/npm-worm-iocs.md`.
+When compromise is suspected, check the worm-family artifacts and response
+playbook in `references/worm-iocs.md`.
