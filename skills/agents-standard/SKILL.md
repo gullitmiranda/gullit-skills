@@ -11,6 +11,7 @@ A structure for agent working artifacts: plans with lifecycle, decision notes, s
 
 - `.agents/AGENTS.md` in the repo is the authority when it exists — defer to it over this skill.
 - Never migrate legacy content without explicit user approval.
+- Treat `.cursor/plans/` and repository-declared scratch paths as local inputs: never move, promote, commit, or synchronize them implicitly.
 - Never commit anything under a `scratch/` path.
 - No empty placeholder folders or `.gitkeep` — folders appear with their first artifact.
 - `archived/` content is frozen: never edit.
@@ -35,4 +36,10 @@ Apply the standard verbally, without creating structure:
 
 ## Working in a repo with the standard
 
-Read `.agents/AGENTS.md` first. Key mechanics: artifact type by suffix; lifecycle by folder with matching `Status:`; ephemeral tasks in `plans/scratch/`; promotion is moving the file; parent linkage via `parent:` frontmatter; when a slice closes, update the parent mission in the same change.
+Read `.agents/AGENTS.md` first. It defines the artifact types, lifecycle, tracking, and local-draft boundaries for that repository.
+
+Before implementation, classify each input as a tracked lifecycle artifact, local draft or scratch, or non-plan input. Local material may inform execution but stays unchanged unless the user explicitly directs a promotion.
+
+For an explicit request to implement a tracked executable plan, prepare the branch or worktree before changing `proposed` to `active`. Do not infer the contract of a tracked slice stub; return to planning or ask the user.
+
+Close an `active` tracked slice only after its implementation is committed, validated, and reviewed. Move it to `implemented` with a matching `Status:` line and update its parent mission in the same change. `implemented` does not require a PR, merge, or release; record those references only when known. With `--no-commit`, leave the tracked plan `active` and report that closure remains pending.
