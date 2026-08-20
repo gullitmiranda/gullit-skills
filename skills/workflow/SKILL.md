@@ -1,6 +1,6 @@
 ---
 name: workflow
-description: Language, terminal, workspace, branch, commit, PR, planning, and documentation workflow rules. Use when writing in English, committing, creating PRs, or creating plans in .cursor/plans/.
+description: Language, terminal, workspace, branch, commit, PR, planning, and documentation workflow rules. Use when writing in English, committing, creating PRs, or creating and updating plans.
 ---
 
 # Workflow Rules
@@ -11,7 +11,9 @@ Workflow rules for language, git, plans, and documentation in this workspace.
 
 - Only commit when explicitly requested; never commit unstaged changes without explicit request.
 - Never commit directly to main/master; all main branch changes go through PRs.
-- NEVER commit files under `.cursor/plans/` — local-only and gitignored; committing them breaks the user's setup.
+- Read `.agents/AGENTS.md` before creating or updating a plan when it exists; it controls plan location, format, lifecycle, and versioning.
+- NEVER commit files under `.cursor/plans/` — they are local-only drafts and gitignored.
+- Never move, promote, commit, or synchronize `.cursor/plans/` or repository-declared scratch artifacts implicitly.
 - NEVER include timelines, schedules, cronograms, or time estimates in plans.
 - With Trunk hooks, run the final `git commit` with stdin closed (`</dev/null`) so the hook cannot hang on EOF. If still stuck or reporting daemon/GRPC errors, run `trunk daemon shutdown` once, then retry.
 
@@ -33,7 +35,9 @@ Workflow rules for language, git, plans, and documentation in this workspace.
 ## Plans
 
 - Unless explicitly asked otherwise, switch to Plan mode before creating or updating plan files so the originating chat is referenced.
-- Save plans in `.cursor/plans/` with a `.plan.md` extension (e.g. `descriptive-name.plan.md`), using the native Cursor plan structure: `## Objective`, `## Tasks`, `## Dependencies`, `## Acceptance Criteria`, `## Notes`.
+- First apply `.agents/AGENTS.md` when present. Its plan location, format, lifecycle, and tracking rules override this runtime fallback.
+- Only when no repository standard exists, save Cursor plans in `.cursor/plans/` with a `.plan.md` extension (for example, `descriptive-name.plan.md`) using `## Objective`, `## Tasks`, `## Dependencies`, `## Acceptance Criteria`, and `## Notes`.
+- `.cursor/plans/` and `.agents/plans/` are never synchronized. A local draft can be input, not an implicit tracked-plan change.
 - Focus on what needs to be done, never when.
 
 ## Documentation

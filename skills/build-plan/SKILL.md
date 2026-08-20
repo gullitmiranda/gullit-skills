@@ -14,19 +14,25 @@ validation.
 
 - Never implement directly on `main`/`master` unless explicitly requested;
   create or switch to a feature branch first.
+- Before implementation, classify the source as a tracked lifecycle artifact, local draft or scratch, or non-plan input. When `.agents/AGENTS.md` exists, it controls plan location, format, lifecycle, and versioning.
+- Do not move, promote, commit, or synchronize `.cursor/plans/` or repository-declared scratch artifacts implicitly.
 - Do not commit ignored files or local-only planning artifacts unless the user
   asks and the repository versions them.
 - Do not push or open/update a PR without `--pr` or an explicit user ask.
+- Prepare the branch or worktree before moving a tracked executable plan from `proposed` to `active`; make that transition only for an explicit implementation request.
 - Do not expand a slice stub by inference; route through `plan` or the user.
 - With `--single-commit`, validate per block but commit once after final review.
+- With `--no-commit`, leave a tracked plan in `active` and report that lifecycle closure remains pending.
 - PR or publication text must not reference local-only files, ignored files,
   raw sensitive output, or unpushed artifacts.
 
 ## Invocation Model
 
 Accept natural language and referenced/attached files, issues, PRs, handoffs,
-and chat context as source artifacts. Infer a primary plan and scope from the
-user's wording; ask only when ambiguity blocks safe execution.
+and chat context as source artifacts. Classify each potential plan before using
+it: record its source, type, lifecycle state, parent, execution readiness, and
+next route. Infer scope only from an executable artifact or explicit user
+wording; ask when ambiguity blocks safe execution.
 
 ## Options
 
@@ -46,6 +52,7 @@ user's wording; ask only when ambiguity blocks safe execution.
 Compose with, do not duplicate:
 
 - `workflow-intake`: resuming from plans, handoffs, issues, unclear next steps.
+- `agents-standard`: repository plan authority, lifecycle, and local-draft boundaries.
 - `engineering-workflow`: classify feature, bug, existing plan, architecture,
   parallel workstreams.
 - `agent-selection`: main chat vs subagents vs worktrees vs new thread.
@@ -66,9 +73,12 @@ such a convention, follow it explicitly instead of improvising:
    `--base`).
 2. Run validation for the slice.
 3. Open a review loop with review agents and the user.
-4. Update the aggregator plan at the end: mark the slice completed, record
-   PR/merge references, and make the next slice explicit.
-5. Update consuming skills when the changed surface affects them.
+4. For a tracked slice, close it only after implementation is committed,
+   validated, and reviewed: move `active` to `implemented` and update its
+   parent mission in the same change. `implemented` does not require a PR,
+   merge, or release.
+5. Record PR or merge references only when known, make the next slice explicit,
+   and update consuming skills when the changed surface affects them.
 
 If the aggregator contains only a stub summary of the slice (no scope, files,
 or acceptance criteria), do not infer the full contract yourself. Recommend a
@@ -81,13 +91,21 @@ building.
 
 Read the source artifacts, then inspect repository state: current branch, base
 branch, dirty tree, commits ahead of base, project rules, and validation
-commands.
+commands. When `.agents/AGENTS.md` exists, read it before applying runtime
+fallbacks and record Plan Authority: source, type (`tracked`, `local`, or
+`non-plan`), lifecycle, parent, execution readiness, and next route.
 
-### 2. Worktree
+### 2. Worktree And Start
 
-Default to the current worktree when safe. Use a separate one only with a
-concrete reason: source branch that must stay read-only, unrelated local
-changes, parallel work, high-risk plan, or `--worktree`.
+Prepare the selected branch or worktree before changing a tracked plan. Default
+to the current worktree when safe; use a separate one for a read-only source
+branch, unrelated local changes, parallel work, a high-risk plan, or
+`--worktree`.
+
+For an explicit request to implement a tracked, executable `proposed` plan,
+then move it to `active` and update its matching `Status:` line. Leave local
+drafts and scratch untouched. If a tracked slice is only a stub, return to
+planning rather than infer its contract.
 
 ### 3. Execution Blocks
 
@@ -112,7 +130,7 @@ path, source artifacts and scope, expected output, and validation commands.
 3. Run targeted validation for the changed surface.
 4. Inspect the diff and exclude unrelated, ignored, sensitive, or local-only
    files.
-5. Commit the block with a conventional commit message.
+5. Commit the block with a conventional commit message, unless `--no-commit` is set.
 6. Record validation evidence and remaining risk.
 
 ### 6. Final Review And Checks
@@ -125,17 +143,29 @@ path, source artifacts and scope, expected output, and validation commands.
 - Verify commits match the intended block boundaries.
 - If a required check cannot run, state why and what evidence remains missing.
 
+### 7. Plan Closure
+
+Close a tracked `active` slice only after its implementation is committed,
+validated, and reviewed. Move it to `implemented`, update its matching
+`Status:` line, and update the parent mission in the same change. `implemented`
+does not require a PR, merge, or release; PR and merge references are optional
+evidence when known. With `--no-commit`, keep the plan `active` and report the
+pending closure.
+
 ## Output
 
 Keep the user updated at block boundaries. At the end, report:
 
 - Scope completed
+- Plan Authority: source, type, lifecycle, parent, readiness, and next route
 - Worktree/branch used
 - Commits created, grouped by block
 - Validation commands and outcomes
 - Reviews performed (agents and user loop, when applicable)
-- Plan and consuming-skill updates made (for aggregator plans: slice status,
-  PR/merge refs, next slice)
+- Plan and consuming-skill updates made (including a tracked slice's parent
+  mission update and any optional known PR/merge evidence)
+- Whether tracked-plan closure is complete or pending (always pending with
+  `--no-commit`)
 - Whether a PR was created or intentionally left pending (default without
   `--pr`)
 - Files or plan items intentionally not completed
