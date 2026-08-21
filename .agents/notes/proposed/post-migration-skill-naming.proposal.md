@@ -1,11 +1,11 @@
 # Post-migration skill naming review
 
-Revisit the public names `work-plan` and `build-plan` only after source-home migration is complete and installed skills have been safely reconciled.
+Revisit the public names `work-plan` and `build-plan` only after the target source-home tree is installed by the rewritten CLI.
 
 ## Prerequisites
 
-- The installer supports migration of existing source paths, renames, retirements, and declared dependencies.
-- The target source-home tree has been applied without breaking existing installations.
+- The rewritten installer supports the target source-home tree and declared dependencies.
+- Skills can be reinstalled from a clean state after the CLI rewrite.
 - Supported runtime behavior has been verified in the environments that will expose the skills.
 
 ## Decision to make
