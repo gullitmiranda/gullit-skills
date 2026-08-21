@@ -12,10 +12,6 @@ mechanical, or primarily validated by commands.
 - Work that should not pollute an IDE conversation.
 - Isolated execution in a dedicated branch or worktree.
 
-## Skill invocation compatibility
-
-Use `work-plan` and `build` as public skill names. Terminal and ACP agents do not share a universal slash-command surface, so do not rely on `/plan` or `/build`. The legacy `plan` and `build-plan` entries are compatibility-only.
-
 ## Handoff Input
 
 Always provide a context capsule. For implementation work, include:

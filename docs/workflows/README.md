@@ -16,10 +16,10 @@ Workflows compose atomic skills into repeatable paths without creating a second 
 ```text
 work-intake
 -> clarify or discover
--> work-plan
+-> plan
 -> select runtime
 -> isolate when needed
--> build
+-> build-plan
 -> validate
 -> review or ship when requested
 -> work-closeout when closure is requested
@@ -27,7 +27,7 @@ work-intake
 
 Use `work-intake` for a handoff, plan, issue, documentation, workspace state, or broad next-step question. It recommends the route and runtime; it does not imply implementation in the same thread.
 
-Small tasks can proceed directly to `build` only when a ready local implementation plan already defines scope, decisions, runtime, and validation. Otherwise create or refine the plan with `work-plan` first.
+Small tasks can proceed directly to `build-plan` only when a ready local implementation plan already defines scope, decisions, runtime, and validation. Otherwise create or refine the plan with `plan` first.
 
 ## Workflow rules
 
