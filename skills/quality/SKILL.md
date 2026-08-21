@@ -34,7 +34,7 @@ When pasting or referencing external text, rewrite it as clean text instead of c
 
 - Conventional commit format: `<type>(<scope>): <description>`; types: feat, fix, chore, docs, style, refactor, test
 - Present tense, imperative mood; concise but descriptive
-- **Always write commit messages in English**
+- Write commit messages in the default artifact language defined by `user-preferences`.
 - Issue references: GitHub Issues by default (`#123` / `owner/repo#123`); Linear `TEAM-123` only when explicitly referenced
 
 ## Lint and format fix workflow (Trunk)
@@ -67,7 +67,7 @@ Before a PR is marked ready or merged:
 
 ## Pull Request Standards
 
-- **Always write PR titles and descriptions in English**; conventional commit format for PR titles
+- Write PR titles and descriptions in the default artifact language defined by `user-preferences`; use conventional commit format for PR titles
 - Reference issues when applicable: GitHub Issues by default; Linear only when explicitly referenced in commits or prompt
 - When referencing PRs or issues, always use full GitHub URLs (e.g., `https://github.com/org/repo/pull/123`), never shorthand like `repo #123` or `repo#number`
 - When a PR references ZeroPath, include known findings as complete visible URLs like `https://zeropath.com/app/issues/<uuid>` and do not add ZeroPath content to unrelated PRs

@@ -1,6 +1,6 @@
 ---
 name: workflow
-description: Language, terminal, workspace, branch, commit, PR, planning, and documentation workflow rules. Use when writing in English, committing, creating PRs, or creating and updating plans.
+description: Workflow rules for terminal, workspace, branch, commit, PR, planning, and documentation tasks. Use when committing, creating PRs, or creating and updating plans.
 ---
 
 # Workflow Rules
@@ -19,7 +19,7 @@ Workflow rules for language, git, plans, and documentation in this workspace.
 
 ## Language
 
-- Write all documentation, comments, code, commit messages, and PR titles/descriptions in English.
+- Follow the canonical artifact-language policy in `user-preferences`. Without an explicit exception, write durable and publishable technical artifacts in English.
 
 ## Workspace & Multi-Repo
 
