@@ -11,3 +11,7 @@ Revisit the public names `work-plan` and `build-plan` only after source-home mig
 ## Decision to make
 
 Evaluate whether simpler public names improve usability without creating ambiguous or conflicting skill identities. Do not add runtime-command invocation guidance to documentation before that review has verified a specific runtime need.
+
+## Compatibility cleanup
+
+Reinstall skills with the rewritten CLI rather than preserving legacy wrapper skills. New installations must not discover or install legacy aliases as ordinary skills.
