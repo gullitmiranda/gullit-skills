@@ -271,7 +271,7 @@ Update `publish-safe-links` to block local `.agents/plans/` references in publis
 
 ### Post-migration naming review
 
-After the installer safely migrates existing source paths and installations, evaluate whether the public names `work-plan` and `build-plan` should become simpler. Treat this as a separate follow-up decision informed by verified runtime behavior and user needs.
+After the rewritten installer supports the target source-home tree and skills have been reinstalled, evaluate whether the public names `work-plan` and `build-plan` should become simpler. Treat this as a separate follow-up decision informed by verified runtime behavior and user needs.
 
 Do not add runtime-command invocation or collision guidance to durable documentation as part of this revamp.
 
