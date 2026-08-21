@@ -10,7 +10,7 @@ description: Legacy compatibility entry point for work-closeout. Use only when a
 ## Rules
 
 - Apply the `work-closeout` classification and confirmation requirements.
-- Do not archive through `plan-archive`, delete plans, or mutate related repository state without explicit user intent.
+- Do not use a separate archive skill, delete plans, or mutate related repository state without explicit user intent.
 - Treat local plans as ignored artifacts and legacy plan paths as compatibility input only.
 
 Use `work-closeout` for new closeout work.

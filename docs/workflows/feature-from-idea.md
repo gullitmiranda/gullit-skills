@@ -1,63 +1,36 @@
 # Feature From Idea
 
-Use this workflow when the user starts with an ambiguous feature idea or a
-problem statement that still needs domain alignment.
+Use this workflow when a feature idea or problem statement still needs domain alignment.
 
 ## Flow
 
 ```text
-workspace-status
--> zoom-out when the code area is unfamiliar
--> grill-with-docs
--> plan or to-prd
--> incremental-delivery or to-issues
+work-intake
+-> workspace-status
+-> grill-with-docs when terms or decisions are unclear
+-> work-plan
+-> incremental-delivery when independent deliveries are needed
 -> agent-selection
 -> git-worktree when isolation is needed
--> tdd
+-> build
 -> quality
--> pr
+-> pr when requested
+-> work-closeout when requested
 ```
 
 ## Steps
 
-1. Understand the workspace.
-   - Use `workspace-status` when multiple repos may be involved.
-   - Identify the target repo and current git state.
+1. Understand the workspace and target repository.
+2. Clarify domain terms, behavior, and material trade-offs before execution.
+3. Create one ready local implementation plan with `work-plan`.
+4. Use `incremental-delivery` only when the work needs independently reviewable deliveries.
+5. Select the runtime and isolation level with `agent-selection` and `git-worktree`.
+6. Execute the ready contract with `build`, validate it with `quality`, and use `pr` only when requested.
+7. Use `work-closeout` when the user wants to assess, archive, discard, or distill the local plan.
 
-2. Build the code and domain map.
-   - Use `zoom-out` if the code area is unfamiliar.
-   - Use `grill-with-docs` when terminology, domain rules, or decisions are fuzzy.
-   - Update `CONTEXT.md` or ADRs only when the skill's rules say to.
-
-3. Produce a plan artifact.
-   - Use `plan` for local operational planning.
-   - Use `to-prd` when the result should become a durable issue-tracker artifact.
-
-4. Split into vertical slices.
-   - Use `incremental-delivery` for PR sequencing and validation.
-   - Use `to-issues` when slices should become independently pickable issues.
-
-5. Choose the runtime.
-   - Use `agent-selection`.
-   - Keep discussion in the main chat.
-   - Use subagents for exploration.
-   - Use terminal/ACP/Pi-style agents for long implementation.
-
-6. Implement.
-   - Use `git-worktree` when work must be isolated.
-   - Use `tdd` for behavior-first implementation.
-   - Keep each slice reviewable.
-
-7. Close the slice.
-   - Run `quality`.
-   - Use `pr` when a pull request is requested.
-   - Return validation evidence and remaining risks.
-
-## Expected Outputs
+## Expected outputs
 
 - Clear domain terms and decisions.
-- A local plan or PRD.
-- Vertical slices with dependencies.
-- Runtime recommendation.
-- Implementation with tests or documented validation.
-- PR-ready summary when requested.
+- A ready local plan under `.agents/plans/` when planning is needed.
+- Independent deliveries only when justified.
+- Validation evidence and remaining risks.

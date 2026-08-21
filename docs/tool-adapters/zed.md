@@ -11,6 +11,10 @@ editor.
 - Trying a different ACP or terminal-backed agent on the same workstream.
 - Continuing work after Cursor context has become too noisy.
 
+## Skill invocation compatibility
+
+Use `work-plan` and `build` as public skill names. Do not assume `/plan` or `/build` is available as a skill command: Zed runtime configuration may reserve, reinterpret, or omit slash commands. The legacy `plan` and `build-plan` entries are compatibility-only.
+
 ## Starting A Zed Thread
 
 Use a context capsule as the opening message. Include:
