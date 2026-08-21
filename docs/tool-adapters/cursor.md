@@ -35,15 +35,6 @@ Do not ask subagents to return full logs unless logs are the evidence.
 Before forking, create or update a context capsule so the new thread has a
 clean framing even if it inherits older context.
 
-## Use Cursor Plans For
-
-When the repository has an agent workspace authority, create implementation plans under:
-
-```text
-.agents/plans/<workstream>.plan.md
-```
-
-These are local operational state and must not be committed. Treat `.cursor/plans/` only as an explicit-migration compatibility path.
 
 ## Parent Chat Checklist
 

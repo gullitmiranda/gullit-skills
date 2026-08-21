@@ -5,7 +5,7 @@ Status: partially validated
 ## Completed checks
 
 - All 46 current `SKILL.md` files have a unique frontmatter `name` matching their source directory.
-- An isolated install from a conventional local clone discovered and linked all 45 skills, including `agent-workspace`, `agent-notes`, `work-intake`, `work-plan`, `build-plan`, `work-closeout`, and `cursor-project-path-migration`.
+- An isolated install from a conventional local clone discovered and linked all 38 current skills, including `agent-workspace`, `agent-notes`, `work-intake`, `work-plan`, `build-plan`, `work-closeout`, and `cursor-project-path-migration`, without legacy wrappers.
 - An isolated migration fixture moved a local plan and its `.archived/` history from the legacy plan directory to `.agents/plans/` unchanged, then created the documented relative compatibility symlink. The fixture also confirmed that both the plan tree and compatibility symlink are ignored.
 - Changed Markdown files passed local-link checks, whitespace checks, and project diagnostics.
 

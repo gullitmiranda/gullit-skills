@@ -44,6 +44,7 @@ Treat `retired/` and `archived/` notes as frozen by default. Create a successor 
 ## Documentation boundaries
 
 - Do not add runtime-command invocation or collision guidance to tracked docs or skills based only on a migration discussion or static inference. Keep it local until the user explicitly requests publication or verified runtime evidence justifies it.
+- Do not restate an agent workspace path in a runtime adapter unless the adapter needs that path to operate.
 
 ## Implementation plans
 
