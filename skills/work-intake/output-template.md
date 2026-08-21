@@ -15,7 +15,7 @@
 - Type: local plan | tracked note | legacy local input | non-plan
 - Note lifecycle: proposed | current | retired | archived | n/a
 - Execution readiness: ready | needs-refinement | blocked | unclear
-- Next route: `plan` | `build-plan` | `incremental-delivery` | `work-closeout` | user decision
+- Next route: `work-plan` | `build-plan` | `incremental-delivery` | `work-closeout` | user decision
 
 ## Workstreams
 

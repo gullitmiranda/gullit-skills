@@ -17,13 +17,13 @@ This inventory records the tracked references that must change for the agent wor
 | `.gitignore` | Does not portably exclude legacy plans. | Compatibility read; ignore `.cursor/plans/` so local-plan handling does not depend on a developer-global ignore file. | `safety` | Updated in this block. |
 | `.cursor/skills/plan-archive/SKILL.md` | Archives plans under the legacy local path through a separate Cursor skill. | Remove; fold confirmed local-plan archival into `work-closeout`. | `work-closeout` | Retire after replacement validation. |
 | `README.md` | Advertises the Cursor-only archive skill and its install path. | Remove; describe the replacement skill and supported installation source after source-home migration is safe. | Documentation | Update with retired adapter. |
-| `docs/tool-adapters/cursor.md` | Creates new local plans in the legacy directory. | Local plan; create plans in `.agents/plans/`, mentioning the legacy directory only as opt-in compatibility. | `plan` | Update adapter. |
+| `docs/tool-adapters/cursor.md` | Creates new local plans in the legacy directory. | Local plan; create plans in `.agents/plans/`, mentioning the legacy directory only as opt-in compatibility. | `work-plan` | Update adapter. |
 | `docs/workflows/README.md` | Keeps plans local but names the legacy directory. | Local plan; retain the local-only rule with the canonical path. | `agent-workspace` | Update workflow guidance. |
 | `skills/agents-standard/SKILL.md` | Treats plans as a tracked lifecycle tree and preserves legacy plans as local inputs. | Split into local plan, tracked note, and compatibility read rules. | `agent-workspace`, `agent-notes` | Rewrite required. |
 | `skills/agents-standard/templates/agents-AGENTS.md` | Defines tracked plans, scratch plans, duplicated lifecycle state, and plan-contained decisions. | Split into local-plan and tracked-note layout. | `agent-workspace` | Rewrite required. |
 | `skills/build-plan/SKILL.md` | Executes tracked plans with lifecycle transitions. | Remove tracked-plan transitions; execute one ready local plan. | `build-plan` | Rewrite required. |
 | `skills/engineering-workflow/SKILL.md` | Keeps local plans at the legacy path. | Local plan; merge routing into `work-intake`. | `work-intake` | Retire after merge. |
-| `skills/plan/SKILL.md` | Creates Cursor and Claude plans in the legacy path and prevents implicit promotion. | Local plan; create new plans at `.agents/plans/` while retaining legacy files as compatibility-only input. | `plan` | Rewrite required. |
+| `skills/plan/SKILL.md` | Creates Cursor and Claude plans in the legacy path and prevents implicit promotion. | Local plan; create new plans at `.agents/plans/` while retaining legacy files as compatibility-only input. | `work-plan` | Rewrite required. |
 | `skills/project-path-migration/SKILL.md` | Describes the legacy plan directory as repository content. | Local plan and tracked note; describe both new workspace locations and only mention the legacy path when a compatibility symlink exists. | `cursor-project-path-migration` | Update after rename gate. |
 | `skills/publish-safe-links/SKILL.md` | Rejects legacy local plans from publishable output only. | Compatibility read; reject both legacy and canonical local plan paths. | `publish-safe-links` | Update required. |
 | `skills/quality/SKILL.md` | Delegates publication safety while illustrating only the legacy plan path. | Compatibility read; delegate path enforcement to `publish-safe-links` without making local paths publishable. | `publish-safe-links` | Update required. |
@@ -38,7 +38,7 @@ This inventory records the tracked references that must change for the agent wor
 | Current source | Target disposition | Active consumers to update | Gate |
 | --- | --- | --- | --- |
 | `skills/agents-standard/` | Rewrite as `agent-workspace`. | `build-plan` | The new shared artifact contract. |
-| `skills/plan/` | Retain the public name with the rewritten local-plan contract. | `build-plan`, `workflow-intake`, `engineering-workflow`, skills map, templates | Revisit possible simplification after source-home migration. |
+| `skills/plan/` | Rewrite as `work-plan`. | `build-plan`, `workflow-intake`, `engineering-workflow`, skills map, templates | Revisit possible simplification after source-home migration. |
 | `skills/workflow-intake/` | Merge with `engineering-workflow` as `work-intake`. | README, workflow docs, context docs, build skill | Leave one public workflow router. |
 | `skills/engineering-workflow/` | Merge its useful route catalog into `work-intake`, then retire. | README, `build-plan`, `workflow-intake` | Core route must not require third-party skills. |
 | `skills/build-plan/` | Retain the public name with the rewritten execution contract. | `workflow-intake` and template | Revisit possible simplification after source-home migration. |

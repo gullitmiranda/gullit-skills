@@ -79,7 +79,7 @@ the highest-scoring file; on ties prefer the more specific one (for example,
 | Code style, linting, formatting, conventional commits | `quality/SKILL.md` |
 | PR creation, review, merge strategy | `pr/SKILL.md` |
 | Dangerous operations, destructive commands, permissions | `safety/SKILL.md` |
-| Language, documentation style, planning format | `user-preferences/SKILL.md`, `plan/SKILL.md`, or `.agents/AGENTS.md` |
+| Language, documentation style, planning format | `user-preferences/SKILL.md`, `work-plan/SKILL.md`, or `.agents/AGENTS.md` |
 | Kubernetes operations | `k8s/SKILL.md` |
 | GitHub Issues, MCP, external integrations | `integration/SKILL.md` or topical skill |
 | Agent behavior constraints (don't do X) | Delegate to `persist-agent-constraints` skill |

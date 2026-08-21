@@ -18,7 +18,7 @@ Use these to establish the artifact contract or make implementation ready.
 
 - `agent-workspace`: establish or migrate plans, notes, and scratch boundaries.
 - `agent-notes`: record durable decisions, research, missions, and coordination knowledge.
-- `plan`: create or refine one local implementation plan.
+- `work-plan`: create or refine one local implementation plan.
 - `incremental-delivery`: coordinate multiple independent, reviewable deliveries.
 - `model-selection`: compare complete runtime model configurations and defaults.
 
@@ -49,7 +49,7 @@ Ambiguous feature work:
 work-intake
 -> workspace-status
 -> grill-with-docs when decisions need user input
--> plan
+-> work-plan
 -> incremental-delivery when multiple independent deliveries are needed
 -> agent-selection
 -> git-worktree when isolation is needed
@@ -75,7 +75,7 @@ Bug or regression:
 ```text
 work-intake
 -> establish a reproducible feedback loop
--> plan when the fix needs a contract
+-> work-plan when the fix needs a contract
 -> build-plan
 -> quality
 ```
@@ -86,7 +86,7 @@ Architecture work:
 work-intake
 -> workspace-status
 -> grill-with-docs
--> plan
+-> work-plan
 -> incremental-delivery
 -> agent-selection
 -> build-plan

@@ -17,7 +17,7 @@ Manage durable agent working knowledge without turning it into an execution-plan
 
 ## Procedure
 
-1. Identify whether the information is durable knowledge or an implementation contract. Route contracts to `plan`.
+1. Identify whether the information is durable knowledge or an implementation contract. Route contracts to `work-plan`.
 2. Create or refine a note with a descriptive optional suffix such as `.decision.md`, `.research.md`, `.proposal.md`, or `.mission.md`. Add visible `Status:` or `Outcome:` lines only when useful for that note type.
 3. For a lifecycle transition, move the file to the appropriate note folder. For supersession, create a current successor that links to the frozen predecessor and explains the replacement.
 4. When distilling completed work, capture durable decisions, constraints, findings, outcomes, and follow-ups; omit operational checklists and incidental command history.
