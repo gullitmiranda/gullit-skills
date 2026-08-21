@@ -20,7 +20,7 @@ Useful ideas:
 How this repo uses the ideas:
 
 - Treat Matt's skills as inspiration, not required workflow dependencies.
-- Keep the core workflow self-contained with personal skills such as `plan`,
+- Keep the core workflow self-contained with personal skills such as `work-plan`,
   `incremental-delivery`, `git-worktree`, `quality`, and `pr`.
 - Keep personal orchestration skills thin so the atomic skills remain reusable.
 

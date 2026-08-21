@@ -1,6 +1,6 @@
 # Post-migration skill naming review
 
-Revisit the public names `plan` and `build-plan` only after source-home migration is complete and installed skills have been safely reconciled.
+Revisit the public names `work-plan` and `build-plan` only after source-home migration is complete and installed skills have been safely reconciled.
 
 ## Prerequisites
 
