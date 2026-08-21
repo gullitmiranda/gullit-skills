@@ -162,7 +162,7 @@ skills/
       context-capsule/
 
     planning/
-      plan/                        # retain pending post-migration naming review
+      plan/                        -> work-plan/
 
     execution/
       build-plan/                  # retain pending post-migration naming review
@@ -246,7 +246,7 @@ A high-level idea needs only a reference entry. Do not present an external skill
 
 ### Shared artifact-contract rewrite
 
-Treat `agent-workspace`, `plan`, `work-intake`, `build-plan`, and `work-closeout` as a coordinated semantic rewrite, not a set of independent renames. Their common contract is:
+Treat `agent-workspace`, `work-plan`, `work-intake`, `build-plan`, and `work-closeout` as a coordinated semantic rewrite, not a set of independent renames. Their common contract is:
 
 - implementation plans are local `.agents/plans/` artifacts that are discarded, archived locally, or distilled after use;
 - tracked lifecycle artifacts are `.agents/notes/{proposed,current,retired,archived}`;
@@ -254,7 +254,7 @@ Treat `agent-workspace`, `plan`, `work-intake`, `build-plan`, and `work-closeout
 
 `agent-notes` is a distinct recurring skill for creating, updating, retiring, archiving, superseding, and distilling notes. `agent-workspace` owns setup, migration, and explanation of the artifact model.
 
-`incremental-delivery` remains a distinct execution skill for coordinating multiple independent deliveries. Extract its reusable safety, validation, branch, and publication rules to the appropriate guardrails rather than absorbing the entire skill into `plan`.
+`incremental-delivery` remains a distinct execution skill for coordinating multiple independent deliveries. Extract its reusable safety, validation, branch, and publication rules to the appropriate guardrails rather than absorbing the entire skill into `work-plan`.
 
 `work-closeout` includes an archive mode with explicit user confirmation. Retire `plan-archive` after moving its required behavior and updating callers.
 
@@ -271,7 +271,7 @@ Update `publish-safe-links` to block local `.agents/plans/` references in publis
 
 ### Post-migration naming review
 
-After the installer safely migrates existing source paths and installations, evaluate whether the public names `plan` and `build-plan` should become simpler. Treat this as a separate follow-up decision informed by verified runtime behavior and user needs.
+After the installer safely migrates existing source paths and installations, evaluate whether the public names `work-plan` and `build-plan` should become simpler. Treat this as a separate follow-up decision informed by verified runtime behavior and user needs.
 
 Do not add runtime-command invocation or collision guidance to durable documentation as part of this revamp.
 

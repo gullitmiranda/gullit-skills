@@ -9,7 +9,7 @@ work-intake
 -> workspace-status
 -> inspect modules, callers, interfaces, and test surfaces
 -> grill-with-docs for durable terminology or trade-offs
--> plan
+-> work-plan
 -> incremental-delivery when multiple independent refactors are needed
 -> agent-selection
 -> build-plan
@@ -21,7 +21,7 @@ work-intake
 
 1. Understand the target area and identify concrete sources of friction such as leaky interfaces, shallow modules, missing test surfaces, or low locality.
 2. Use `grill-with-docs` when domain terminology or an architectural trade-off needs user alignment.
-3. Create a ready local implementation plan with `plan`; do not treat a decision note as the execution contract.
+3. Create a ready local implementation plan with `work-plan`; do not treat a decision note as the execution contract.
 4. Use `incremental-delivery` to keep independent refactor slices reviewable and testable.
 5. Choose the runtime and isolation level, then execute with `build-plan` and validate through the improved interface where possible.
 
