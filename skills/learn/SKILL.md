@@ -39,11 +39,13 @@ Do NOT blindly append to a catch-all file.
 
 ### 3a. Candidate files by scope
 
+When a rule governs implementation-plan, note, or scratch location, lifecycle, or tracking, read `.agents/AGENTS.md` first when it exists. It is the repository authority for that workspace contract.
+
 **scope = user:**
 
 | Priority | Location | Notes |
 | -------- | -------- | ----- |
-| 1 | Topical SKILL.md in `~/.claude/skills/`, `~/.cursor/skills/`, `~/.codex/skills/` | Best topical match wins |
+| 1 | Topical SKILL.md in `~/.agents/skills/`, `~/.claude/skills/`, `~/.cursor/skills/`, `~/.codex/skills/` | Best topical match wins |
 | 2 | `~/.claude/CLAUDE.md` | Claude Code user-level |
 | 3 | `~/.codex/AGENTS.md` | Codex user-level |
 | Fallback | `~/.cursor/skills/user-preferences/SKILL.md` | Only if no topical match |
@@ -52,10 +54,11 @@ Do NOT blindly append to a catch-all file.
 
 | Priority | Location | Notes |
 | -------- | -------- | ----- |
-| 1 | Topical SKILL.md in `.claude/skills/`, `.cursor/skills/` | Best topical match wins |
-| 2 | `.cursor/rules/*.mdc` | Cursor rules (glob-based) |
-| 3 | `./AGENTS.md` | Cross-tool |
-| 4 | `./CLAUDE.md` or `.claude/CLAUDE.md` | Claude Code project-level |
+| 1 | Topical SKILL.md in `.agents/skills/`, `.claude/skills/`, `.cursor/skills/` | Best topical match wins |
+| 2 | `.agents/AGENTS.md` | Agent workspace authority when present |
+| 3 | `.cursor/rules/*.mdc` | Cursor rules (glob-based) |
+| 4 | `./AGENTS.md` | Cross-tool |
+| 5 | `./CLAUDE.md` or `.claude/CLAUDE.md` | Claude Code project-level |
 | Fallback | `./AGENTS.md` under a new topical section | Only if no topical match |
 
 **scope = local:** `./AGENTS.local.md`, else `./CLAUDE.local.md`.
@@ -65,8 +68,8 @@ Do NOT blindly append to a catch-all file.
 Read each candidate's frontmatter `description` (SKILL.md), `description`/`globs`
 (.mdc), or heading structure. Strong signals: description mentions the topic;
 a section heading matches. Moderate: file already contains related rules. Pick
-the highest-scoring file; on ties prefer the more specific one (e.g.
-`git/SKILL.md` over `workflow/SKILL.md` for a branching rule).
+the highest-scoring file; on ties prefer the more specific one (for example,
+`git/SKILL.md` over `work-intake/SKILL.md` for a branching rule).
 
 ### 3c. Topic-to-file quick reference
 
@@ -76,7 +79,7 @@ the highest-scoring file; on ties prefer the more specific one (e.g.
 | Code style, linting, formatting, conventional commits | `quality/SKILL.md` |
 | PR creation, review, merge strategy | `pr/SKILL.md` |
 | Dangerous operations, destructive commands, permissions | `safety/SKILL.md` |
-| Language, documentation style, planning format | `workflow/SKILL.md` |
+| Language, documentation style, planning format | `user-preferences/SKILL.md`, `work-plan/SKILL.md`, or `.agents/AGENTS.md` |
 | Kubernetes operations | `k8s/SKILL.md` |
 | GitHub Issues, MCP, external integrations | `integration/SKILL.md` or topical skill |
 | Agent behavior constraints (don't do X) | Delegate to `persist-agent-constraints` skill |
@@ -111,8 +114,9 @@ Format specifics:
 ## Step 5 - Cross-tool sync
 
 If the project already has instruction files for multiple tools, write the rule
-to ALL applicable existing formats: topical SKILL.md (`.claude/skills/` or
-`.cursor/skills/`), matching `.cursor/rules/*.mdc`, `CLAUDE.md`, `AGENTS.md`.
+to ALL applicable existing formats: topical SKILL.md (`.agents/skills/`,
+`.claude/skills/`, or `.cursor/skills/`), matching `.cursor/rules/*.mdc`,
+`CLAUDE.md`, and `AGENTS.md`.
 Do NOT create new tool-specific directories just for sync.
 
 ## Step 6 - Gitignore update (local scope only)
