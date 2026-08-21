@@ -18,7 +18,7 @@ Produce one local execution contract, not a tracked lifecycle artifact.
 ## Procedure
 
 1. Inspect the request, authority, relevant code or documentation, and existing local plan input. State unresolved execution-relevant decisions.
-2. Create or refine one local plan with objective, scope, approach, constraints, implementation steps, validation, acceptance criteria, and meaningful alternatives or risks.
+2. Create or refine one local plan with objective, scope, approach, constraints, implementation steps, validation, acceptance criteria, and meaningful alternatives or risks. Omit timelines and estimates unless the user explicitly asks for them.
 3. Confirm the plan is executable without making relevant product, scope, or architecture decisions. Otherwise return the smallest decision or refinement needed.
 4. Report the local path, readiness, open decisions, validation expectation, and next route: `build`, `incremental-delivery`, or user decision.
 

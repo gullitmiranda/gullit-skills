@@ -12,7 +12,7 @@ description: Git, command, Kubernetes, data, workspace, and temporary files safe
 - Never commit to main/master unless explicitly requested.
 - Never run `git reset --hard` without explicit user approval.
 - Never add gitignored files to git (`git add`) — at most, show the command for the user to run themselves.
-- Never commit files under `.cursor/plans/` — they are local-only/gitignored; this breaks the user's setup and has been corrected multiple times.
+- Never commit files under `.agents/plans/` or `.cursor/plans/` — both are local-only plan paths; the latter is legacy compatibility input.
 - Never execute `kubectl delete` or `kubectl apply`.
 - Do not change git stage without being asked; never commit unstaged changes without explicit request.
 - When splitting, stacking, or consolidating work from an existing feature/draft branch, never execute the mission on the source branch. Create a new working branch (or worktree) from the agreed base and treat the source branch as read-only input.
