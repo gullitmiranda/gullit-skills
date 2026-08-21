@@ -16,6 +16,8 @@ you generate in the first place; `gremlin-clean` strips invisible Unicode.
 - Never delete license headers, linter directives, `TODO`/`FIXME`/`HACK` with
   context, or comments explaining *why* (constraints, workarounds, ticket refs).
 - Never change code behavior. Comments and prose only.
+- Preserve an artifact's existing language; deslop never translates content.
+- For substantially new or replaced durable prose, follow the artifact-language policy in `user-preferences`.
 - In doubt whether a comment carries information? Keep it and flag it.
 
 ## Procedure

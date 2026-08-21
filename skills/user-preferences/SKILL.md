@@ -1,13 +1,16 @@
 ---
 name: user-preferences
-description: guma's personal assistant behavior preferences across all projects (user-level). Use when interacting with the user in any repo for general assistant behavior not covered by topical skills.
+description: Canonical portable preferences for guma across all projects and agent runtimes. Load before creating, editing, or publishing a durable or publishable artifact.
 ---
 
-# User Preferences (User-Level)
+# User Preferences
 
-Miscellaneous personal preferences that do not belong in a topical skill file.
-Before adding rules here, check if a topical skill already covers the domain
-(git, quality, safety, workflow, k8s, etc.) and add there instead.
+This is the canonical cross-runtime policy for guma. Runtime-specific instructions
+must load this skill before artifact work; do not add agent-specific behavior here.
+
+Before adding a preference, check whether it is runtime-specific or task-specific.
+Keep portable personal policy here and route the rest to the relevant runtime adapter
+or topical skill.
 
 ## How to Interpret My Instructions
 
@@ -19,16 +22,11 @@ If the right path diverges from what I said, diverging is correct: take it and p
 
 Exception: during migrations, adapters and conversion shims between old and new interfaces are legitimate design, not workarounds. See `codebase-design`.
 
-## Tool defaults
+## Artifact language
 
-- When the user mentions "skill", default to creating/editing in `.claude/skills/` instead of `.cursor/rules/`, unless explicitly instructed otherwise.
-- Never create or edit files via shell heredocs (`cat > file << 'EOF'`, `echo > file`). Always use the platform's file tools (`write_file`/`edit_file`, `Write`/`Edit`, etc.). Shell heredocs bypass diff review, checkpoint tracking, and path validation, and are fragile with special characters. Exception: bulk scaffolding of many files, or piping output from another command.
-
-## Shell environment (Cursor IDE)
-
-- The Cursor shell does NOT run `mise activate` hooks. Environment variables set by mise (e.g., `GH_TOKEN`) are NOT automatically loaded when running commands.
-- Before running `gh` CLI or any command that depends on mise-managed env vars in work repos (`~/Code/work/*`), prefix with `eval "$(mise env)"` to load the correct environment.
-- Example: `cd /path/to/repo && eval "$(mise env)" && gh pr create ...`
+- Write all durable and publishable technical artifacts in English by default: source code, code comments, documentation, plans, commit messages, pull requests, issues, review comments, release notes, and generated text intended for publication.
+- Use another language only when the user explicitly requests it or a repository instruction or applicable task-specific skill explicitly requires it.
+- Do not infer an artifact's language from the language of the conversation.
 
 ## Naming preferences
 
