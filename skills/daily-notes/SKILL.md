@@ -12,7 +12,7 @@ Create a concise Markdown daily note for SessionApp, focused on what was actuall
 
 ## Hard Rules
 
-- Write in Portuguese (BR).
+- Write in Portuguese (BR). This exception applies only to personal Daily Notes; do not use it for repository artifacts, source code, comments, plans, commits, pull requests, issues, or review comments.
 - No unsupported claims. If a source was unavailable, either omit it or state the limitation briefly. Do not invent PR status; verify when status matters.
 - Use Slack only when authentication is already available or the user explicitly wants Slack included.
 - If the note file already exists, read it first and preserve user edits; preserve a good existing structure instead of rewriting the whole document.
