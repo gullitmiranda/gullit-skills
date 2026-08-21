@@ -37,13 +37,17 @@ clean framing even if it inherits older context.
 
 ## Use Cursor Plans For
 
-Cursor and Claude CLI plans belong under:
+When the repository has an agent workspace authority, create implementation plans under:
 
 ```text
-.cursor/plans/<workstream>.plan.md
+.agents/plans/<workstream>.plan.md
 ```
 
-These are local operational state and must not be committed.
+These are local operational state and must not be committed. Treat `.cursor/plans/` only as an explicit-migration compatibility path.
+
+## Skill invocation compatibility
+
+Use `work-plan` and `build` as public skill names. Do not assume `/plan` or `/build` is available as a skill command: Cursor may reserve, reinterpret, or omit slash commands by runtime configuration. The legacy `plan` and `build-plan` entries are compatibility-only.
 
 ## Parent Chat Checklist
 

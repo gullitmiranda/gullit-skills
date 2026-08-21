@@ -3,6 +3,10 @@
 Pi-style extensions are useful as runtime helpers around an agent. This repo
 does not require Pi, but borrows several workflow ideas from Pi setups.
 
+## Skill invocation compatibility
+
+Use `work-plan` and `build` as public skill names. Pi-style runtimes may expose commands differently, so do not rely on `/plan` or `/build`. The legacy `plan` and `build-plan` entries are compatibility-only.
+
 ## Useful Extension Patterns
 
 ### Transcript copy

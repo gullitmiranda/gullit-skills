@@ -2,50 +2,52 @@
 
 Personal skills for AI coding agents, following the [Agent Skills](https://agentskills.io) open standard.
 
-## Directory Structure
+## Repository layout
 
-```
-skills/                        # Cross-agent skills (installed by all agents)
+```text
+skills/                        # Cross-agent skills in installation-compatible source paths
   <skill-name>/SKILL.md
-  gh-profile-template/SKILL.md # Reusable template — copy and fill in placeholders
 
-docs/                          # Workflow docs and tool adapters
+docs/                          # Workflow composition and runtime adapters
   skills-map.md
   workflows/
   tool-adapters/
 
-.cursor/skills/                # Cursor-specific skills
-  plan-archive/SKILL.md
-
-.claude/skills/                # Claude Code-specific skills
-.agents/skills/                # Other agent-specific skills
+.agents/                       # This repository's agent workspace contract
+  AGENTS.md
+  notes/                       # Tracked durable working knowledge
+  plans/                       # Local ignored implementation plans
 ```
 
-- `skills/` contains skills that work across any agent runtime.
-- `docs/` contains workflow composition docs, context transfer guidance, and tool adapters.
-- Skills with a `-template` suffix are reusable templates with placeholders. Copy to your own skills repo, rename, and fill in the values.
-- `.<agent>/skills/` contains skills scoped to a specific agent (Cursor, Claude, Codex, etc.).
+Skills remain in flat source paths while the installer work adds safe migration for existing installations. The public skill identities below are stable; the target nested source-home tree will be applied only when that migration is available.
 
-## Workflow Entry Points
+## Agent workspace
 
-This repo keeps atomic skills independent and documents how to compose them into
-larger engineering workflows.
+`.agents/AGENTS.md` is the authority for agent working artifacts in this repository:
 
-- [`docs/skills-map.md`](docs/skills-map.md): phase-based map of personal and external skills.
-- [`docs/workflows/`](docs/workflows/): example flows for features, bugs, architecture work, existing plans, and parallel workstreams.
-- [`docs/context-management.md`](docs/context-management.md): portable context capsule protocol.
-- [`docs/agent-selection.md`](docs/agent-selection.md): when to use main chat, subagents, forks, IDE agents, or terminal/ACP/Pi-style agents.
-- [`docs/tool-adapters/`](docs/tool-adapters/): Cursor, Zed, terminal-agent, and Pi-extension adapters.
-- [`docs/references.md`](docs/references.md): external references that shaped the workflow design.
+- `.agents/plans/` holds ignored local implementation plans.
+- `.agents/notes/` holds tracked durable working knowledge.
+- `.agents/scratch/` holds ignored disposable material.
+- `.cursor/plans/` is a legacy local input that is migrated only with explicit user direction.
 
-Core orchestration skills:
+## Workflow entry points
 
-- `workflow-intake`: analyze handoffs, docs, issues, or workspace state and recommend where/how to continue before implementation.
-- `engineering-workflow`: choose the workflow and compose atomic skills.
-- `agent-selection`: recommend the right agent/runtime for the next phase.
-- `context-capsule`: create portable handoff context for subagents, forks, Zed threads, terminal agents, or later resume.
+The core workflow is self-contained and composes small skills instead of requiring third-party installs:
 
-## SKILL.md Format
+- `work-intake`: inspect context and select the smallest next route.
+- `work-plan`: create or refine one ready local implementation plan.
+- `build`: execute one ready local implementation plan.
+- `incremental-delivery`: coordinate multiple independent deliveries.
+- `work-closeout`: assess a plan or work context and perform confirmed closeout actions.
+- `agent-workspace`: establish or migrate the workspace contract.
+- `agent-notes`: manage tracked notes and their lifecycle.
+- `cursor-project-path-migration`: move a Cursor project path with reversible workspace-state recovery.
+
+Legacy names such as `workflow-intake`, `engineering-workflow`, `plan`, `build-plan`, `work-context-cleanup`, `workflow`, `agents-standard`, and `project-path-migration` are compatibility entry points only. New workflows should use the public names above.
+
+See [`docs/skills-map.md`](docs/skills-map.md) for the workflow map, [`docs/workflows/`](docs/workflows/) for examples, and [`docs/tool-adapters/`](docs/tool-adapters/) for runtime guidance.
+
+## SKILL.md format
 
 Each skill is a `SKILL.md` file with YAML frontmatter:
 
@@ -57,10 +59,10 @@ description: Short description of what the skill does and when to use it.
 
 # My Skill
 
-Instructions for the agent...
+Instructions for the agent.
 ```
 
-See the [agentskills.io](https://agentskills.io) spec for the full format reference.
+See the [Agent Skills specification](https://agentskills.io) for the full format reference.
 
 ## Install
 
@@ -70,11 +72,11 @@ Requires [ai-skills-cli](https://github.com/gullitmiranda/ai-skills-cli).
 # Install all cross-agent skills
 ai-skills add gullitmiranda/gullit-skills
 
-# Install a single skill
-ai-skills add https://github.com/gullitmiranda/gullit-skills/tree/main/skills/git
+# Install one workflow entry point
+ai-skills add https://github.com/gullitmiranda/gullit-skills/tree/main/skills/work-intake
 
-# Install Cursor-specific skills
-ai-skills add https://github.com/gullitmiranda/gullit-skills/tree/main/.cursor/skills/plan-archive
+# Install the agent workspace contract
+ai-skills add https://github.com/gullitmiranda/gullit-skills/tree/main/skills/agent-workspace
 
 # Pin to a specific ref
 ai-skills add gullitmiranda/gullit-skills --ref v1.0.0

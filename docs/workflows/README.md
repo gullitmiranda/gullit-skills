@@ -1,56 +1,38 @@
 # Workflows
 
-Workflows compose atomic skills into repeatable paths. They should guide the
-agent without turning the repo into one rigid process.
+Workflows compose atomic skills into repeatable paths without creating a second policy layer.
 
-## Available Workflows
+## Available workflows
 
-- [Feature From Idea](feature-from-idea.md): turn an ambiguous feature idea into implemented, validated work.
-- [Bug Diagnosis](bug-diagnosis.md): debug with a reproducible feedback loop before fixing.
-- [Existing Plan To PR](existing-plan-to-pr.md): execute an already agreed plan through branch, validation, and PR.
-- [Parallel Workstreams](parallel-workstreams.md): supervise multiple plans or side quests in one repo/workspace.
-- [Architecture Improvement](architecture-improvement.md): find and execute architecture improvements without mixing them with feature work.
-- [PR Delivery](pr-delivery.md): create an early draft, review a fixed diff in isolation, and watch the final reviewed revision.
+- [Feature From Idea](feature-from-idea.md): turn an ambiguous feature into validated work.
+- [Bug Diagnosis](bug-diagnosis.md): establish evidence before fixing a defect.
+- [Existing Plan To PR](existing-plan-to-pr.md): execute a ready local plan or clear request.
+- [Parallel Workstreams](parallel-workstreams.md): supervise independent work without collisions.
+- [Architecture Improvement](architecture-improvement.md): improve a codebase without mixing unrelated feature work.
+- [PR Delivery](pr-delivery.md): create, review, and watch a pull request when requested.
 
-## Common Phases
-
-```text
-intake
--> decide execution mode
--> discover
--> plan
--> select agent/runtime
--> isolate
--> execute
--> validate
--> review/ship
-```
-
-Use `workflow-intake` when the starting context is a handoff, plan, issue, docs,
-current workspace state, or a broad "what should we do next?" question. Intake
-does not imply implementation in the same thread; it recommends the workflow and
-runtime first.
-
-Legacy shorthand without intake:
+## Common phases
 
 ```text
-discover
--> plan
--> select agent/runtime
--> isolate
--> execute
+work-intake
+-> clarify or discover
+-> work-plan
+-> select runtime
+-> isolate when needed
+-> build
 -> validate
--> review/ship
+-> review or ship when requested
+-> work-closeout when closure is requested
 ```
 
-Not every workflow uses every phase. Small tasks can skip straight to execution
-when the goal, files, runtime, and validation are obvious.
+Use `work-intake` for a handoff, plan, issue, documentation, workspace state, or broad next-step question. It recommends the route and runtime; it does not imply implementation in the same thread.
 
-## Workflow Rules
+Small tasks can proceed directly to `build` only when a ready local implementation plan already defines scope, decisions, runtime, and validation. Otherwise create or refine the plan with `work-plan` first.
 
-- Keep atomic skills under `skills/<name>/`.
-- Use workflow docs to compose skills.
+## Workflow rules
+
+- Compose atomic skills; do not duplicate their policy in workflow documentation.
 - Use `agent-selection` before substantial or long-running work.
 - Use `context-capsule` before handing work to another tool, thread, or agent.
-- Keep local plans local; do not commit `.cursor/plans/`.
+- Keep implementation plans local under `.agents/plans/`; never commit them.
 - Prefer vertical slices over broad horizontal phases.

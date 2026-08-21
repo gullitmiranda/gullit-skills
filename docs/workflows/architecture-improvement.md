@@ -1,64 +1,40 @@
 # Architecture Improvement
 
-Use this workflow when the code is becoming hard to understand, test, change, or
-delegate to agents.
+Use this workflow when the code is becoming hard to understand, test, change, or delegate.
 
 ## Flow
 
 ```text
-workspace-status
--> zoom-out
--> improve-codebase-architecture
--> grill-with-docs for durable decisions
--> incremental-delivery
+work-intake
+-> workspace-status
+-> inspect modules, callers, interfaces, and test surfaces
+-> grill-with-docs for durable terminology or trade-offs
+-> work-plan
+-> incremental-delivery when multiple independent refactors are needed
 -> agent-selection
--> implementation slice
+-> build
 -> quality
--> pr
+-> pr when requested
 ```
 
 ## Steps
 
-1. Understand the area.
-   - Use `workspace-status` when multiple repos may be involved.
-   - Use `zoom-out` for a map of modules, callers, and domain concepts.
+1. Understand the target area and identify concrete sources of friction such as leaky interfaces, shallow modules, missing test surfaces, or low locality.
+2. Use `grill-with-docs` when domain terminology or an architectural trade-off needs user alignment.
+3. Create a ready local implementation plan with `work-plan`; do not treat a decision note as the execution contract.
+4. Use `incremental-delivery` to keep independent refactor slices reviewable and testable.
+5. Choose the runtime and isolation level, then execute with `build` and validate through the improved interface where possible.
 
-2. Find architecture candidates.
-   - Use `improve-codebase-architecture`.
-   - Look for shallow modules, leaky interfaces, missing test surfaces, and low locality.
-   - Do not propose broad rewrites as the default.
-
-3. Decide what matters.
-   - Use `grill-with-docs` when the candidate depends on domain terminology or a durable trade-off.
-   - Record glossary terms or ADRs only when the skill's criteria are met.
-
-4. Split the work.
-   - Use `incremental-delivery`.
-   - Keep refactor slices separate from feature behavior when possible.
-   - Make each slice independently reviewable and testable.
-
-5. Choose runtime and isolation.
-   - Use `agent-selection`.
-   - Use subagents for exploration.
-   - Use terminal/ACP/Pi-style agents for large mechanical refactors.
-   - Use worktrees for parallel or risky edits.
-
-6. Validate.
-   - Prefer tests through the improved interface.
-   - Run `quality`.
-   - Use `pr` when requested.
-
-## Expected Outputs
+## Expected outputs
 
 - Architecture candidate summary.
-- Decision record when needed.
-- Incremental implementation plan.
-- Clear test surface.
-- Validation evidence.
+- Durable note or documentation only when it captures lasting knowledge.
+- Ready local plan and independently validated increments when needed.
+- Validation evidence and remaining trade-offs.
 
-## Anti-Patterns
+## Avoid
 
-- Mixing architecture cleanup with unrelated feature work.
-- Creating new abstractions without a concrete locality or leverage gain.
-- Re-litigating existing ADRs without new evidence.
+- Mixing unrelated feature behavior into architecture cleanup.
+- Introducing abstractions without a concrete locality or leverage gain.
+- Re-litigating durable decisions without new evidence.
 - Shipping prototype code as production code.

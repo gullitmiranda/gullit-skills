@@ -6,7 +6,7 @@ conversation between agents, tools, workstreams, and future sessions.
 The default artifact is a `context capsule`: a concise, portable summary that
 can be pasted into any agent or used as the prompt for a subagent.
 
-Use `workflow-intake` before creating a capsule when you are not sure which
+Use `work-intake` before creating a capsule when you are not sure which
 workstream should continue or which runtime should execute it.
 
 ## Default Rule

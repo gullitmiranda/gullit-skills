@@ -12,7 +12,8 @@ local-only, gitignored, or unpushed files that a reader cannot access.
 
 - These paths NEVER appear as links in publishable content, no verification
   needed:
-  - `.cursor/plans/` — local-only plan files
+  - `.agents/plans/` — local-only implementation plans
+  - `.cursor/plans/` — legacy local-only plan files
   - `.cursor/skills/` (when not part of the published repo)
   - `.factory/` — internal research and scratch
   - `wt-*/` — local git worktrees
@@ -43,9 +44,9 @@ mention ZeroPath.
 
 Skip for:
 
-- Agent-private context: planning docs under `.cursor/plans/`, internal research
-  under `.factory/`, scratch notes, agent transcripts. These are read only by the
-  agent and can freely reference local paths.
+- Agent-private context: planning docs under `.agents/plans/` or legacy
+  `.cursor/plans/`, internal research under `.factory/`, scratch notes, and agent
+  transcripts. These are read only by the agent and can freely reference local paths.
 - The chat reply itself (the user can resolve any path they see).
 
 ## Verification procedure for any other path
@@ -117,8 +118,8 @@ When the draft already references ZeroPath:
 
 Before invoking the publishing tool, run mentally:
 
-- [ ] No `.cursor/plans/`, `.factory/`, `wt-*/`, `agent-transcripts/`,
-      `/Users/`, `~/` references in the draft
+- [ ] No `.agents/plans/`, `.cursor/plans/`, `.factory/`, `wt-*/`,
+      `agent-transcripts/`, `/Users/`, `~/` references in the draft
 - [ ] Every relative path passes `git ls-files --error-unmatch`
 - [ ] No path matches `git check-ignore`
 - [ ] All referenced files are pushed (`git log origin/<base>..HEAD -- <path>`
