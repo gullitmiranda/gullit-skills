@@ -10,6 +10,8 @@ description: >-
 
 # JS Supply Chain Safety
 
+Apply this specialization together with `supply-chain-safety`. When their rules differ, the stricter rule wins.
+
 ## Hard Rules
 
 - Package manager: use what the repo declares — `packageManager` field in
