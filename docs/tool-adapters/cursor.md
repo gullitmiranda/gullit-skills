@@ -45,10 +45,6 @@ When the repository has an agent workspace authority, create implementation plan
 
 These are local operational state and must not be committed. Treat `.cursor/plans/` only as an explicit-migration compatibility path.
 
-## Skill invocation compatibility
-
-Use `work-plan` and `build` as public skill names. Do not assume `/plan` or `/build` is available as a skill command: Cursor may reserve, reinterpret, or omit slash commands by runtime configuration. The legacy `plan` and `build-plan` entries are compatibility-only.
-
 ## Parent Chat Checklist
 
 When using Cursor subagents or forks:

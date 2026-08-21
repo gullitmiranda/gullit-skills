@@ -1,17 +1,27 @@
 ---
 name: plan
-description: Legacy compatibility entry point for local implementation planning. Use only when an existing prompt, configuration, or installed skill explicitly names `plan`.
+description: Create or refine one local implementation plan that is ready for execution. Use when work needs an executable scope, approach, constraints, and validation contract before implementation.
 ---
 
-# Plan Compatibility
+# Plan
 
-`work-plan` is the public owner of implementation-plan authoring.
+Produce one local execution contract, not a tracked lifecycle artifact.
 
-## Rules
+## Hard Rules
 
-- Follow the `work-plan` contract for new or revised implementation plans.
-- Create workspace-standard plans in `.agents/plans/`, never as tracked notes.
-- Treat `.cursor/plans/` as a legacy local input and do not migrate it implicitly.
-- Do not preserve the retired tracked-plan lifecycle or promotion behavior.
+- Read `.agents/AGENTS.md` first when it exists.
+- Create new workspace-standard plans only as `.agents/plans/<slug>.plan.md`; they are local and never committed.
+- Treat `.cursor/plans/` as legacy compatibility input. Do not move, promote, synchronize, or reclassify it without explicit user authorization.
+- Do not create a plan under `.agents/notes/`, and do not assign plans note lifecycle states.
+- If a product, scope, or architecture decision needed for execution remains open, propose a refinement or ask the user. Decide it during implementation only with explicit authorization.
 
-Use `work-plan` for new planning work.
+## Procedure
+
+1. Inspect the request, authority, relevant code or documentation, and existing local plan input. State unresolved execution-relevant decisions.
+2. Create or refine one local plan with objective, scope, approach, constraints, implementation steps, validation, acceptance criteria, and meaningful alternatives or risks. Omit timelines and estimates unless the user explicitly asks for them.
+3. Confirm the plan is executable without making relevant product, scope, or architecture decisions. Otherwise return the smallest decision or refinement needed.
+4. Report the local path, readiness, open decisions, validation expectation, and next route: `build-plan`, `incremental-delivery`, or user decision.
+
+## Fallback
+
+Without a repository workspace authority, use the runtime's local planning convention. Do not infer that a runtime-local plan is tracked knowledge or permission to migrate it.

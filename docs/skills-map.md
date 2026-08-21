@@ -18,7 +18,7 @@ Use these to establish the artifact contract or make implementation ready.
 
 - `agent-workspace`: establish or migrate plans, notes, and scratch boundaries.
 - `agent-notes`: record durable decisions, research, missions, and coordination knowledge.
-- `work-plan`: create or refine one local implementation plan.
+- `plan`: create or refine one local implementation plan.
 - `incremental-delivery`: coordinate multiple independent, reviewable deliveries.
 - `model-selection`: compare complete runtime model configurations and defaults.
 
@@ -26,7 +26,7 @@ Use these to establish the artifact contract or make implementation ready.
 
 Use these to implement and assess a ready contract.
 
-- `build`: execute one ready local implementation plan.
+- `build-plan`: execute one ready local implementation plan.
 - `incremental-delivery`: coordinate multi-increment implementation when needed.
 - `work-closeout`: classify a plan or context and perform only confirmed closure actions.
 - `quality`: apply checks and output hygiene.
@@ -49,11 +49,11 @@ Ambiguous feature work:
 work-intake
 -> workspace-status
 -> grill-with-docs when decisions need user input
--> work-plan
+-> plan
 -> incremental-delivery when multiple independent deliveries are needed
 -> agent-selection
 -> git-worktree when isolation is needed
--> build
+-> build-plan
 -> quality
 -> pr when requested
 -> work-closeout when the user wants plan assessment or closure
@@ -65,7 +65,7 @@ Existing ready plan:
 work-intake
 -> agent-selection
 -> git-worktree when needed
--> build
+-> build-plan
 -> quality
 -> work-closeout
 ```
@@ -75,8 +75,8 @@ Bug or regression:
 ```text
 work-intake
 -> establish a reproducible feedback loop
--> work-plan when the fix needs a contract
--> build
+-> plan when the fix needs a contract
+-> build-plan
 -> quality
 ```
 
@@ -86,9 +86,9 @@ Architecture work:
 work-intake
 -> workspace-status
 -> grill-with-docs
--> work-plan
+-> plan
 -> incremental-delivery
 -> agent-selection
--> build
+-> build-plan
 -> quality
 ```

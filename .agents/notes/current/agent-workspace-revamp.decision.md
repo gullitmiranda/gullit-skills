@@ -162,10 +162,10 @@ skills/
       context-capsule/
 
     planning/
-      plan/                        -> work-plan/
+      plan/                        # retain pending post-migration naming review
 
     execution/
-      build-plan/                  -> build/
+      build-plan/                  # retain pending post-migration naming review
       incremental-delivery/        # retain; slim duplicated guardrail rules
       work-context-cleanup/        -> work-closeout/
 
@@ -246,7 +246,7 @@ A high-level idea needs only a reference entry. Do not present an external skill
 
 ### Shared artifact-contract rewrite
 
-Treat `agent-workspace`, `work-plan`, `work-intake`, `build`, and `work-closeout` as a coordinated semantic rewrite, not a set of independent renames. Their common contract is:
+Treat `agent-workspace`, `plan`, `work-intake`, `build-plan`, and `work-closeout` as a coordinated semantic rewrite, not a set of independent renames. Their common contract is:
 
 - implementation plans are local `.agents/plans/` artifacts that are discarded, archived locally, or distilled after use;
 - tracked lifecycle artifacts are `.agents/notes/{proposed,current,retired,archived}`;
@@ -254,7 +254,7 @@ Treat `agent-workspace`, `work-plan`, `work-intake`, `build`, and `work-closeout
 
 `agent-notes` is a distinct recurring skill for creating, updating, retiring, archiving, superseding, and distilling notes. `agent-workspace` owns setup, migration, and explanation of the artifact model.
 
-`incremental-delivery` remains a distinct execution skill for coordinating multiple independent deliveries. Extract its reusable safety, validation, branch, and publication rules to the appropriate guardrails rather than absorbing the entire skill into `work-plan`.
+`incremental-delivery` remains a distinct execution skill for coordinating multiple independent deliveries. Extract its reusable safety, validation, branch, and publication rules to the appropriate guardrails rather than absorbing the entire skill into `plan`.
 
 `work-closeout` includes an archive mode with explicit user confirmation. Retire `plan-archive` after moving its required behavior and updating callers.
 
@@ -269,14 +269,11 @@ Before changing any skill path, create a reference inventory for every use of `.
 
 Update `publish-safe-links` to block local `.agents/plans/` references in publishable output.
 
-### Post-restructure harness validation
+### Post-migration naming review
 
-After restructuring, validate command compatibility in every supported harness:
+After the installer safely migrates existing source paths and installations, evaluate whether the public names `plan` and `build-plan` should become simpler. Treat this as a separate follow-up decision informed by verified runtime behavior and user needs.
 
-- whether `/plan` is reserved, enters a harness plan mode, or conflicts with the `work-plan` skill; and
-- whether `/build-plan` should become `/build` without colliding with a harness command or another skill.
-
-`work-plan` and `build` are target public names for this validation. They still describe one plan artifact type and one execution responsibility, respectively.
+Do not add runtime-command invocation or collision guidance to durable documentation as part of this revamp.
 
 ### Deferred dependency-model work
 
