@@ -126,6 +126,7 @@ Maintain a matrix only as measured evidence becomes available. Empty cells mean
 
 | Runtime | Workload | Configuration | Quality | Cost | Latency | Reliability | Evidence | Decision |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Zed | Edit prediction (next-edit) | `ollama` + `sweep-next-edit` | Provisional | ~$0 | 5-10 s cold, <500 ms warm | TBD | [`zed-sweep-next-edit-ollama.md`](research/zed-sweep-next-edit-ollama.md) | Needs pilot validation before promotion |
 | Zed | Planning | Not evaluated | - | - | - | - | - | Inherit global fallback |
 | Zed | Safe implementation | Not evaluated | - | - | - | - | - | Inherit global fallback |
 | Zed | Trusted delivery | Not evaluated | - | - | - | - | - | Inherit global fallback |
