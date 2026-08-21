@@ -9,7 +9,7 @@ Coordinate multiple deliveries; do not replace planning, execution, or guardrail
 
 ## Hard Rules
 
-- Start only after the target outcome and execution-relevant decisions are resolved. Route open decisions to `work-plan` or the user.
+- Start only after the target outcome and execution-relevant decisions are resolved. Route open decisions to `plan` or the user.
 - Use the isolation, branch, commit, validation, and publication rules from `git-worktree`, `git`, `quality`, `safety`, and `pr`; do not restate or weaken them here.
 - Scope each increment to independently testable user value. When pull requests are requested, use one pull request per increment unless the user approves an exception.
 - Treat failing or unrun validation as incomplete evidence, not a completed increment.

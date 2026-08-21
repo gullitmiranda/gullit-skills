@@ -35,15 +35,15 @@ Skills remain in flat source paths while the installer work adds safe migration 
 The core workflow is self-contained and composes small skills instead of requiring third-party installs:
 
 - `work-intake`: inspect context and select the smallest next route.
-- `work-plan`: create or refine one ready local implementation plan.
-- `build`: execute one ready local implementation plan.
+- `plan`: create or refine one ready local implementation plan.
+- `build-plan`: execute one ready local implementation plan.
 - `incremental-delivery`: coordinate multiple independent deliveries.
 - `work-closeout`: assess a plan or work context and perform confirmed closeout actions.
 - `agent-workspace`: establish or migrate the workspace contract.
 - `agent-notes`: manage tracked notes and their lifecycle.
 - `cursor-project-path-migration`: move a Cursor project path with reversible workspace-state recovery.
 
-Legacy names such as `workflow-intake`, `engineering-workflow`, `plan`, `build-plan`, `work-context-cleanup`, `workflow`, `agents-standard`, and `project-path-migration` are compatibility entry points only. New workflows should use the public names above.
+Legacy names such as `workflow-intake`, `engineering-workflow`, `work-context-cleanup`, `workflow`, `agents-standard`, and `project-path-migration` are compatibility entry points only. New workflows should use the public names above.
 
 See [`docs/skills-map.md`](docs/skills-map.md) for the workflow map, [`docs/workflows/`](docs/workflows/) for examples, and [`docs/tool-adapters/`](docs/tool-adapters/) for runtime guidance.
 
