@@ -49,7 +49,7 @@ This inventory records the tracked references that must change for the agent wor
 
 ## Source-home gate
 
-The installed CLI can recursively discover nested skill directories, but the current implementation does not safely reconcile existing installations when a skill's source path or basename changes. It also does not yet implement the decision's `ai-skills.yaml` dependency contract. Do not make physical source-home moves until that separate CLI work provides and validates installation migration, rename/retirement reconciliation, collision handling, and the declared dependency model.
+The installed CLI can recursively discover nested skill directories, but the current implementation does not safely reconcile existing installations when a skill's source path or basename changes. It also does not yet implement the decision's `ai-skills.yaml` dependency contract. New public skill identities may remain in compatible flat source directories while physical source-home moves are deferred. Do not make those moves until the separate CLI work provides and validates installation migration, rename/retirement reconciliation, collision handling, and the declared dependency model.
 
 ## Validation evidence
 
