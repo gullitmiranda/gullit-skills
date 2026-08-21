@@ -9,4 +9,4 @@ Thumbs.db
 *.swo
 
 # Legacy local agent plans
-.cursor/plans/
+.cursor/plans
