@@ -17,7 +17,7 @@ This inventory records the tracked references that must change for the agent wor
 | `.gitignore` | Does not portably exclude legacy plans. | Compatibility read; ignore `.cursor/plans/` so local-plan handling does not depend on a developer-global ignore file. | `safety` | Updated in this block. |
 | `.cursor/skills/plan-archive/SKILL.md` | Archives plans under the legacy local path through a separate Cursor skill. | Remove; fold confirmed local-plan archival into `work-closeout`. | `work-closeout` | Retire after replacement validation. |
 | `README.md` | Advertises the Cursor-only archive skill and its install path. | Remove; describe the replacement skill and supported installation source after source-home migration is safe. | Documentation | Update with retired adapter. |
-| `docs/tool-adapters/cursor.md` | Creates new local plans in the legacy directory. | Local plan; create plans in `.agents/plans/`, mentioning the legacy directory only as opt-in compatibility. | `work-plan` | Update adapter. |
+| `docs/tool-adapters/cursor.md` | Creates new local plans in the legacy directory. | Remove path instruction; the workspace authority owns plan location and migration. | `agent-workspace` | Updated after adapter review. |
 | `docs/workflows/README.md` | Keeps plans local but names the legacy directory. | Local plan; retain the local-only rule with the canonical path. | `agent-workspace` | Update workflow guidance. |
 | `skills/agents-standard/SKILL.md` | Treats plans as a tracked lifecycle tree and preserves legacy plans as local inputs. | Split into local plan, tracked note, and compatibility read rules. | `agent-workspace`, `agent-notes` | Rewrite required. |
 | `skills/agents-standard/templates/agents-AGENTS.md` | Defines tracked plans, scratch plans, duplicated lifecycle state, and plan-contained decisions. | Split into local-plan and tracked-note layout. | `agent-workspace` | Rewrite required. |
@@ -49,7 +49,7 @@ This inventory records the tracked references that must change for the agent wor
 
 ## Source-home gate
 
-The installed CLI can recursively discover nested skill directories, but the current implementation does not safely reconcile existing installations when a skill's source path or basename changes. It also does not yet implement the decision's `ai-skills.yaml` dependency contract. New public skill identities may remain in compatible flat source directories while physical source-home moves are deferred. Do not make those moves until the separate CLI work provides and validates installation migration, rename/retirement reconciliation, collision handling, and the declared dependency model.
+The installed CLI can recursively discover nested skill directories, but the current implementation does not yet implement the decision's `ai-skills.yaml` dependency contract or validate the target source-home migration. Reinstallation is expected after the CLI rewrite, so legacy wrapper skills are not a compatibility mechanism. New public skill identities may remain in compatible flat source directories while physical source-home moves are deferred. Do not make those moves until the separate CLI work provides and validates nested discovery, the declared dependency model, collision handling, and end-to-end installation coverage.
 
 ## Validation evidence
 
