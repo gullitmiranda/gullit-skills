@@ -35,15 +35,6 @@ Do not ask subagents to return full logs unless logs are the evidence.
 Before forking, create or update a context capsule so the new thread has a
 clean framing even if it inherits older context.
 
-## Use Cursor Plans For
-
-Cursor and Claude CLI plans belong under:
-
-```text
-.cursor/plans/<workstream>.plan.md
-```
-
-These are local operational state and must not be committed.
 
 ## Parent Chat Checklist
 

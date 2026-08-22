@@ -1,60 +1,32 @@
 # Bug Diagnosis
 
-Use this workflow when the user reports a bug, regression, failing test,
-exception, or performance problem.
+Use this workflow for a reported bug, regression, failing test, exception, or performance problem.
 
 ## Flow
 
 ```text
-workspace-status
+work-intake
+-> workspace-status when repository context is unclear
+-> establish a reproducible feedback loop
+-> work-plan
 -> agent-selection
--> diagnose
--> tdd for regression coverage when appropriate
+-> build-plan
 -> quality
--> pr
+-> work-closeout when requested
 ```
 
 ## Steps
 
-1. Confirm the target repo and symptom.
-   - Use `workspace-status` if the workspace has multiple repos.
-   - Restate the user-visible failure.
+1. Confirm the target repository and user-visible symptom.
+2. Create the fastest deterministic signal available: a failing test, script, request, browser harness, replay, or fixture.
+3. Reproduce and minimize the failure before proposing a fix. Probe one variable at a time and keep temporary instrumentation easy to remove.
+4. Create or refine one ready local implementation plan with `work-plan`, then execute the proven fix with `build-plan`.
+5. Re-run the original feedback loop, remove temporary instrumentation, and run `quality`.
 
-2. Choose the runtime.
-   - Use IDE agent when reproduction needs interactive inspection.
-   - Use terminal/ACP/Pi-style agent when the bug can be driven by a command loop, test harness, script, or replay.
-   - Use a context capsule before handing the bug to another tool.
+## Expected outputs
 
-3. Build the feedback loop.
-   - Use `diagnose`.
-   - Do not start by guessing fixes.
-   - Create the fastest deterministic signal available: failing test, script, curl command, browser harness, replay, or fixture.
-
-4. Reproduce and minimize.
-   - Confirm the loop shows the same bug the user described.
-   - Minimize until the failure is sharp enough to debug.
-
-5. Hypothesize and instrument.
-   - Rank hypotheses.
-   - Probe one variable at a time.
-   - Tag temporary debug output so cleanup is easy.
-
-6. Fix and prevent regression.
-   - Add a regression test at the right interface when possible.
-   - If no good test surface exists, record that as architecture friction.
-   - Apply the smallest fix that addresses the proven cause.
-
-7. Close out.
-   - Re-run the original feedback loop.
-   - Remove temporary instrumentation.
-   - Run `quality`.
-   - Use `pr` when requested.
-
-## Expected Outputs
-
-- Repro command or harness.
-- Proven cause.
-- Fix.
-- Regression coverage or documented reason it was not possible.
-- Validation evidence.
-- Architecture follow-up if the code was hard to test.
+- Reproduction evidence.
+- A proven cause or explicitly bounded uncertainty.
+- The smallest justified fix.
+- Regression coverage when an appropriate test surface exists.
+- Validation evidence and any follow-up architecture friction.
