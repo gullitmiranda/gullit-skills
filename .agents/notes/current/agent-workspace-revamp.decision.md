@@ -124,7 +124,7 @@ Skill identity, workflow position, consumer dependency, and source-directory pla
 
 - A skill has one atomic responsibility and a clear, scope-specific name.
 - A workflow describes the ordered use of skills to reach an outcome.
-- A consuming project or personal setup declares the skills it needs as dependencies in `ai-skills.yaml`.
+- A consuming project or personal setup declares the skills it needs as dependencies in `skills.yaml`.
 - Source-directory placement is a navigational home for maintainers, not a restriction on which workflows may use the skill.
 
 A workflow must not require separately installed third-party skills to complete its core path. External material is copied or adapted into an owned skill only when justified. Workflow documentation composes atomic skills; it must not duplicate their instructions or create one large orchestration skill responsible for every phase.
@@ -143,11 +143,11 @@ The revised skill set should distinguish these responsibilities:
 - executing a ready implementation plan; and
 - closing or archiving a local plan.
 
-Choose a nested source layout that is easy to navigate. The installer must evolve to discover, install, update, and migrate skills at their declared locations. Installed-skill discoverability and existing paths remain explicit migration concerns.
+Choose a nested source layout that is easy to navigate. The current installer can discover nested skills; complete the source tree, then reinstall skills from a clean state. The rewritten CLI will later define vendored installation behavior.
 
 ### Target source-home tree
 
-This is the target tree. It creates no directories yet. `->` marks a required rename, merge, or retirement during implementation.
+This is the target tree. `->` marks a required rename, merge, or retirement during implementation.
 
 ```text
 skills/
@@ -219,13 +219,26 @@ retire/
   plan-archive/                    -> work-closeout archive mode
 ```
 
-The tree deliberately places skills in one primary home only. Workflows and consumer `ai-skills.yaml` dependencies may compose skills across these homes. `engineering/discovery/` is justified by the pre-planning role of `work-intake` and `grill-with-docs`; `engineering/execution/` distinguishes plan execution and multi-increment coordination from plan authoring; `reporting/` is justified by the cross-system evidence-reconciliation responsibility of `activity-report`. `engineering/maintenance/` and `integrations/` remain distinct homes because each names a stable primary responsibility.
+The tree deliberately places skills in one primary home only. Workflows and consumer `skills.yaml` dependencies may compose skills across these homes. `engineering/discovery/` is justified by the pre-planning role of `work-intake` and `grill-with-docs`; `engineering/execution/` distinguishes plan execution and multi-increment coordination from plan authoring; `reporting/` is justified by the cross-system evidence-reconciliation responsibility of `activity-report`. `engineering/maintenance/` and `integrations/` remain distinct homes because each names a stable primary responsibility.
 
 ### Dependency manifest boundary
 
-A consuming project or personal setup declares its required skills in `ai-skills.yaml`. The manifest describes install intent; workflow documents describe when and how selected skills are used.
+A consuming project or personal setup may declare actual skill dependencies in `skills.yaml`. Workflow documents describe when and how selected skills are used.
 
-The dependency schema, installer behavior, and provenance format are owned by the separate `ai-skills-cli` design work. This revamp assumes only that dependencies are listed in `ai-skills.yaml` and that the future installer supports the resulting nested skill locations.
+The future dependency shape may resemble:
+
+```yaml
+version: 1
+
+dependencies:
+  - source: <source specifier accepted by npx skills>
+    include:
+      - <skill-name>
+    exclude:
+      - <skill-name>
+```
+
+`include` and `exclude` are optional. Do not use this manifest for upstream provenance, copied material, or inspiration: `docs/references.md` is the canonical reference record. Do not validate or depend on this shape as a stable installer contract. The rewritten CLI will later install skills as vendored copies, so its final schema and behavior remain owned by the separate `ai-skills-cli` work.
 
 ### External sources and provenance
 
@@ -271,20 +284,20 @@ Update `publish-safe-links` to block local `.agents/plans/` references in publis
 
 ### Post-migration naming review
 
-After the rewritten installer supports the target source-home tree and skills have been reinstalled, evaluate whether the public names `work-plan` and `build-plan` should become simpler. Treat this as a separate follow-up decision informed by verified runtime behavior and user needs.
+After the target source-home tree is complete and skills have been reinstalled from it, evaluate whether the public names `work-plan` and `build-plan` should become simpler. Treat this as a separate follow-up decision informed by verified runtime behavior and user needs.
 
 Do not add runtime-command invocation or collision guidance to durable documentation as part of this revamp.
 
 ### Deferred dependency-model work
 
-Dependencies are listed in `ai-skills.yaml`. Its schema, installer behavior, and provenance format are deliberately outside this revamp and will be defined by the separate `ai-skills-cli` design work. Consult that definition at implementation time.
+Dependencies are listed in `skills.yaml`. Its schema, installer behavior, and provenance format are deliberately outside this revamp and will be defined by the separate `ai-skills-cli` design work. Consult that definition at implementation time.
 
 - Exact `ai-skills-cli` implementation and command surface.
-- Exact `ai-skills.yaml` schema and physical source layout.
+- Exact `skills.yaml` schema and vendored-install behavior.
 - Which external artifacts to copy or adapt, after license review.
 - Revision of `docs/references.md` from its current externally-installed dependency framing to the provenance model defined there.
 
-Migration must preserve installed-skill discoverability and account for existing paths.
+Complete the target source-home tree, reinstall skills from a clean state, then use that updated skill set to finish the CLI work.
 
 ## Alternatives considered
 
