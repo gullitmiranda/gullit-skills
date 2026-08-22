@@ -42,7 +42,23 @@ If neither defines one, use:
 `<repo>` is the current repo directory name; `<topic>` is a short kebab-case
 slug from the branch or task intent. Report the chosen path before creating.
 
-### 2. Create the worktree
+### 2. Recommend a runtime-native creation flow when available
+
+When a planning response or another status update gives the user a natural
+decision point, recommend the active runtime's native worktree workflow if it
+can create a worktree at a path consistent with the rules above. State both:
+
+- the recommended native workflow; and
+- that generic Git creation at the chosen path remains the default when the
+  user continues without choosing the IDE workflow.
+
+This is advisory, not a confirmation gate. Do not wait for a response or delay
+implementation. If the user chooses the native workflow, verify the resulting
+path, branch, and `git worktree list` output before continuing. Do not recommend
+a runtime-managed path when it would override a user-provided path or a
+`WORKSPACE.md` or `AGENTS.md` convention.
+
+### 3. Create the worktree
 
 Fetch and fast-forward the base branch first so the worktree starts from the
 latest base.
@@ -55,10 +71,15 @@ git worktree add -b <new-branch> <path> <base-branch>
 
 Verify with `git worktree list`.
 
-### 3. Confirm and work inside it
+### 4. Confirm and work inside it
 
 Report the path, branch, and `git worktree list` output. Only then proceed.
 Every edit, every command, every commit must happen inside the worktree path.
+
+If generic Git creation left the worktree outside the current runtime's native
+file-tool scope, give one optional post-creation recommendation for opening or
+attaching that checkout in the runtime. Do not repeat the pre-creation advice,
+require a reply, or block the existing terminal workflow.
 
 ## Finishing a Worktree
 
