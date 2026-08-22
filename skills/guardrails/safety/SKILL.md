@@ -7,21 +7,23 @@ description: Git, command, Kubernetes, data, workspace, and temporary files safe
 
 ## Hard Rules
 
-- Do not commit unless explicitly requested.
+- Do not commit unless explicitly requested or authorized by an applicable user or repository policy.
 - Do not push unless explicitly requested; never push directly to main/master.
 - Never commit to main/master unless explicitly requested.
 - Never run `git reset --hard` without explicit user approval.
 - Never add gitignored files to git (`git add`) — at most, show the command for the user to run themselves.
-- Never commit files under `.agents/plans/` or `.cursor/plans/` — both are local-only plan paths; the latter is legacy compatibility input.
+- Never commit files under `.agents/plans/` or `.cursor/plans` — one physical local plan tree (canonical `.agents/plans/`; `.cursor/plans` may be a compatibility symlink).
 - Never execute `kubectl delete` or `kubectl apply`.
 - Do not change git stage without being asked; never commit unstaged changes without explicit request.
 - When splitting, stacking, or consolidating work from an existing feature/draft branch, never execute the mission on the source branch. Create a new working branch (or worktree) from the agreed base and treat the source branch as read-only input.
+- Before any `git commit` or `git push` in a personal repository, run the data-boundary scan. Do not skip it for notes, docs, or "I'll sanitize later."
 
 ## Git
 
 - In repos with Trunk git hooks, close stdin on `git commit` by appending `</dev/null` to prevent hook hangs in pseudo-terminals. If Trunk still appears stuck or logs `Socket closed`, `Connection refused`, or `Daemon stopped`, use `trunk daemon shutdown` only as fallback recovery before retrying the commit.
 - Always create feature branches for changes; use `/git-branch` for safe branch creation. `/commit` automatically creates a feature branch when on main/master.
 - For incremental delivery, branch-split, or PR-stack work, create the delivery branch/worktree before editing anything (see `incremental-delivery/SKILL.md` for the full protocol — slice mapping, cherry-picking, validation per increment).
+- When an explicit task or plan contract, or an applicable user or repository policy, authorizes incremental commits, make one well-scoped commit after each completed, validated logical implementation block; do not commit merely per changed file or defer all blocks to a final oversized commit.
 - Verify branch before committing; validate conventional commit format; show what will be committed before execution.
 - Always create pull requests for main branch changes; use `/pr-create` for safe PR creation; verify the remote branch exists before pushing.
 

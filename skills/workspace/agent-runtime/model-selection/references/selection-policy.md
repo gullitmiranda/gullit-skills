@@ -2,7 +2,7 @@
 
 Use this reference with `model-selection` to turn a model-choice question into
 a comparable, reversible decision. It adds evaluation detail to the durable
-policy in [`docs/model-selection.md`](../../../docs/model-selection.md).
+policy in [`docs/model-selection.md`](../../../../../docs/model-selection.md).
 
 ## Evaluation Record
 

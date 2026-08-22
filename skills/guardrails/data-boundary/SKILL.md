@@ -1,6 +1,9 @@
 ---
 name: data-boundary
-description: Prevent sensitive, private, or context-specific information from leaking into repositories or published content. Use before writing, committing, or publishing material outside its intended context.
+description: >-
+  ALWAYS use before writing, editing, committing, or pushing in any personal or
+  public repository. Prevent employer, client, or private identifiers from
+  leaking outside their authorized context.
 ---
 
 # Data Boundary Guard
@@ -49,12 +52,14 @@ Before writing or publishing:
 4. Generalize or remove information that is not required for the reusable behavior.
 5. Stop and ask when the boundary or authorization is ambiguous.
 
-Before committing to a public personal repository:
+Before writing, committing, or pushing to a public personal repository:
 
+- Classify the destination. Research notes, operating cards, and "temporary" docs are not exceptions.
 - Inspect the staged diff.
-- Run a repository-specific forbidden-pattern scan.
-- Confirm that examples are generic and portable.
+- Run the machine forbidden-pattern scan (`personal-publish-guard`). Treat a miss, skip, or `--no-verify` as a failed publish, not a warning.
+- Confirm that examples are generic and portable (`<company>`, `<org>`, `<work>`, `<repo>`).
 - Confirm that no private source, logs, prompts, tool arguments, or credentials are included.
+- If the scan is missing or the boundary is ambiguous, stop. Do not publish and "generalize later."
 
 ## Private Personal Archives
 
