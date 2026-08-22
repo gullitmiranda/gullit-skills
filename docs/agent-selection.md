@@ -162,20 +162,13 @@ Before escalating, create or update a context capsule.
 
 ## Required Output
 
-When recommending a runtime, say:
+Write the runtime recommendation as ordinary Markdown prose. Cover the
+recommended runtime, autonomy mode, why it fits this phase, the context to
+transfer, and the expected return. This is reader-facing decision guidance, so
+do not put it in a code fence.
 
-- Recommended runtime.
-- Autonomy mode.
-- Why it fits this phase.
-- What context to pass.
-- What result should come back.
-
-Example:
-
-```text
-Recommended runtime: terminal agent.
-Autonomy mode: autonomous.
-Why: this is a long, harness-driven implementation with repeated test runs.
-Context: pass the context capsule plus the target branch/worktree.
-Expected return: changed files, commands run, validation result, blockers.
-```
+When work moves to another runtime, follow the recommendation with a
+`## Handoff Prompt` section. Put the completed context capsule in one fenced
+`markdown` block so it can be copied unchanged into the receiving thread. The
+handoff prompt contains only the receiving agent's context and task; it does
+not repeat the execution recommendation.
