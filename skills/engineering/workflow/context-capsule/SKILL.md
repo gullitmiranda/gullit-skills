@@ -14,6 +14,9 @@ without reading the whole conversation.
 - Do not include work-only information in personal or public repositories unless it is explicitly safe.
 - Mark validation as stale unless it was run in the current session or is immutable CI evidence.
 - Do not hide blockers; make them explicit.
+- When the capsule is a prompt for another thread, return its complete content
+  in one fenced `markdown` block. Keep recommendations and other reader-facing
+  guidance outside that block.
 
 ## Process
 

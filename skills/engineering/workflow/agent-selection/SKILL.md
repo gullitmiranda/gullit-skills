@@ -38,11 +38,12 @@ Choose where the next step should run before doing substantial work.
 | Tool switch or resume | Context capsule |
 | Exact history required | Full transcript transfer |
 
-## Required Recommendation Format
+## Output
 
-```text
-Recommended runtime:
-Why:
-Context to pass:
-Expected return:
-```
+Write the execution recommendation as normal Markdown prose. State the runtime,
+autonomy mode, why it fits, the context to transfer, and the expected return.
+Do not put this reader-facing guidance in a code fence.
+
+When work moves to another runtime, present the completed `context-capsule`
+separately in one fenced `markdown` block. That block is the copyable prompt;
+the recommendation remains outside it.
