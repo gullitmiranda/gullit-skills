@@ -52,7 +52,9 @@ work-intake
 -> work-plan
 -> incremental-delivery when multiple independent deliveries are needed
 -> agent-selection
+-> selected runtime adapter recommends native worktree creation when its path complies with policy
 -> git-worktree when isolation is needed
+-> optional runtime attachment only after generic Git creation
 -> build-plan
 -> quality
 -> pr when requested
@@ -64,7 +66,9 @@ Existing ready plan:
 ```text
 work-intake
 -> agent-selection
+-> selected runtime adapter recommends native worktree creation when its path complies with policy
 -> git-worktree when needed
+-> optional runtime attachment only after generic Git creation
 -> build-plan
 -> quality
 -> work-closeout

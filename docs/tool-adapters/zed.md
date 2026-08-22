@@ -25,6 +25,46 @@ Use a context capsule as the opening message. Include:
 
 Avoid pasting full transcripts unless exact wording matters.
 
+## Worktrees
+
+### Recommend Zed creation before generic Git
+
+When an implementation plan needs an isolated worktree, recommend Zed's native
+flow before generic Git creation when the user has a natural decision point:
+
+1. Use the title-bar worktree picker or `git: worktree` to create or select the
+   checkout.
+2. Open or continue in that worktree project.
+3. Start a thread in that project so its native file tools target the isolated
+   checkout.
+
+State that generic Git creation remains the default if the user continues
+without choosing this flow. Do not wait for confirmation or delay autonomous
+implementation.
+
+Use generic Git creation when the user, `WORKSPACE.md`, or repository
+`AGENTS.md` requires a path that Zed's managed flow cannot satisfy.
+
+### Attach an externally created worktree only as a fallback
+
+After generic Git creation, the recommended Zed path is to open the checkout as
+an independent project, for example with `zed -n <worktree-path>`, then start a
+new thread using a context capsule.
+
+To retain the existing thread instead, use **File > Add Folder to Project** and
+select the worktree. This broadens the current multi-root project to include
+both checkouts, so the next prompt should name the exact root the agent may
+edit. If the user chooses neither option, continue in the current thread with
+the existing terminal workflow.
+
+`zed -a` adds a separate project to the window's Threads Sidebar; it does not
+add a root to the current project. Likewise, `agent.tool_permissions` controls
+approval and `agent.sandbox_permissions.write_paths` controls terminal writes;
+neither gives native file tools access to a path outside the project roots. See
+[Windows & Projects](https://zed.dev/docs/windows-and-projects),
+[Tool Permissions](https://zed.dev/docs/ai/tool-permissions), and
+[Sandboxing](https://zed.dev/docs/ai/sandboxing).
+
 ## Switching From Cursor To Zed
 
 Before switching:
