@@ -1,117 +1,94 @@
 # Skills Map
 
-This map groups personal and external skills by workflow phase. It is a
-navigation aid: atomic skills stay installable from `skills/<name>/`, while
-workflow docs describe how to compose them.
+This map groups the repository's atomic skills by workflow role. Source paths are nested under `skills/` by primary responsibility.
 
-## Phases
+## Discovery and routing
 
-### Discovery
+Use these when the next step or the relevant context is unclear.
 
-Use these when the goal, domain language, or relevant code area is still fuzzy.
+- `work-intake`: inspect context, classify artifacts, and select the smallest route.
+- `workspace-status`: understand repository boundaries in multi-repository workspaces.
+- [`grill-with-docs`](../skills/engineering/discovery/grill-with-docs/README.md): challenge a proposal against domain language and durable decisions.
+- `agent-selection`: select the right runtime before substantial work.
+- `context-capsule`: transfer the smallest useful context across agents or tools.
 
-- `workflow-intake`: analyze available context and recommend how to start or resume before implementation.
-- `workspace-status`: understand repository boundaries in multi-repo workspaces.
-- [`grill-with-docs`](../skills/grill-with-docs/README.md): challenge a plan against the domain model, update `CONTEXT.md`, and capture durable decisions.
-- `zoom-out` from `mattpocock/skills`: build a higher-level map of an unfamiliar code area.
-- `prototype` from `mattpocock/skills`: answer a design question with throwaway logic or UI code.
+## Workspace and planning
 
-### Planning
+Use these to establish the artifact contract or make implementation ready.
 
-Use these when the work needs structure before implementation.
+- `agent-workspace`: establish or migrate plans, notes, and scratch boundaries.
+- `agent-notes`: record durable decisions, research, missions, and coordination knowledge.
+- `work-plan`: create or refine one local implementation plan.
+- `incremental-delivery`: coordinate multiple independent, reviewable deliveries.
+- `model-selection`: compare complete runtime model configurations and defaults.
 
-- `plan`: create or update tool-appropriate local plans.
-- `incremental-delivery`: split large work into testable, reviewable increments.
-- `to-prd` from `mattpocock/skills`: turn agreed context into a PRD in the project issue tracker.
-- `to-issues` from `mattpocock/skills`: break a PRD or plan into vertical-slice issues.
-- `agent-selection`: choose the right runtime before substantial work starts.
-- `model-selection`: compare complete model configurations and validate defaults with runtime-specific evidence.
+## Execution and closeout
 
-### Isolation
+Use these to implement and assess a ready contract.
 
-Use these before parallel or risky implementation.
+- `build-plan`: execute one ready local implementation plan.
+- `incremental-delivery`: coordinate multi-increment implementation when needed.
+- `work-closeout`: classify a plan or context and perform only confirmed closure actions.
+- `quality`: apply checks and output hygiene.
 
-- `git-worktree`: enforce isolated worktrees when requested.
-- `git`: apply safe branch, commit, and reset workflows.
-- `safety`: apply command, workspace, git, and destructive-operation safety rules.
-- `data-boundary`: prevent work-only information from leaking into personal or public repositories.
+## Guardrails
 
-### Execution
+Use these whenever their boundary applies.
 
-Use these to implement changes with tight feedback loops.
+- `safety`, `git`, and `git-worktree`: repository state, branch, worktree, and destructive-operation safety.
+- `data-boundary`: prevent private or context-specific information from leaking.
+- `supply-chain-safety` and `js-supply-chain-safety`: secure package and tool installation; the stricter applicable rule wins.
+- `publish-safe-links`: prevent local or unpublished paths from appearing in publishable text.
+- `pr`, `pr-delivery`, and `pr-babysit`: pull-request lifecycle work when requested.
 
-- `tdd` from `mattpocock/skills`: implement one behavior at a time with red-green-refactor.
-- `diagnose` from `mattpocock/skills`: debug with a reproducible feedback loop before hypothesizing.
-- `quality`: apply code, documentation, testing, performance, and security standards.
-- `supply-chain-safety`: universal rules for installing packages or global CLIs in any ecosystem (sfw-wrapped installs, mise for globals, minimum-release-age, pre-install inspection).
-- `js-supply-chain-safety`: JS-specific extension — PM detection, native release-age configs, forbidden package.json patterns, npm worm IOCs.
-- `trunk-safety`: protect Trunk setup and upgrades.
+## Default compositions
 
-### Architecture
-
-Use these when design friction, testability, or module depth matters.
-
-- `improve-codebase-architecture` from `mattpocock/skills`: identify deepening opportunities informed by domain docs and ADRs.
-- [`grill-with-docs`](../skills/grill-with-docs/README.md): resolve terminology and durable trade-offs discovered during architecture work.
-- `tech-debt`: record deferred technical debt without starting follow-up work.
-
-### Validation And Review
-
-Use these before handing work to a reviewer or maintainer.
-
-- `quality`: run appropriate checks and keep generated text clean.
-- `pr`: create, update, and validate pull requests.
-- `pr-delivery`: create an early draft, run a guarded or strict fixed-revision review, repair clear findings, and hand the final reviewed revision to the watcher.
-- `pr-babysit`: monitor one reviewed PR SHA, triage scoped CI/comments/conflicts, and safely watch, ready, or explicitly merge it.
-- `publish-safe-links`: verify published links and file references before posting externally.
-- `zeropath`: handle ZeroPath-specific findings and evidence when relevant.
-
-### Context Management
-
-Use these when parallel work, context pressure, or tool switching would otherwise
-pollute the main conversation.
-
-- `workflow-intake`: decide whether to continue in the current thread or route work to another runtime.
-- `context-capsule`: create a portable summary for subagents, forks, Zed threads, terminal agents, or future resumes.
-- `agent-selection`: decide whether the next step belongs in the main chat, subagent, fork, IDE agent, or terminal/ACP/Pi-style agent.
-- `handoff` from `mattpocock/skills`: compact a session when context window pressure is the main problem.
-- Pi-style transcript tools such as `copy-all`: use only when exact conversational history matters.
-
-## Default Composition
-
-For ambiguous feature work:
+Ambiguous feature work:
 
 ```text
-workflow-intake when starting from unknown state
+work-intake
 -> workspace-status
--> zoom-out or grill-with-docs
--> plan or to-prd
--> incremental-delivery or to-issues
+-> grill-with-docs when decisions need user input
+-> work-plan
+-> incremental-delivery when multiple independent deliveries are needed
 -> agent-selection
 -> git-worktree when isolation is needed
--> tdd
+-> build-plan
 -> quality
--> pr-delivery when an early draft, fixed-revision review, and remote-check follow-up are requested
--> pr for direct lifecycle operations
+-> pr when requested
+-> work-closeout when the user wants plan assessment or closure
 ```
 
-For hard bugs:
+Existing ready plan:
 
 ```text
-workspace-status
--> diagnose
--> tdd for regression coverage when appropriate
+work-intake
+-> agent-selection
+-> git-worktree when needed
+-> build-plan
 -> quality
--> pr
+-> work-closeout
 ```
 
-For architecture work:
+Bug or regression:
 
 ```text
-workspace-status
--> zoom-out
--> improve-codebase-architecture
--> grill-with-docs for durable decisions
+work-intake
+-> establish a reproducible feedback loop
+-> work-plan when the fix needs a contract
+-> build-plan
+-> quality
+```
+
+Architecture work:
+
+```text
+work-intake
+-> workspace-status
+-> grill-with-docs
+-> work-plan
 -> incremental-delivery
 -> agent-selection
+-> build-plan
+-> quality
 ```

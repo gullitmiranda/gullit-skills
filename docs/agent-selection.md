@@ -4,7 +4,7 @@ Agent selection decides where the next step should run before substantial work
 starts. The goal is to match the task shape to the runtime, not to force every
 task through the same IDE chat.
 
-If the current state is unclear, run `workflow-intake` first. Intake identifies
+If the current state is unclear, run `work-intake` first. Intake identifies
 workstreams and then calls into this decision layer.
 
 ## Inputs
