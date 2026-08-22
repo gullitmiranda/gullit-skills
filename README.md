@@ -5,8 +5,13 @@ Personal skills for AI coding agents, following the [Agent Skills](https://agent
 ## Repository layout
 
 ```text
-skills/                        # Cross-agent skills in installation-compatible source paths
-  <skill-name>/SKILL.md
+skills/                        # Cross-agent skills by primary responsibility
+  engineering/
+  workspace/
+  guardrails/
+  integrations/
+  reporting/
+  personal/
 
 docs/                          # Workflow composition and runtime adapters
   skills-map.md
@@ -19,7 +24,7 @@ docs/                          # Workflow composition and runtime adapters
   plans/                       # Local ignored implementation plans
 ```
 
-Skills remain in flat source paths while the installer work adds safe migration for existing installations. The public skill identities below are stable; the target nested source-home tree will be applied only when that migration is available.
+Skills are organized in nested source homes by primary responsibility. Reinstall skills from this tree before continuing the CLI rewrite.
 
 ## Agent workspace
 
@@ -72,10 +77,10 @@ Requires [ai-skills-cli](https://github.com/gullitmiranda/ai-skills-cli).
 ai-skills add gullitmiranda/gullit-skills
 
 # Install one workflow entry point
-ai-skills add https://github.com/gullitmiranda/gullit-skills/tree/main/skills/work-intake
+ai-skills add https://github.com/gullitmiranda/gullit-skills/tree/main/skills/engineering/discovery/work-intake
 
 # Install the agent workspace contract
-ai-skills add https://github.com/gullitmiranda/gullit-skills/tree/main/skills/agent-workspace
+ai-skills add https://github.com/gullitmiranda/gullit-skills/tree/main/skills/workspace/agent-workspace
 
 # Pin to a specific ref
 ai-skills add gullitmiranda/gullit-skills --ref v1.0.0
