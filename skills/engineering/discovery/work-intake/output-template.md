@@ -29,12 +29,17 @@
 
 ## Execution Recommendation
 
-- Execute here: yes | no | maybe
-- Autonomy mode: autonomous | collaborative | discovery-first
-- Recommended runtime:
-- Why:
-- Context to pass:
-- Expected return:
+Write one to three concise prose paragraphs that state whether to execute here,
+the autonomy mode, the recommended runtime, why it fits, the context to
+transfer, and the expected return. Do not use a fenced code block: this section
+is reader-facing decision guidance.
+
+## Handoff Prompt
+
+Include only when work moves to another runtime. Put the completed
+`context-capsule` in one fenced `markdown` block so the user can copy it into
+the receiving thread unchanged. Do not repeat the execution recommendation
+inside the prompt.
 
 ## Risks And Blockers
 
