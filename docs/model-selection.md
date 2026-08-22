@@ -132,7 +132,7 @@ Maintain a matrix only as measured evidence becomes available. Empty cells mean
 | Zed | Trusted delivery | Not evaluated | - | - | - | - | - | Inherit global fallback |
 
 Use the scorecard and pilot template in
-[`skills/model-selection/references/selection-policy.md`](../skills/model-selection/references/selection-policy.md)
+[`skills/workspace/agent-runtime/model-selection/references/selection-policy.md`](../skills/workspace/agent-runtime/model-selection/references/selection-policy.md)
 when adding evidence.
 
 ## Review Triggers

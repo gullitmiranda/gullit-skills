@@ -1,58 +1,32 @@
 # Existing Plan To PR
 
-Use this workflow when the user already has a plan, issue, PRD, or clear task
-and wants execution rather than more discovery.
+Use this workflow when the user has a ready local plan, issue, or clear task and wants execution rather than discovery.
 
 ## Flow
 
 ```text
-read existing plan or issue
+work-intake
+-> work-plan when the source needs refinement
 -> agent-selection
 -> git-worktree when requested or needed
--> incremental-delivery if scope is large
--> tdd or focused implementation
+-> incremental-delivery when scope needs independent deliveries
+-> build-plan
 -> quality
--> pr
+-> pr when requested
+-> work-closeout when requested
 ```
 
 ## Steps
 
-1. Read the source artifact.
-   - Use the existing issue, PRD, plan, or user request as the source of truth.
-   - Do not re-plan from scratch unless the artifact is stale or ambiguous.
+1. Read the source and verify whether it is a ready local plan, tracked note, legacy input, or non-plan request.
+2. Create or refine one local plan with `work-plan` unless the source is already a ready local implementation plan. Resolve execution-relevant product, scope, or architecture decisions before implementation.
+3. Choose the runtime and isolate work when needed.
+4. Execute the ready contract with `build-plan`; use `incremental-delivery` only for independently reviewable deliveries.
+5. Run the appropriate validation and use `pr` only when the user requests a pull request.
+6. Use `work-closeout` when the user wants to assess or change the local plan after implementation.
 
-2. Check scope.
-   - If it is small and clear, implement directly.
-   - If it is large, use `incremental-delivery` to split it into reviewable slices.
+## Expected outputs
 
-3. Choose the runtime.
-   - Use `agent-selection`.
-   - Use Cursor or Zed for focused implementation with tight IDE review.
-   - Use terminal/ACP/Pi-style agents for long mechanical work.
-   - Use a context capsule for tool handoff.
-
-4. Isolate work.
-   - Use `git-worktree` when explicitly requested or when parallel work would be safer in a separate worktree.
-   - Keep each branch focused.
-
-5. Execute.
-   - Use `tdd` when behavior can be tested first.
-   - Keep changes aligned with the source artifact.
-   - Avoid opportunistic refactors outside the slice.
-
-6. Validate.
-   - Run targeted checks during iteration.
-   - Run the appropriate quality gate before handoff.
-   - Do not claim validation that was not run.
-
-7. Prepare PR.
-   - Use `pr` when the user requests a PR.
-   - Keep the PR title/body aligned with the actual diff.
-   - Include validation evidence and risk notes.
-
-## Expected Outputs
-
-- Implemented slice or feature.
-- Validation evidence.
-- Updated source artifact only when appropriate.
-- PR-ready branch or created PR when requested.
+- Implemented scope aligned with the source contract.
+- Validation evidence and remaining risks.
+- A pull-request-ready branch or created pull request only when requested.
