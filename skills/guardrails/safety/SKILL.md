@@ -22,6 +22,7 @@ description: Git, command, Kubernetes, data, workspace, and temporary files safe
 - In repos with Trunk git hooks, close stdin on `git commit` by appending `</dev/null` to prevent hook hangs in pseudo-terminals. If Trunk still appears stuck or logs `Socket closed`, `Connection refused`, or `Daemon stopped`, use `trunk daemon shutdown` only as fallback recovery before retrying the commit.
 - Always create feature branches for changes; use `/git-branch` for safe branch creation. `/commit` automatically creates a feature branch when on main/master.
 - For incremental delivery, branch-split, or PR-stack work, create the delivery branch/worktree before editing anything (see `incremental-delivery/SKILL.md` for the full protocol — slice mapping, cherry-picking, validation per increment).
+- When a task explicitly authorizes incremental commits, make one well-scoped commit after each completed, validated logical implementation block; do not commit merely per changed file or defer all blocks to a final oversized commit.
 - Verify branch before committing; validate conventional commit format; show what will be committed before execution.
 - Always create pull requests for main branch changes; use `/pr-create` for safe PR creation; verify the remote branch exists before pushing.
 
