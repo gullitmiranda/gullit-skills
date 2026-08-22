@@ -10,7 +10,7 @@ runtime. Do not select from a provider leaderboard or nominal token price alone.
 
 Read [references/selection-policy.md](references/selection-policy.md) before
 making a recommendation or changing a model default. The durable human-facing
-policy is in [docs/model-selection.md](../../docs/model-selection.md).
+policy is in [docs/model-selection.md](../../../../docs/model-selection.md).
 
 Zed edit-predictions setup notes are in
 [`zed-sweep-next-edit-setup.md`](zed-sweep-next-edit-setup.md).

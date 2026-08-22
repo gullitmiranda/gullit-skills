@@ -1,6 +1,6 @@
 # Skills Map
 
-This map groups the repository's atomic skills by workflow role. Current source paths remain `skills/<name>/` until the installer can safely migrate existing installations to the approved nested source homes.
+This map groups the repository's atomic skills by workflow role. Source paths are nested under `skills/` by primary responsibility.
 
 ## Discovery and routing
 
@@ -8,7 +8,7 @@ Use these when the next step or the relevant context is unclear.
 
 - `work-intake`: inspect context, classify artifacts, and select the smallest route.
 - `workspace-status`: understand repository boundaries in multi-repository workspaces.
-- [`grill-with-docs`](../skills/grill-with-docs/README.md): challenge a proposal against domain language and durable decisions.
+- [`grill-with-docs`](../skills/engineering/discovery/grill-with-docs/README.md): challenge a proposal against domain language and durable decisions.
 - `agent-selection`: select the right runtime before substantial work.
 - `context-capsule`: transfer the smallest useful context across agents or tools.
 
