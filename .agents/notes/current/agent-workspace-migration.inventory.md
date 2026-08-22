@@ -49,7 +49,7 @@ This inventory records the tracked references that must change for the agent wor
 
 ## Source-home gate
 
-The installed CLI can recursively discover nested skill directories, but the current implementation does not yet implement the decision's `ai-skills.yaml` dependency contract or validate the target source-home migration. Reinstallation is expected after the CLI rewrite, so legacy wrapper skills are not a compatibility mechanism. New public skill identities may remain in compatible flat source directories while physical source-home moves are deferred. Do not make those moves until the separate CLI work provides and validates nested discovery, the declared dependency model, collision handling, and end-to-end installation coverage.
+The installed CLI can recursively discover nested skill directories. Complete the target source-home tree, then reinstall skills from a clean state before continuing the separate CLI rewrite. Legacy wrapper skills are not a compatibility mechanism. The rewritten CLI will later define vendored installation behavior and the final `skills.yaml` contract.
 
 ## Validation evidence
 
