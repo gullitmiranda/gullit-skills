@@ -20,7 +20,7 @@ Execute one local implementation contract without assigning it a tracked lifecyc
 
 1. Inspect plan scope, repository instructions, branch/worktree, local changes, relevant files, and validation commands. Record the plan as local, its readiness, and `n/a` lifecycle.
 2. Prepare the execution branch or worktree when needed. Break the work into reviewable blocks, each with focused scope and minimum validation.
-3. Implement and validate each block. Commit only when the user request or plan contract explicitly calls for commits; never include ignored local plans.
+3. Implement and validate each block. If an explicit user request or plan contract calls for incremental commits, commit each completed, validated logical block before starting the next; otherwise do not commit. Never include ignored local plans.
 4. Review the full diff and report implementation evidence, validation, uncompleted items, risks, and the next route. Use `work-closeout` when the user asks to assess or change the local plan after execution.
 
 ## Scope
