@@ -14,11 +14,12 @@ Produce one local execution contract, not a tracked lifecycle artifact.
 - Treat `.cursor/plans/` as legacy compatibility input. Do not move, promote, synchronize, or reclassify it without explicit user authorization.
 - Do not create a plan under `.agents/notes/`, and do not assign plans note lifecycle states.
 - If a product, scope, or architecture decision needed for execution remains open, propose a refinement or ask the user. Decide it during implementation only with explicit authorization.
+- Follow `user-preferences` and repository policies when forming the execution contract.
 
 ## Procedure
 
 1. Inspect the request, authority, relevant code or documentation, and existing local plan input. State unresolved execution-relevant decisions.
-2. Create or refine one local plan with objective, scope, approach, constraints, implementation steps, validation, acceptance criteria, and meaningful alternatives or risks. Omit timelines and estimates unless the user explicitly asks for them.
+2. Create or refine one local plan with objective, scope, approach, constraints, implementation steps, validation, acceptance criteria, commit cadence for multi-block work, and meaningful alternatives or risks. Omit timelines and estimates unless the user explicitly asks for them.
 3. Confirm the plan is executable without making relevant product, scope, or architecture decisions. Otherwise return the smallest decision or refinement needed.
 4. Report the local path, readiness, open decisions, validation expectation, and next route: `build-plan`, `incremental-delivery`, or user decision.
 
