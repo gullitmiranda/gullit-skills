@@ -40,6 +40,11 @@ Exception: during migrations, adapters and conversion shims between old and new 
 
 - In the user's **personal** GitHub repos (owner `gullitmiranda`, e.g. `~/code/gullit/...`), committing/pushing directly to `main` is allowed without explicit per-task confirmation. The safety skill's "never commit to main/master" rule applies to shared or organizational repos, not personal ones. Still keep commits well-scoped and reversible.
 
+## Git commit cadence
+
+- During multi-block implementation on a delivery branch, create one well-scoped conventional commit after every completed, validated logical block. This standing preference authorizes those commits; it does not authorize commits to `main`/`master` or pushes.
+- Follow a different cadence when an explicit user or repository instruction requires one; do not commit per file or defer all completed blocks to an oversized final commit.
+
 ## PR Review Comments
 
 - When the user asks to resolve PR review comments from automated review agents, handle each targeted comment individually by replying in GitHub or updating the PR, whichever best resolves it, and then mark the thread/comment as resolved before finishing.
