@@ -18,6 +18,7 @@ description: Pull request lifecycle - create and update PRs with gh CLI, validat
 - If the current branch belongs to a `gh stack` stack (check `gh stack view --json`), delegate stack operations (submit, sync, merge, navigation) to the `gh-stack` skill; never use `gh pr merge` on a stacked PR — use `gh stack merge <target> --yes`.
 - Never pass a merge strategy flag (`--squash`, `--rebase`) unless the user asked for it. Default to plain `git merge`/`gh pr merge` — no flag — and let the user's git config (`merge.ff` = `no`, e.g. `--no-ff`) decide. Explicit flags override the user's own configuration.
 - Run quality checks before a standard PR is marked ready; `/pr draft` may open an early draft after an integrity preflight so remote checks can start.
+- Always wait for required checks to pass before merging. Never bypass them (e.g. `gh pr merge --admin`) unless the user explicitly requests it (e.g. `--skip-check`). Do not use `--auto` for this — it enables GitHub's auto-merge on the PR, which is a different mechanism.
 
 ## PR Information Quality Contract
 
