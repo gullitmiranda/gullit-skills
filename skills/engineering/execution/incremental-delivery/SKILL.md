@@ -10,15 +10,15 @@ Coordinate multiple deliveries; do not replace planning, execution, or guardrail
 ## Hard Rules
 
 - Start only after the target outcome and execution-relevant decisions are resolved. Route open decisions to `work-plan` or the user.
-- Use the isolation, branch, commit, validation, and publication rules from `git-worktree`, `git`, `quality`, `safety`, and `pr`; do not restate or weaken them here.
+- Follow `user-preferences` and use the isolation, branch, commit, validation, and publication rules from `git-worktree`, `git`, `quality`, `safety`, and `pr`; do not restate or weaken them here.
 - Scope each increment to independently testable user value. When pull requests are requested, use one pull request per increment unless the user approves an exception.
 - Treat failing or unrun validation as incomplete evidence, not a completed increment.
 
 ## Procedure
 
 1. Define the final target as a small set of verifiable acceptance criteria.
-2. Map and sequence independent vertical increments, each with scope, dependencies, risks, validation, and acceptance evidence.
-3. Coordinate implementation and handoff for one increment at a time in the appropriate isolated delivery context.
+2. Map and sequence independent vertical increments, each with scope, dependencies, risks, validation, acceptance evidence, and a commit boundary when the applicable cadence calls for incremental commits.
+3. Coordinate implementation and handoff for one increment at a time in the appropriate isolated delivery context. When that cadence authorizes incremental commits, create the completed increment's commit after validation and before starting the next.
 4. Report what each increment delivered, validation evidence, remaining risks, dependencies, and the next increment.
 
 ## Avoid
