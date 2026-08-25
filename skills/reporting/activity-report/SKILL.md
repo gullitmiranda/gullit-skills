@@ -18,7 +18,7 @@ Generate concise work reports that reconcile delivery evidence with tracker stat
 
 ## Procedure
 
-1. **Scope the report.** Resolve the target person, inclusive date range, requested language, and requested sources. For another person, resolve Slack identity, email, GitHub login, and Linear identity when available.
+1. **Scope the report.** Resolve the target person, inclusive date range, language (default: the conversation's language; English per `user-preferences` only when the report is saved or published as an artifact), and requested sources. For another person, resolve Slack identity, email, GitHub login, and Linear identity when available.
 
 2. **Gather evidence.** Query sources in parallel after confirming access.
    - **Slack:** collect authored messages, mentions, and decision or blocker threads.
@@ -27,7 +27,7 @@ Generate concise work reports that reconcile delivery evidence with tracker stat
 
 3. **Reconcile status.** Link pull requests and issues to their Linear records and relevant Slack context. Use `Done` only with a completed Linear status or merge evidence. Keep `In Review`, `In Progress`, `Triage`, `Backlog`, and `Blocked` exactly as tracked. If a merged pull request still has a stale tracker state, report both facts and flag tracker reconciliation.
 
-4. **Write the report.** Use the requested language and this structure:
+4. **Write the report.** Use the resolved language and this structure (the template is illustrative and does not set the language):
 
    ```markdown
    # Work Report - [YYYY-MM-DD] to [YYYY-MM-DD]

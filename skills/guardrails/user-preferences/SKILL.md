@@ -27,6 +27,12 @@ Exception: during migrations, adapters and conversion shims between old and new 
 - Write all durable and publishable technical artifacts in English by default: source code, code comments, documentation, plans, commit messages, pull requests, issues, review comments, release notes, and generated text intended for publication.
 - Use another language only when the user explicitly requests it or a repository instruction or applicable task-specific skill explicitly requires it.
 - Do not infer an artifact's language from the language of the conversation.
+- This policy governs artifacts only; it does not govern conversational replies.
+
+## Conversation language
+
+- Respond in the language of the conversation: mirror the user's current language and keep using it until they switch. No explicit request is needed.
+- Reports, summaries, feedback, and analysis delivered in the chat are conversation, not artifacts. The artifact-language policy applies only once content is saved to a file or published to an external system (commit, PR, issue, comment).
 
 ## Naming preferences
 

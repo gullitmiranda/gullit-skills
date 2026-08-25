@@ -51,7 +51,7 @@ One or two sentences: the decision and why it matters now.
 **Suggestion: A.** One sentence why this option wins.
 ```
 
-The suggestion is its own line, with the chosen token and a reason. Do not use emoji as structure.
+The suggestion is its own line, with the chosen token and a reason. Do not use emoji as structure. Ask in the language of the conversation; the template is illustrative and does not set the language. Documentation updated during the session still follows the artifact-language policy.
 
 ## During the session
 
