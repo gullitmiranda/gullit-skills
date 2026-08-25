@@ -58,5 +58,9 @@ different results.
 - Next pilot, if evidence is incomplete:
 ```
 
+Write the decision in the language of the conversation; the template is
+illustrative and does not set the language. If the decision is saved or
+published, follow the artifact-language policy in `user-preferences`.
+
 When the evidence is insufficient, recommend a pilot with its task set and
 success criteria instead of guessing a default.
