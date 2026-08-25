@@ -13,6 +13,8 @@ at upstream commit `e3b90b5238f38cdea5996e16861dcae28ef52eda`.
 The local version preserves the upstream intent and adds the project-specific
 working-document model: use specs for evolving behavior, requirements, and
 implementation decisions; reserve ADRs for durable architectural trade-offs.
+Questions use a heading, labeled options, and a bold `Suggestion:` line so the
+recommendation is impossible to miss.
 
 ## Dependencies
 

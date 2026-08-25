@@ -5,7 +5,7 @@ description: "Grilling session that challenges your plan against the existing do
 
 <what-to-do>
 
-Interview me relentlessly about every aspect of this plan until we reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one. For each question, provide your recommended answer.
+Interview me relentlessly about every aspect of this plan until we reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one.
 
 Ask the questions one at a time, waiting for feedback on each question before continuing.
 
@@ -20,6 +20,7 @@ If a question can be answered by exploring the codebase, explore the codebase in
 - Offer an ADR only when all three hold: (1) hard to reverse, (2) surprising without context, (3) the result of a real trade-off. Otherwise keep rationale in the spec.
 - Create files lazily — only when you have something to write.
 - Update docs inline as terms/decisions resolve. Don't batch.
+- Format every question with the card below. Never smash title, body, options, and suggestion into one paragraph.
 
 ## Doc locations
 
@@ -34,6 +35,23 @@ If a question can be answered by exploring the codebase, explore the codebase in
 Prefer the repo's existing spec location. In multi-context repos, context-specific specs and ADRs live under each context directory (e.g. `src/ordering/specs/`, `src/ordering/docs/adr/`); system-wide ones stay at root. `CONTEXT-MAP.md` points to per-context docs; the per-context docs are authoritative.
 
 Formats: [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md), [ADR-FORMAT.md](./ADR-FORMAT.md).
+
+## Question format
+
+Ask one question per turn:
+
+```markdown
+### N. Short title
+
+One or two sentences: the decision and why it matters now.
+
+- **A.** option
+- **B.** option
+
+**Suggestion: A.** One sentence why this option wins.
+```
+
+The suggestion is its own line, with the chosen token and a reason. Do not use emoji as structure.
 
 ## During the session
 

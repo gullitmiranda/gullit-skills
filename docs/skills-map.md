@@ -8,6 +8,7 @@ Use these when the next step or the relevant context is unclear.
 
 - `work-intake`: inspect context, classify artifacts, and select the smallest route.
 - `workspace-status`: understand repository boundaries in multi-repository workspaces.
+- [`grilling`](../skills/engineering/discovery/grilling/README.md): stress-test a plan or idea with a readable frontier of questions.
 - [`grill-with-docs`](../skills/engineering/discovery/grill-with-docs/README.md): challenge a proposal against domain language and durable decisions.
 - `agent-selection`: select the right runtime before substantial work.
 - `context-capsule`: transfer the smallest useful context across agents or tools.
