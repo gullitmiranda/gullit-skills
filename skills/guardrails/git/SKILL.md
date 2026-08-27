@@ -57,7 +57,8 @@ with `main` as a fresh base. NEVER merge the feature branch into `main`.
 
 ## Merge and Init Defaults
 
-- Always use `git merge --no-ff` when merging branches. Only use fast-forward when the user explicitly requests it.
+- Use `git merge --no-ff` for branch merges unless the user explicitly requests fast-forward. For post-merge synchronization, use the PR workflow's `git pull --ff-only` protocol.
+- After a remote PR or stack merge is confirmed, reconcile the local base before ending the workflow; never force-sync a dirty or diverged worktree.
 - Initialize new Git projects on `main` by default.
 - Respect ignored files and explicitly mention ignored-file handling in action summaries.
 

@@ -1,6 +1,6 @@
 ---
 name: pr-delivery
-description: Create or reuse a draft PR early to start remote checks, review a fixed revision with guarded or strict boundaries, repair clear findings, and hand the reviewed revision to pr-babysit. Use only when the user explicitly requests this complete PR delivery flow.
+description: Create or reuse a draft PR, review a fixed revision with guarded or strict boundaries, repair clear findings, and reconcile the local base after an explicit merge. Use when the user requests the complete PR delivery flow.
 disable-model-invocation: true
 ---
 
@@ -41,9 +41,9 @@ Defaults:
   `--ready`. Never a default.
 - `--solo`: the user is the sole reviewer. Passes through to `pr-babysit`,
   waiving the review-manifest gate for readiness and merge.
-- `--admin`: merge with `gh pr merge --admin`, bypassing branch protection.
-  Only valid with `--merge`; requires admin permission. Passes through to
-  `pr-babysit`.
+- `--admin`: for a non-stacked PR, merge with `gh pr merge --admin`, bypassing
+  branch protection. Stacked PRs use `gh-stack`'s merge path. Only valid with
+  `--merge`; requires admin permission. Passes through to `pr-babysit`.
 
 `--ready` and `--merge` are user-facing pass-throughs to `pr-babysit`. The
 standalone `pr-babysit` default remains watch-only because monitoring a PR
@@ -227,6 +227,12 @@ Stop rather than loop indefinitely if the same failure recurs without progress,
 a decision is needed, the PR head becomes stale, or a validation result is
 unknown.
 
+After a confirmed merge, wait for post-merge local reconciliation before
+ending the delivery flow. Accept `merged` only with
+`local-sync: synchronized`. For `merged-local-sync-blocked`, report the remote
+merge and local blocker separately. For `queued`, leave the local base unchanged
+and report that the merge has not landed.
+
 ## Completion Report
 
 Report:
@@ -235,7 +241,9 @@ Report:
 - initial and final reviewed head SHA;
 - selected review mode (`guarded`, `strict`, or `solo`), fixed-SHA integrity checks, reviewer sessions, and their outcome;
 - autonomous fixes and validations actually run;
-- current `pr-babysit` result; and
-- any decision, CI failure, or merge blocker left for the user.
+- current `pr-babysit` result, including post-merge `local-sync` status and the
+  synchronized base branch when applicable; and
+- any decision, CI failure, merge blocker, or local synchronization blocker left
+  for the user.
 
 Arguments: $ARGUMENTS
