@@ -1,6 +1,6 @@
 ---
 name: pr-babysit
-description: Watch PR heads, triage scoped conflicts, comments, and CI failures, and make each PR ready or merge it only when the reviewed head SHA is green. Use after pr-delivery has completed every review session, or standalone to watch current PR heads.
+description: Watch PR heads, triage scoped conflicts and CI failures, make each PR ready or merge it only when the reviewed head SHA is green, and reconcile the local base after confirmed merges. Use for explicit PR monitoring, readiness, or merge workflows.
 disable-model-invocation: true
 ---
 
@@ -20,7 +20,7 @@ Apply `gh-profile` before GitHub and remote Git operations. Apply `pr` when sync
 - `--ready`: when green, convert from draft to ready for review.
 - `--merge`: when green, merge. Implies `--ready` (convert first, keep watching the same SHA — some required checks only run once ready — and merge only after they succeed). Never a default.
 - `--solo`: user is sole reviewer (solo repository). Waives only the human-review gate (review manifest); every other condition still applies. Report `solo` as review mode in the result so the bypass is auditable.
-- `--admin`: merge with `gh pr merge --admin`, bypassing branch protection (required reviews, required checks). Only valid with `--merge`; requires admin permission. **Never proactive**: use only on explicit user request — do not suggest it when protections block a merge; report the blocker and wait. Intended for sole-maintainer repos where protection cannot be satisfied otherwise. Report `admin` in the result.
+- `--admin`: for a non-stacked PR, merge with `gh pr merge --admin`, bypassing branch protection (required reviews, required checks). Stacked PRs must use `gh-stack`'s merge path. Only valid with `--merge`; requires admin permission. **Never proactive**: use only on explicit user request — do not suggest it when protections block a merge; report the blocker and wait. Intended for sole-maintainer repos where protection cannot be satisfied otherwise. Report `admin` in the result.
 
 `--ready` and `--merge` are cumulative steps, not exclusive modes; with neither, the run only watches and repairs. They are allowed only when expected and reviewed SHAs match (in practice a `pr-delivery` handoff) or when `--solo` was passed. Watching multiple PRs without manifests and without `--solo` is watch-only for all of them.
 
@@ -84,9 +84,19 @@ Proceed only when all hold for the same SHA: current remote head equals expected
 Then apply in order:
 
 1. `--ready`: convert draft to ready. Stop first if an active auto-merge request or repository automation could merge unexpectedly. After converting, keep watching the same SHA (some checks only start once a PR leaves draft).
-2. `--merge`: merge only after all prior conditions and repository protections are satisfied, including checks that started after ready conversion. Respect merge queues; never override protections. With `--admin`, use `gh pr merge --admin` and report `admin` in the result.
+2. `--merge`: merge only after all prior conditions and repository protections are satisfied, including checks that started after ready conversion. Respect merge queues; never override protections. For a non-stacked PR, `--admin` uses `gh pr merge --admin` only when explicitly requested; stacked PRs use `gh-stack` and report `admin` there.
+3. After the merge command returns, re-query the PR and continue only when its state is `MERGED`. Apply the `pr` skill's post-merge local reconciliation before returning `merged`. If the PR is queued or its state is otherwise not `MERGED`, do not update the local base as if the merge had landed.
 
 If checks are in progress, keep watching the same SHA. If they fail, triage under the CI rules. Stop and report when the failure cannot be safely fixed within scope or progress stops.
+
+## After a Confirmed Merge
+
+Apply `pr`'s post-merge local reconciliation:
+
+- Return `merged` only when local synchronization succeeds.
+- Return `merged-local-sync-blocked` with the exact blocker and next safe action
+  when the remote merge succeeds but local reconciliation cannot.
+- For stacked PRs, use `gh-stack` and verify its sync result and stack state.
 
 ## Result Contract
 
@@ -98,8 +108,10 @@ Return one of:
 - `stale-head`: another actor changed the PR head.
 - `blocked`: CI, conflict, policy, review-integrity, or external condition cannot be safely resolved.
 - `timed-out`: checks did not settle within the active watcher limit.
-- `merged`: only after explicit merge mode succeeds.
+- `queued`: the merge was accepted or queued, but the PR is not yet `MERGED`; local base synchronization was not attempted.
+- `merged`: only after explicit merge mode succeeds and post-merge local reconciliation succeeds.
+- `merged-local-sync-blocked`: the remote merge succeeded, but local reconciliation could not safely complete.
 
-Always include PR URL, current head SHA, reviewed head SHA (or `none`), review mode, check summary, changes made, and next safe action. Multiple PRs: one result per PR.
+Always include PR URL, current head SHA, reviewed head SHA (or `none`), review mode, check summary, changes made, `local-sync` status, and next safe action. Multiple PRs: one result per PR.
 
 Arguments: $ARGUMENTS

@@ -1,6 +1,6 @@
 ---
 name: pr
-description: Pull request lifecycle - create and update PRs with gh CLI, validate quality gates, keep PR metadata aligned with the current diff, and mark ready for review. Use when creating a PR, updating an existing PR after new changes, running quality checks, or marking PR ready for review.
+description: Pull request lifecycle - create and update PRs with gh CLI, validate quality gates, keep PR metadata aligned with the current diff, mark ready for review, and reconcile the local base after confirmed merges. Use when creating a PR, updating an existing PR after new changes, running quality checks, or marking PR ready for review.
 ---
 # Pull Request Management
 
@@ -19,6 +19,7 @@ description: Pull request lifecycle - create and update PRs with gh CLI, validat
 - Never pass a merge strategy flag (`--squash`, `--rebase`) unless the user asked for it. Default to plain `git merge`/`gh pr merge` — no flag — and let the user's git config (`merge.ff` = `no`, e.g. `--no-ff`) decide. Explicit flags override the user's own configuration.
 - Run quality checks before a standard PR is marked ready; `/pr draft` may open an early draft after an integrity preflight so remote checks can start.
 - Always wait for required checks to pass before merging. Never bypass them (e.g. `gh pr merge --admin`) unless the user explicitly requests it (e.g. `--skip-check`). Do not use `--auto` for this — it enables GitHub's auto-merge on the PR, which is a different mechanism.
+- A remote merge is not the end of the workflow. Any route that confirms `MERGED` must complete the post-merge local reconciliation below, or report `merged-local-sync-blocked` with its blocker.
 
 ## PR Information Quality Contract
 
@@ -106,6 +107,31 @@ Do not argue with the bot, list pros/cons, or promise follow-ups that are not re
 3. Verify required checks pass and no merge conflicts exist.
 4. Request reviewers (CODEOWNERS, changed-file patterns, prior reviewers) and assign the author.
 5. Remove draft status. Do not apply status labels — draft→ready is the native GitHub signal; repo-specific labels belong to that repo's own rules.
+
+## Post-merge local reconciliation
+
+Use this after the GitHub API confirms `MERGED`; a successful merge command or a
+queued merge is not sufficient.
+
+1. Identify the merged PR's base branch and the verified Git remote. Do not
+   assume `main` or `origin`.
+2. Inspect `git status --short` and `git worktree list` in the active repository.
+   Staged, unstaged, or untracked changes, or the base branch checked out in
+   another worktree, block synchronization. Do not switch, stash, reset, delete,
+   or overwrite in that state.
+3. For a non-stacked PR with a clean active worktree, switch to the merged base
+   branch and run `git pull --ff-only <remote> <base>`. If the local base has
+   diverged, stop and report the divergence; never force-sync it with
+   `git reset --hard`.
+4. For a stacked PR, delegate synchronization to `gh-stack` and use its
+   non-interactive sync command with the verified remote, such as
+   `gh stack sync --prune --remote <remote>`. Do not apply the standard
+   `git switch`/`git pull` sequence to a stacked branch.
+5. Verify that the PR remains `MERGED`, the local base HEAD equals the remote
+   base, and the worktree status is understood. Report
+   `local-sync: synchronized` or `local-sync: blocked`, including the base,
+   remote, blocker, and next safe action. Do not delete non-stacked feature
+   branches automatically; branch cleanup is separate.
 
 ## Quality Gates
 
