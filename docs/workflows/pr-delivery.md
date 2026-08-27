@@ -17,6 +17,7 @@ committed clean feature branch
 -> wait for all reviewer agents and retain a serialized completion manifest
 -> pr-babysit watches the final reviewed SHA
 -> watch, ready, or explicit merge
+-> confirm remote merge and reconcile the local base
 ```
 
 ## Defaults
@@ -54,6 +55,10 @@ changing a PR's public state when its watcher is invoked independently.
   quality checks, and requires fixed-revision delta review before the PR can become
   ready or merge.
 - Merge requires the explicit `--merge` flag.
+- A confirmed remote merge is not complete until the local base is reconciled.
+  A clean worktree is switched to the merged base and updated with
+  `git pull --ff-only`; dirty, diverged, or conflicting worktrees are reported
+  as local synchronization blockers instead of being overwritten.
 - `--solo` (user is the sole reviewer) waives only the human-review gate
   (review manifest) for readiness and merge; every other gate (green checks,
   mergeable, non-stale head, no pending decision) still applies, and the
