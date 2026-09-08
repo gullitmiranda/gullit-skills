@@ -20,6 +20,8 @@ attacks like the Trivy compromise (March 2026).
 - **Never** remove `!` pins without explicit user request.
 - **Never** enable tools blindly — check `references/compromised-versions.md` first.
 - **Never** put path/rule ignores in `trunk.yaml`'s `lint.ignore` — it is typically gitignored (single-player mode), so ignores won't be shared. Use each tool's own committed config file (see Linter Ignore Configuration).
+- **Never** leave generated tool configs under `.trunk/configs/`. Move or merge them into each tool's standard committed config path so contributors can use the tools without Trunk; preserve existing project config.
+- Keep `.trunk/` personal and untracked in single-player setups; never run `trunk config share` or commit Trunk configuration unless explicitly requested.
 - Only enable tools the project actually needs.
 
 ## Workflow 1: Fresh Setup
@@ -32,20 +34,21 @@ attacks like the Trivy compromise (March 2026).
    - `--force` — overwrites existing `trunk.yaml`; required because `--lock` only writes the sha256 block during a fresh init (`--allow-existing` skips it). Lost custom config is visible in `git diff` and easy to restore.
    - `--lock` — sha256 hashes for the CLI binary per platform
    - `-n` — no to all prompts: minimal install
-2. If the repo already had a `trunk.yaml`, review `git diff .trunk/trunk.yaml` and restore lost custom config (ignore paths, disabled linters).
-3. Enable recommended actions:
+2. Promote every generated config from `.trunk/configs/` to the tool's standard repository path. If that path already exists, merge the generated settings without overwriting project rules. Confirm `git status` shows native tool configs but not `.trunk/`.
+3. If the repo already had a `trunk.yaml`, review `git diff .trunk/trunk.yaml` and restore lost custom config (ignore paths, disabled linters).
+4. Enable recommended actions:
    ```bash
    trunk actions enable trunk-check-pre-push trunk-check-pre-commit trunk-fmt-pre-commit
    ```
 
 For a repo that already has Trunk configured, verify the same three hooks
 are enabled (`trunk actions list`) and enable any that are missing.
-4. Pin all versions — finds every `@version` entry in `.trunk/trunk.yaml`, appends `!` (skipping already-pinned), shows a before/after diff:
+5. Pin all versions — finds every `@version` entry in `.trunk/trunk.yaml`, appends `!` (skipping already-pinned), shows a before/after diff:
    ```bash
    bash <skill-dir>/scripts/trunk-pin-versions.sh
    ```
-5. Verify: `trunk check --sample 5`
-6. Check `references/compromised-versions.md`; if any enabled tool has a known incident, warn the user and suggest `trunk check disable <tool>`.
+6. Verify: `trunk check --sample 5`
+7. Check `references/compromised-versions.md`; if any enabled tool has a known incident, warn the user and suggest `trunk check disable <tool>`.
 
 ## Workflow 2: Safe Upgrade
 
