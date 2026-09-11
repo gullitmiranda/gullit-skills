@@ -51,6 +51,15 @@ Exception: during migrations, adapters and conversion shims between old and new 
 - During multi-block implementation on a delivery branch, create one well-scoped conventional commit after every completed, validated logical block. This standing preference authorizes those commits; it does not authorize commits to `main`/`master` or pushes.
 - Follow a different cadence when an explicit user or repository instruction requires one; do not commit per file or defer all completed blocks to an oversized final commit.
 
+## Execution orchestration
+
+- For multi-block implementation or intake that routes to `build-plan` /
+  `incremental-delivery`, always present and follow an orchestration cast
+  (`agent-selection`): roles, runtimes, **concrete models per role** (not
+  primary `inherit`), write sets, honest sequencing, and clean-context reviews.
+  Prefer **bullets** in chat over wide tables. Do not default to an uncast
+  sequential monolith in the parent thread.
+
 ## PR Review Comments
 
 - When the user asks to resolve PR review comments from automated review agents, handle each targeted comment individually by replying in GitHub or updating the PR, whichever best resolves it, and then mark the thread/comment as resolved before finishing.

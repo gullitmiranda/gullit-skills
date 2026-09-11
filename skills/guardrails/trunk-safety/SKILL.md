@@ -2,9 +2,11 @@
 name: trunk-safety
 description: >-
   Safe Trunk (trunk.io) setup and upgrade workflows with version pinning, sha256
-  locking, and supply-chain attack protection. Use when the user asks to set up
-  Trunk, run trunk init, upgrade trunk tools, enable/disable linters, or mentions
-  trunk.yaml, trunk check, trunk fmt, or linter security.
+  locking, supply-chain attack protection, and agent-safe git hooks (PTY/TTY
+  hang avoidance). Use when the user asks to set up Trunk, run trunk init,
+  upgrade trunk tools, enable/disable linters, mentions trunk.yaml / trunk check
+  / trunk fmt, linter security, or when git commit hangs on Trunk hooks in an
+  AI agent or pseudo-terminal.
 ---
 
 # Trunk Safety
@@ -38,11 +40,18 @@ attacks like the Trivy compromise (March 2026).
 3. If the repo already had a `trunk.yaml`, review `git diff .trunk/trunk.yaml` and restore lost custom config (ignore paths, disabled linters).
 4. Enable recommended actions:
    ```bash
-   trunk actions enable trunk-check-pre-push trunk-check-pre-commit trunk-fmt-pre-commit
+   trunk actions enable trunk-check-pre-push trunk-check-pre-commit
    ```
+   Prefer **check** hooks only. Do **not** enable `trunk-fmt-pre-commit` by
+   default in agent-heavy workflows: that hook opens `/dev/tty` when stderr is
+   a TTY and hangs AI agents on interactive Prettier/format prompts. Agents
+   must run `CI=1 trunk fmt --ci -y` before commit instead (see `git` skill).
+   Enable `trunk-fmt-pre-commit` only if the user explicitly wants interactive
+   human-local formatting on commit.
 
-For a repo that already has Trunk configured, verify the same three hooks
-are enabled (`trunk actions list`) and enable any that are missing.
+For a repo that already has Trunk configured, verify check hooks are enabled
+(`trunk actions list`). If `trunk-fmt-pre-commit` is enabled and agents hang on
+commit, disable it: `trunk actions disable trunk-fmt-pre-commit`.
 5. Pin all versions — finds every `@version` entry in `.trunk/trunk.yaml`, appends `!` (skipping already-pinned), shows a before/after diff:
    ```bash
    bash <skill-dir>/scripts/trunk-pin-versions.sh
@@ -78,27 +87,31 @@ A compromised tool must never be enabled, even briefly.
 
 ## Workflow 4: Agent-safe Git Hooks
 
-Use when `git commit` appears to hang while Trunk hooks run, especially from an AI agent or pseudo-terminal.
+Use when `git commit` appears to hang while Trunk hooks run, especially from an AI agent or pseudo-terminal. Full commit sequence lives in the `git` skill; this workflow is diagnosis + recovery.
 
-Root causes:
+Root causes (in order of likelihood for agent hangs):
 
-1. **Hook stdin waiting for EOF** (most common). Trunk-generated hooks save stdin with `cat` into a tempfile before redirecting stdin to `/dev/tty` or `/dev/null`. In agent-run commands stdin can stay open, so `cat` waits indefinitely.
-2. **Stopped or crashed daemon** (fallback case, not the default assumption). Symptoms: `GRPC Failed`, `Socket closed`, `Connection refused`, `Daemon stopped`.
+1. **Interactive TTY prompts**. Trunk's hook does `exec </dev/tty` when stderr is a TTY. Agent runners often allocate a PTY, so Prettier "autoformat?" / "Continue anyway?" wait forever. Closing stdin alone does **not** fix this.
+2. **Hook stdin waiting for EOF**. Trunk-generated hooks save stdin with `cat` into a tempfile. If stdin stays open, `cat` waits indefinitely.
+3. **Stopped or crashed daemon**. Symptoms: `GRPC Failed`, `Socket closed`, `Connection refused`, `Daemon stopped`.
 
-Default behavior: leave the daemon alone and run the final commit with stdin explicitly closed by appending `</dev/null`. For multi-line messages, write to a temp file and use `git commit -F <message-file> </dev/null`.
+### Prevention (every agent commit)
 
-Optional preflight (without stopping the daemon):
+```bash
+CI=1 trunk fmt --ci -y --upstream HEAD --no-progress </dev/null
+CI=1 trunk check --ci -y --upstream HEAD --no-progress </dev/null
+# stage any reformatted files, then:
+CI=1 GIT_TERMINAL_PROMPT=0 git commit ... </dev/null   # with harness timeout; prefer non-PTY
+```
 
-- `trunk check --ci --upstream HEAD --no-progress`
-- `trunk fmt --ci --upstream HEAD --no-progress`
+If the repo enables `trunk-fmt-pre-commit` and agents keep hanging, disable that action and keep fmt as an explicit preflight (see Workflow 1).
 
-Fallback recovery — only when the commit still hangs with `</dev/null`, output shows daemon/GRPC errors, or `trunk daemon status` confirms unhealthy:
+### Recovery when a commit is already hung
 
-1. Stop the stuck command.
-2. `trunk daemon shutdown`
-3. `trunk check --ci --upstream HEAD --no-progress --print-failures`
-4. Inspect `~/.cache/trunk/repos/*/logs/cli.log` and `daemon.log` for `Socket closed`, `Connection refused`, `Daemon stopped`, or the linter that was running last.
-5. Retry the commit with `</dev/null`.
+1. Stop the stuck command (do not wait minutes).
+2. If logs show daemon/GRPC errors or `trunk daemon status` is unhealthy: `trunk daemon shutdown`, then `CI=1 trunk check --ci --upstream HEAD --no-progress --print-failures`.
+3. Inspect `~/.cache/trunk/repos/*/logs/cli.log` and `daemon.log`.
+4. Retry with the prevention sequence above. Last resort after a clean preflight: `git commit --no-verify` (declare it explicitly).
 
 Optional mitigation: if one linter repeatedly crashes the daemon in a personal repo, prefer a repo-specific ignore/disable over repeated daemon stops. Broad IaC/security linters such as `checkov` may be too noisy for personal dotfiles unless scoped carefully.
 
