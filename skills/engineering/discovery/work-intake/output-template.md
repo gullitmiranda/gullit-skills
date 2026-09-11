@@ -17,22 +17,46 @@
 - Execution readiness: ready | needs-refinement | blocked | unclear
 - Next route: `work-plan` | `build-plan` | `incremental-delivery` | `work-closeout` | user decision
 
-## Workstreams
+## Status
 
-### <workstream name>
+Inventory only: what exists and its state. **No** agents, models, write sets,
+or execution order here — that belongs in Orchestration Sketch.
 
-- Status: active | blocked | done | stale | needs-user-decision
-- Evidence:
-- Open decisions:
-- Recommended route:
-- Next useful step:
+Use compact bullets (preferred when one delivery / mid-flight resume):
+
+- `<name>` — `done` | `active` | `blocked` | `stale` | `needs-user-decision` — one-line evidence; open decision only if any
+
+Use `###` subsections only when streams are truly independent deliveries that
+need separate routes. Still omit cast details from this section.
+
+Omit this section entirely when Source Context + Authority already state a
+single obvious mid-flight resume and there is nothing to inventory.
 
 ## Execution Recommendation
 
-Write one to three concise prose paragraphs that state whether to execute here,
-the autonomy mode, the recommended runtime, why it fits, the context to
-transfer, and the expected return. Do not use a fenced code block: this section
-is reader-facing decision guidance.
+One short paragraph (two max): execute here or not, autonomy mode, and what
+"done" returns. Do not restate the cast or re-list workstream status.
+
+## Orchestration Sketch
+
+Required when Next route is `build-plan` or `incremental-delivery`. Omit only
+for clarify / `work-plan` / `work-closeout` / pure user decision with no
+execution cast.
+
+This is the **execution** section: remaining critical path only. Do not repeat
+Status inventory (no “I2a largely done” bullets here).
+
+Use the **bullet** cast from `agent-selection`
+([orchestration-cast.md](../agent-selection/references/orchestration-cast.md)).
+Do not default to a wide table in chat.
+
+- Mode / remaining scope / commit policy (one line)
+- Critical-path roles as bullets: runtime · **concrete model** · fallback ·
+  does / write set / capsule / order (`after` or `parallel`)
+- Deferred (optional twin, etc.) — separate heading, or omit
+- Review fixed point(s), spec/plan paths, when reviews fire
+
+If solo sequential, give the exception reason in one line.
 
 ## Handoff Prompt
 
