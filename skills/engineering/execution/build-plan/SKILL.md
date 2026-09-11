@@ -15,13 +15,23 @@ Execute one local implementation contract without assigning it a tracked lifecyc
 - If product, scope, or architecture decisions needed to execute remain open, stop and route to `work-plan` or the user.
 - Follow `user-preferences`, `safety`, `git`, `quality`, `data-boundary`, and `publish-safe-links`; do not duplicate their policy.
 - Do not push or create a pull request without explicit user direction.
+- Before the first block, produce an **orchestration cast** via `agent-selection`
+  (runtime + model per role, write sets, review capsules). Do not default to a
+  solo sequential monolith; that shape needs an explicit exception from
+  `agent-selection`.
+- Subagent writers must have disjoint write sets. The orchestrator reconciles,
+  validates, and commits; it does not absorb parallelizable work without cause.
+- Per block: run scoped validation and an independent review with a **review**
+  `context-capsule` (or `code-review`). Review may overlap scoped validation.
+  Do not review inside the implementer's debug transcript when a subagent or
+  clean handoff is available.
 
 ## Procedure
 
 1. Inspect plan scope, repository instructions, branch/worktree, local changes, relevant files, validation commands, and applicable commit cadence. Record the plan as local, its readiness, and `n/a` lifecycle.
-2. Prepare the execution branch or worktree when needed. Break the work into reviewable blocks, each with focused scope and minimum validation; map a commit boundary for each block when the applicable cadence calls for incremental commits.
-3. Implement and validate each block. If an explicit user request or plan contract, or an applicable user or repository policy, authorizes incremental commits, commit the completed, validated logical block before starting the next; otherwise do not commit. Never include ignored local plans.
-4. Review the full diff and report implementation evidence, validation, uncompleted items, risks, and the next route. Use `work-closeout` when the user asks to assess or change the local plan after execution.
+2. Publish the orchestration cast (`agent-selection`). Prepare the execution branch or worktree when needed. Break the work into reviewable blocks with minimum validation and commit boundaries when the cadence calls for them.
+3. Execute each block through the cast: implement only within assigned write sets, run scoped validation, run clean-context review (overlap allowed), then commit when authorized. Never include ignored local plans.
+4. After the final block, run full-diff review and report implementation evidence, validation, uncompleted items, risks, and the next route. Use `work-closeout` when the user asks to assess or change the local plan after execution.
 
 ## Scope
 
