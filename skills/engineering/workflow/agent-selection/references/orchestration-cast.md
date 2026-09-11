@@ -1,0 +1,68 @@
+# Orchestration Cast
+
+Present the cast in **bullets** in chat (default). Use a wide markdown table
+only when the user asks for a table or when writing a durable artifact that
+benefits from columns. Keep the cast outside any handoff fence.
+
+## Chat format (default)
+
+Lead with one line: mode, remaining scope, commit policy.
+
+Then one bullet per **critical-path** role:
+
+```markdown
+- **<Role>** (<block id if any>) — <runtime> · **<concrete model>** · effort <n/a|value>
+  Fallback: <concrete model or runtime alternative>.
+  Does: <one line>. Write set: <paths/packages>. Capsule: implement|review|n/a.
+  Order: <first | after <Role> | parallel with <Role>>.
+```
+
+Optional / deferred roles go under a separate heading **Deferred (not on
+critical path)** — do not mix them into the main bullets.
+
+Close with: review fixed point(s), spec/plan paths, when reviews fire.
+
+## Hard presentation rules
+
+- **Concrete model required** for every role. Name a model the runtime
+  actually exposes (user-facing name or slug). `inherit` is allowed only as
+  **Fallback**, never as the primary Model cell/line — except Orchestrator,
+  which may be `Composer (parent)` / current parent model.
+- Reviewers must name a model **different from the writer** when more than one
+  is exposed; do not write “≠ writer if available” without picking one.
+- **Order must be honest:** use `parallel with` only when work can start at the
+  same time on disjoint write sets. If B needs A’s interface or commit, write
+  `after <A>` — do not fake parallelism.
+- Cast **remaining work only** when the branch is mid-flight. Do not re-list
+  completed plan steps as active writers.
+- Keep the critical-path cast short (typically ≤6 bullets). Park dual-delivery
+  twins, optional worktrees, and speculative roles under Deferred.
+
+## Role heuristics (operational defaults)
+
+Pick only from models the **current runtime actually exposes**. If a preferred
+model is missing, write `unavailable` and the next best exposed option — do
+not invent slugs.
+
+| Role | Prefer | Avoid |
+| --- | --- | --- |
+| Orchestrator | Parent session model | Downgrading while writers use stronger models |
+| Implementer | Strongest coding-capable exposed model for the block | `inherit` as primary; shared write sets |
+| Review Spec | Different family from the writer when exposed | Same model+transcript as the writer |
+| Review Standards | Different from both writer and Spec when possible | Merging Standards and Spec into one agent |
+| Validation / glue | Smaller/faster coding model when exposed | Overspending a max model on Makefile glue |
+| Exploration | Fast bounded subagent when exposed | Promoting side work into the primary writer without a new cast |
+
+Effort: set only when the runtime exposes it; otherwise `n/a`.
+
+## Capsule types
+
+- **implement**: goal, decisions, constraints, paths, validation commands (`context-capsule` template).
+- **review**: diff command, commit list, spec/plan paths, standards paths only — see `context-capsule` review rule. No implementer debug narrative.
+
+## Solo sequential exception
+
+One role (orchestrator=implementer) is allowed only when you state one of:
+coupled write set; open product/architecture decision; subagents unavailable and
+user has not chosen another thread; or a single-block change with no independent
+review surface yet.
