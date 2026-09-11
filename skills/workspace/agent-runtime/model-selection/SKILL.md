@@ -22,6 +22,9 @@ Zed edit-predictions setup notes are in
 - Do not transfer a benchmark ranking across runtimes without validation.
 - Do not use private repository content in an external evaluation without explicit authorization and a data-boundary review.
 - Do not optimize nominal token price at the expense of validated completion, safety, or operator time.
+- Per-role model picks inside an execution cast belong to `agent-selection`.
+  Use this skill when changing durable defaults, comparing candidates with
+  evidence, or running a pilot—not to replace the orchestration cast.
 
 ## Core Rule
 
