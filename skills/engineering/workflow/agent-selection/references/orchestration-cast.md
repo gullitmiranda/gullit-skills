@@ -4,6 +4,9 @@ Present the cast in **bullets** in chat (default). Use a wide markdown table
 only when the user asks for a table or when writing a durable artifact that
 benefits from columns. Keep the cast outside any handoff fence.
 
+Surface names: `Cursor local` | `Cursor cloud` | `Zed Agent` |
+`ACP:<named-agent>` | `Terminal:<cli>`. Never write bare `ACP`.
+
 ## Chat format (default)
 
 Lead with one line: mode, remaining scope, commit policy.
@@ -11,8 +14,8 @@ Lead with one line: mode, remaining scope, commit policy.
 Then one bullet per **critical-path** role:
 
 ```markdown
-- **<Role>** (<block id if any>) — <runtime> · **<concrete model>** · effort <n/a|value>
-  Fallback: <concrete model or runtime alternative>.
+- **<Role>** (<block id if any>) — <surface> · **<concrete model>** · effort <n/a|value>
+  Fallback: <concrete model or surface alternative>.
   Does: <one line>. Write set: <paths/packages>. Capsule: implement|review|n/a.
   Order: <first | after <Role> | parallel with <Role>>.
 ```
@@ -24,10 +27,13 @@ Close with: review fixed point(s), spec/plan paths, when reviews fire.
 
 ## Hard presentation rules
 
-- **Concrete model required** for every role. Name a model the runtime
+- **Concrete model required** for every role. Name a model the **surface**
   actually exposes (user-facing name or slug). `inherit` is allowed only as
   **Fallback**, never as the primary Model cell/line — except Orchestrator,
   which may be `Composer (parent)` / current parent model.
+- If the preferred model is ineligible on the chosen surface (for example CW
+  gateway on Cursor in the current setup), mark `unavailable` and propose a
+  surface change — do not invent a slug.
 - Reviewers must name a model **different from the writer** when more than one
   is exposed; do not write “≠ writer if available” without picking one.
 - **Order must be honest:** use `parallel with` only when work can start at the
@@ -40,7 +46,7 @@ Close with: review fixed point(s), spec/plan paths, when reviews fire.
 
 ## Role heuristics (operational defaults)
 
-Pick only from models the **current runtime actually exposes**. If a preferred
+Pick only from models the **current surface actually exposes**. If a preferred
 model is missing, write `unavailable` and the next best exposed option — do
 not invent slugs.
 
@@ -53,7 +59,7 @@ not invent slugs.
 | Validation / glue | Smaller/faster coding model when exposed | Overspending a max model on Makefile glue |
 | Exploration | Fast bounded subagent when exposed | Promoting side work into the primary writer without a new cast |
 
-Effort: set only when the runtime exposes it; otherwise `n/a`.
+Effort: set only when the surface exposes it; otherwise `n/a`.
 
 ## Capsule types
 
