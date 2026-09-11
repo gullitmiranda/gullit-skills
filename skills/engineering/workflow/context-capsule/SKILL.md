@@ -17,10 +17,15 @@ without reading the whole conversation.
 - When the capsule is a prompt for another thread, return its complete content
   in one fenced `markdown` block. Keep recommendations and other reader-facing
   guidance outside that block.
+- **Review capsules** (Standards, Spec, Bugbot, security, or block review):
+  include only the diff command, commit list, spec/plan paths, and standards
+  paths (plus expected return). Do **not** include the implementer's debug
+  narrative, failed-command archaeology, or chat history. Prefer
+  [review-template.md](review-template.md) over the full template.
 
 ## Process
 
-1. Identify the target audience (parent chat, child subagent, forked conversation, Zed thread, terminal/ACP/Pi-style agent, future resume).
+1. Identify the target audience (parent chat, child subagent, forked conversation, Zed thread, terminal/ACP/Pi-style agent, future resume) and capsule type (implement vs review).
 2. Include only context needed for the next action; preserve durable decisions and constraints without over-preserving stale implementation details.
-3. Use [template.md](template.md). Prefer links, paths, branch names, issue numbers, and validation commands over raw transcript excerpts.
+3. Use [review-template.md](review-template.md) for reviews; otherwise [template.md](template.md). Prefer links, paths, branch names, issue numbers, and validation commands over raw transcript excerpts.
 4. End with one recommended next action. For child agents, state the expected return format.
