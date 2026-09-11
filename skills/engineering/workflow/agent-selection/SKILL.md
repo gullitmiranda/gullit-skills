@@ -5,12 +5,19 @@ description: Recommend the agent cast for a workflow phase—surfaces, models, w
 
 # Agent Selection
 
-Choose the execution cast (orchestration surface + model per role) before
-substantial work. Do not recommend a surface and leave model or review shape
-implicit.
+Choose the lightest execution cast that fits the work. Keep work in the main
+agent by default; add roles only when delegation has a concrete benefit.
 
 ## Hard Rules
 
+- **Delegation gate:** keep the task in the main agent unless a delegated unit:
+  - is independently executable without sharing evolving decisions or context;
+  - is large enough that parallelism or clean-context review repays handoff cost;
+  - has a bounded, mergeable output and, for writers, a disjoint semantic write set.
+  Multiple steps or files do not establish independence. Do not delegate product
+  decisions, final synthesis, tightly coupled documentation, or work the main
+  agent can complete directly with a few tool calls. This gate still applies when
+  another skill recommends or assumes background delegation.
 - Choose the **orchestration surface** before models. ACP is not a surface —
   write `ACP:<named-agent>`. See
   [references/orchestration-surfaces.md](references/orchestration-surfaces.md).
@@ -26,13 +33,13 @@ implicit.
   conversation and duplicates work the user expected to happen elsewhere.
 - If the recommendation hands work to another tool or agent, invoke or
   produce a `context-capsule` first.
-- For multi-block plans, parallel streams, or block/increment review, present
-  an **orchestration cast** using
+- For independently executable multi-block plans, parallel streams, or
+  block/increment review, present an **orchestration cast** using
   [references/orchestration-cast.md](references/orchestration-cast.md) in
   **chat bullets** (default). Each critical-path role gets surface, a
   **concrete primary model** (not vague `inherit`), effort when exposed, write
-  set, capsule type, honest order (`after` vs `parallel`), and fallback. Solo
-  sequential work needs an explicit exception reason from that reference.
+  set, capsule type, honest order (`after` vs `parallel`), and fallback. A
+  coupled multi-step task may use a one-role cast without special pleading.
 - Recommend only models the surface exposes; if preferred is missing, mark
   `unavailable` and either the next exposed option or a surface change (do
   not invent slugs). Do not leave Model as only `inherit` or
@@ -47,9 +54,10 @@ implicit.
 | --- | --- |
 | Product or architecture decision | Main chat only |
 | Domain grilling | Main chat only |
-| Multi-block ready plan | Orchestrator + disjoint writers + clean-context reviewers (cast required); prefer Cursor when fine per-role models are needed |
-| Bounded exploration | Subagent |
-| Parallel side question | Subagent |
+| Independent multi-block ready plan | Orchestrator + disjoint writers + clean-context reviewers (cast required); prefer Cursor when fine per-role models are needed |
+| Coupled multi-step work or final synthesis | Main agent; a one-role cast is sufficient |
+| Bounded exploration | Main agent unless enough independent reading exists to amortize the handoff |
+| Parallel side question | Subagent only when it passes the delegation gate |
 | Side path becomes primary | Fork or new thread; new cast |
 | Focused single-block implementation | Current surface; cast may be one implementer row. Fine cast → Cursor; CW/OpenRouter non-negotiable → Zed Agent |
 | Block or increment review | Parallel Standards ∥ Spec subagents; review capsules; not the writer transcript |
@@ -63,16 +71,18 @@ implicit.
 ## Procedure
 
 1. Classify the phase (decide / explore / implement / review / handoff).
-2. Pick the orchestration surface from
+2. Apply the delegation gate to each proposed role; collapse coupled work into
+   the main agent.
+3. Pick the orchestration surface from
    [references/orchestration-surfaces.md](references/orchestration-surfaces.md).
-3. Check subagent availability; if absent, stop at alternatives and wait.
-4. Build the cast from [references/orchestration-cast.md](references/orchestration-cast.md)
-   when the defaults table requires it; otherwise name the single surface+model.
-5. Emit reader-facing recommendation (prose + cast). Put any handoff
-   `context-capsule` in its own fenced `markdown` block afterward.
+4. If delegation remains, check subagent availability; if absent, stop at
+   alternatives and wait.
+5. Build and emit the smallest honest cast. Put any handoff `context-capsule`
+   in its own fenced `markdown` block afterward.
 
 ## Output
 
 State autonomy mode, why the cast fits, context to transfer, and expected
-return in normal Markdown (not a fence). The cast (bullets by default) is
-mandatory whenever the multi-block / parallel / review defaults apply.
+return in normal Markdown (not a fence). For every delegated role, state its
+independence and expected benefit. A cast is mandatory for independent
+multi-block, parallel, or review work; it may contain one role for coupled work.

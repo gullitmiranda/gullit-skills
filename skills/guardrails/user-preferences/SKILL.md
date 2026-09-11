@@ -54,11 +54,12 @@ Exception: during migrations, adapters and conversion shims between old and new 
 ## Execution orchestration
 
 - For multi-block implementation or intake that routes to `build-plan` /
-  `incremental-delivery`, always present and follow an orchestration cast
-  (`agent-selection`): roles, runtimes, **concrete models per role** (not
-  primary `inherit`), write sets, honest sequencing, and clean-context reviews.
-  Prefer **bullets** in chat over wide tables. Do not default to an uncast
-  sequential monolith in the parent thread.
+  `incremental-delivery`, apply the `agent-selection` delegation gate, then
+  present and follow the smallest honest orchestration cast: roles, runtimes,
+  **concrete models per role** (not primary `inherit`), write sets, sequencing,
+  and any justified clean-context reviews. Multiple steps or files do not by
+  themselves justify multiple agents; coupled decisions and final synthesis
+  stay with one writer. Prefer **bullets** in chat over wide tables.
 
 ## PR Review Comments
 
