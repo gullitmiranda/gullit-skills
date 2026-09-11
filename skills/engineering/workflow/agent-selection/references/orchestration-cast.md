@@ -57,7 +57,7 @@ not invent slugs.
 | Review Spec | Different family from the writer when exposed | Same model+transcript as the writer |
 | Review Standards | Different from both writer and Spec when possible | Merging Standards and Spec into one agent |
 | Validation / glue | Smaller/faster coding model when exposed | Overspending a max model on Makefile glue |
-| Exploration | Fast bounded subagent when exposed | Promoting side work into the primary writer without a new cast |
+| Exploration | Main agent for bounded reading; fast subagent only for substantial independent work | Delegating a small lookup or final synthesis |
 
 Effort: set only when the surface exposes it; otherwise `n/a`.
 
@@ -66,9 +66,10 @@ Effort: set only when the surface exposes it; otherwise `n/a`.
 - **implement**: goal, decisions, constraints, paths, validation commands (`context-capsule` template).
 - **review**: diff command, commit list, spec/plan paths, standards paths only — see `context-capsule` review rule. No implementer debug narrative.
 
-## Solo sequential exception
+## Delegation threshold
 
-One role (orchestrator=implementer) is allowed only when you state one of:
-coupled write set; open product/architecture decision; subagents unavailable and
-user has not chosen another thread; or a single-block change with no independent
-review surface yet.
+One role (orchestrator=implementer) is the default. Add another role only when
+its work passes the delegation gate in `../SKILL.md`. Paths alone do not define
+write-set independence: artifacts that encode the same evolving decision are a
+coupled semantic write set and stay with one writer. Final synthesis remains
+with the orchestrator.
