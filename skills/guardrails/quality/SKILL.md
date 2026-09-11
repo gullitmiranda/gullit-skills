@@ -39,11 +39,13 @@ When pasting or referencing external text, rewrite it as clean text instead of c
 
 ## Lint and format fix workflow (Trunk)
 
-1. Run `trunk check --fix` first to auto-fix everything Trunk can fix.
-2. Address remaining issues manually.
-3. Re-run `trunk check` to confirm.
+Agent sessions must stay non-interactive (PTY + Trunk hooks hang on prompts):
 
-Do not manually fix what Trunk can fix.
+1. Run `CI=1 trunk check --ci -y --no-progress </dev/null` first to auto-fix everything Trunk can fix.
+2. Address remaining issues manually.
+3. Re-run `CI=1 trunk check --ci --no-progress </dev/null` to confirm.
+
+Do not manually fix what Trunk can fix. Never omit `--ci -y` in agent-driven Trunk runs.
 
 ## Quality Gates
 

@@ -1,6 +1,7 @@
 ---
 name: git
-description: Safe Git workflow - commit with conventional format and branch safety, create branches, reset with backup, and multi-repo status. Use when committing, creating branches, resetting, or checking git status in multi-repo workspaces.
+description: >-
+  Safe Git workflow — conventional commits, branch safety, reset with backup, multi-repo status, and Trunk-safe agent commits (CI=1 / --ci -y / no PTY hangs). Use when committing, creating branches, resetting, checking git status, or before any agent git commit in a Trunk-enabled repo.
 ---
 
 # /commit - Smart Git Commit
@@ -23,14 +24,34 @@ When on main/master without `--main`, create a branch named by change type befor
 
 ## Trunk-backed Commit Safety
 
-When the repository has Trunk configured (`.trunk/trunk.yaml` exists), agent-driven commits must not hang on interactive hook prompts:
+Applies to **every** repository with Trunk (`.trunk/trunk.yaml` or `core.hooksPath` pointing at Trunk git-hooks) — not only one project.
 
-1. **Always run Trunk first, before committing** — fix findings before the hook ever runs:
-   - `trunk fmt --ci --upstream HEAD --no-progress </dev/null`
-   - `trunk check --ci --upstream HEAD --no-progress </dev/null`
-   The `--ci` flag makes Trunk fail fast instead of prompting `Continue anyway? (Y/n)` — an interactive prompt in a non-interactive terminal hangs the commit indefinitely.
-2. **Every `git commit` runs with stdin closed and a timeout** (`</dev/null` + `timeout_ms`), trunk or not — zero cost when healthy, and it prevents the pathological hang: hook stdin saved via `cat` waits forever for EOF in agent pseudo-terminals. If a commit hangs, a hook is waiting for input — never leave it hanging.
-3. **Escape hatch: `--no-verify`** when the hook still blocks after a clean `trunk check`. Always declare it explicitly in the response ("committed with `--no-verify` because …") — a visible bypass, never a silent one. Do not use `trunk daemon shutdown` as a commit workaround.
+Trunk's pre-commit hook opens `/dev/tty` when stderr looks like a TTY. Agent runners often allocate a PTY, so the hook becomes interactive (Prettier "autoformat?", `Continue anyway?`) and **hangs forever**. Closing stdin alone is not enough if stderr is still a TTY.
+
+### Mandatory sequence before every agent `git commit`
+
+1. **Load this skill** (`git`) before committing when Trunk may be present.
+2. **Format and check non-interactively first** (so the hook has nothing interactive left to ask):
+   ```bash
+   CI=1 trunk fmt --ci -y --upstream HEAD --no-progress </dev/null
+   CI=1 trunk check --ci -y --upstream HEAD --no-progress </dev/null
+   ```
+   - `--ci` → fail fast, no "Continue anyway?"
+   - `-y` → apply autofixes without prompting
+   - `CI=1` → mark the environment as non-interactive for tooling
+3. **Stage any files Trunk rewrote**, then commit.
+4. **Every `git commit` must**:
+   - close stdin: `</dev/null`
+   - set `CI=1 GIT_TERMINAL_PROMPT=0`
+   - use a harness timeout (`timeout_ms` / equivalent); if it hits the timeout, treat it as a hook hang — kill and recover, never leave spinning
+   - prefer a non-PTY shell for the commit command when the harness allows it (PTY + Trunk hook = hang risk)
+5. **Escape hatch: `--no-verify`** only after a clean `trunk fmt` + `trunk check` above, when the hook still blocks. Always say so explicitly ("committed with `--no-verify` because …"). Never silent. Do not use `trunk daemon shutdown` as a commit workaround.
+
+### Do not
+
+- Rely on the pre-commit hook to format for you during agent commits.
+- Run `trunk check --fix` or `trunk fmt` **without** `--ci -y` in agent sessions.
+- Leave a commit command running for minutes hoping the hook finishes.
 
 ## Safety Checks
 
