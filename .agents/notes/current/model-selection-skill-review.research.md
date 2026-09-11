@@ -402,5 +402,27 @@ guides (encountered in search; discarded for claim support).
 Keep the hard rules and evidence ladder. Tighten the selection-unit formula and
 constraint-vs-evidence wording so the skill matches how OpenAI, Anthropic,
 Google, Cursor, Zed, OpenRouter, AA, and ACP actually expose configuration.
-Do not weaken the “pilot in the target runtime” requirement—primary sources
+Do not weaken the "pilot in the target runtime" requirement—primary sources
 increasingly treat the **agent harness** as part of the measurement.
+
+---
+
+## Design decision (2026-09-11): surface ≠ model
+
+Follow-up discussion after this research:
+
+- **Selection unit** for `model-selection` is model config only
+  (`provider + snapshot + effort + thinking/mode` [+ route/tier]).
+- **Orchestration surface** (Cursor local/cloud, Zed Agent, `ACP:<agent>`,
+  `Terminal:<cli>`) belongs to `agent-selection`. Surface is precondition and
+  confounder for pilots, not a dimension of the model product.
+- ACP is a protocol, never a peer surface name.
+- Skill **corpus** may be shared via symlinks; **wiring** can still differ
+  (ACP external does not inherit Zed profiles/skills).
+- CW `llm-gateway` remains **ineligible on Cursor** in the current setup
+  (hard filter), independent of model quality; revisit if BYOK appears.
+- CursorBench 3.2 numeric stage tables are suite-stale vs CursorBench 4.0
+  (2026-09-10); keep as dated research, not durable operating policy.
+
+Implemented in `agent-selection` (`orchestration-surfaces.md`) and updated
+`model-selection` skill/docs.

@@ -1,57 +1,78 @@
 ---
 name: model-selection
-description: Select and validate AI agent model configurations across runtimes. Use when comparing models, effort levels, cost, latency, benchmarks, or profile defaults in Cursor, Zed, Claude Code, ACP, or another agent runtime.
+description: Select and validate AI agent model configurations on a fixed orchestration surface. Use when comparing models, effort levels, cost, latency, benchmarks, or profile defaults in Cursor, Zed, Claude Code, or another named agent surface.
 ---
 
 # Model Selection
 
-Choose an agent configuration by evaluating the complete setup in its target
-runtime. Do not select from a provider leaderboard or nominal token price alone.
+Choose a model configuration for a surface that is already fixed. Do not select
+from a provider leaderboard or nominal token price alone. Surface choice
+belongs to `agent-selection`.
 
 Read [references/selection-policy.md](references/selection-policy.md) before
 making a recommendation or changing a model default. The durable human-facing
 policy is in [docs/model-selection.md](../../../../docs/model-selection.md).
 
-Zed edit-predictions setup notes are in
-[`zed-sweep-next-edit-setup.md`](zed-sweep-next-edit-setup.md).
-
 ## Hard Rules
 
-- Never silently change a runtime or profile default.
+- Never silently change a profile or surface default.
 - Do not treat usage telemetry as a quality benchmark.
-- Do not transfer a benchmark ranking across runtimes without validation.
-- Do not use private repository content in an external evaluation without explicit authorization and a data-boundary review.
-- Do not optimize nominal token price at the expense of validated completion, safety, or operator time.
+- Do not transfer a benchmark ranking across surfaces without validation.
+- Do not use private repository content in an external evaluation without
+  explicit authorization and a data-boundary review.
+- Do not optimize nominal token price at the expense of validated completion,
+  safety, or operator time.
+- Apply hard filters before the quality ladder: privacy, data boundary, plan
+  availability, supported parameters, and provider eligibility on the chosen
+  surface (for example CW `llm-gateway` is ineligible on Cursor in the current
+  setup).
 - Per-role model picks inside an execution cast belong to `agent-selection`.
   Use this skill when changing durable defaults, comparing candidates with
   evidence, or running a pilot—not to replace the orchestration cast.
+- If the orchestration surface is unset or contested, stop and use
+  `agent-selection` first.
 
 ## Core Rule
 
 The selection unit is:
 
 ```text
-provider + model + effort + thinking mode + runtime
+provider + model snapshot + effort + thinking/mode
+(+ route/tier when the surface exposes them)
 ```
 
-A model family name is not enough evidence; effort settings, tool schemas,
-sandboxes, context behavior, and provider integrations can produce materially
-different results.
+The orchestration surface is a **precondition and confounder**, not part of the
+product being selected. Hold it constant for a pilot. A model family name alone
+is not enough evidence.
 
 ## Workflow
 
-1. Establish the decision boundary: target runtime and profiles; workload and expected tools; quality, latency, and cost constraints; provider, privacy, repository, and data-boundary restrictions; current default, fallback, and the change being considered. Ask for clarification if the workload or success criteria are unknown. Do not assume a configuration that works in one runtime transfers to another.
-2. Gather comparable evidence, in order: (1) representative local results in the target runtime; (2) comparable reproducible evaluations; (3) runtime-specific public benchmarks; (4) general benchmarks; (5) provider documentation and pricing. Use public benchmarks to narrow candidates, not to declare a winner; record the benchmark's runtime, task type, configuration, version, and date before relying on it.
-3. Define a small pilot: a task set representative of the workload, holding repository state, permissions, prompt shape, and validation constant where practical. For each candidate capture complete configuration, task outcome and validation result, elapsed time, retries and tool failures, observed cost or cost proxy, and operator intervention required. Change one meaningful variable at a time; if impossible, state the confounder explicitly.
-4. Evaluate and recommend: reject any candidate with an unmitigated safety, data-boundary, correctness, or tool-reliability failure. Compare the rest on quality, reliability, cost, latency, operator effort, and runtime fit. Recommend the smallest configuration that reliably meets the quality bar; retain a known-good fallback while a new configuration is provisional.
-5. Apply only an evidence-backed change. Before editing settings: state the configuration being replaced and the proposed replacement; summarize the evidence and remaining uncertainty; identify the fallback and review trigger; obtain the user's approval when the change was not explicitly requested. Do not create profile-specific exceptions until evidence shows a workload needs one; otherwise let profiles inherit the global fallback.
+1. Confirm surface and decision boundary: named surface (or defer to
+   `agent-selection`); workload; quality/latency/cost constraints; hard
+   filters; current default, fallback, and proposed change. Reject ineligible
+   provider/surface pairs before gathering quality evidence.
+2. Gather comparable evidence, in order: (1) representative local results on
+   that surface; (2) comparable reproducible evaluations; (3) surface-specific
+   public benchmarks; (4) general benchmarks; (5) provider documentation and
+   qualitative claims. Use public benchmarks to narrow candidates, not to
+   declare a winner; record suite version, date, harness, and configuration.
+3. Define a small pilot on the fixed surface. Capture configuration, outcome,
+   validation, elapsed time, retries/tool failures, observed cost, and operator
+   intervention. Change one meaningful variable at a time; state confounders.
+4. Evaluate and recommend: reject unmitigated safety, data-boundary,
+   correctness, or tool-reliability failures. Among the rest, prefer the lowest
+   effective cost per validated completion (or lowest operator time if cost is
+   flat), then lower effort/tier. Keep a known-good fallback while provisional.
+5. Apply only an evidence-backed change with user approval when not explicitly
+   requested. Do not create profile-specific exceptions until evidence shows a
+   workload needs one.
 
 ## Required Output
 
 ```markdown
 ## Model Selection Decision
 
-- Runtime and workload:
+- Surface and workload:
 - Candidate configurations:
 - Evidence and its limits:
 - Quality, cost, latency, and reliability comparison:
@@ -62,8 +83,8 @@ different results.
 ```
 
 Write the decision in the language of the conversation; the template is
-illustrative and does not set the language. If the decision is saved or
-published, follow the artifact-language policy in `user-preferences`.
+illustrative. If saved or published, follow the artifact-language policy in
+`user-preferences`.
 
-When the evidence is insufficient, recommend a pilot with its task set and
-success criteria instead of guessing a default.
+When evidence is insufficient, recommend a pilot with task set and success
+criteria instead of guessing a default.
