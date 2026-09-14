@@ -42,6 +42,10 @@ Exception: during migrations, adapters and conversion shims between old and new 
 
 - When referencing any external resource, include a clickable URL whenever possible; compact raw URLs are welcome and often preferred over label-only references, and bare numbers or abbreviations should only be used when no URL is available.
 
+## Slack outbound
+
+- When preparing or sending Slack messages, follow `slack-outbound`: ground in the destination channel/thread, write for that audience, and prefer draft over send until the final text is confirmed.
+
 ## Git commit destinations
 
 - In the user's **personal** GitHub repos (owner `gullitmiranda`, e.g. `~/code/gullit/...`), committing/pushing directly to `main` is allowed without explicit per-task confirmation. The safety skill's "never commit to main/master" rule applies to shared or organizational repos, not personal ones. Still keep commits well-scoped and reversible.
