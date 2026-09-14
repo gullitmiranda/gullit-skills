@@ -40,6 +40,7 @@ Use these whenever their boundary applies.
 - `data-boundary`: prevent private or context-specific information from leaking.
 - `supply-chain-safety` and `js-supply-chain-safety`: secure package and tool installation; the stricter applicable rule wins.
 - `publish-safe-links`: prevent local or unpublished paths from appearing in publishable text.
+- `slack-outbound`: compose Slack messages for the destination audience (ground, draft, confirm before send).
 - `pr`, `pr-delivery`, and `pr-babysit`: pull-request lifecycle work when requested.
 
 ## Default compositions
