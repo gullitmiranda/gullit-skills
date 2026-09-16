@@ -10,7 +10,7 @@ Execute one local implementation contract without assigning it a tracked lifecyc
 ## Hard Rules
 
 - Do not implement on `main` or `master` unless the user explicitly requests it.
-- Read `.agents/AGENTS.md` and classify the source before editing. A workspace-standard implementation plan is local under `.agents/plans/` and is never committed.
+- Read `.agents/AGENTS.md` and classify the source before editing. A local implementation plan lives under `.agents/plans/` (or the same tree via a `.cursor/plans` symlink) and is never committed.
 - Do not move, promote, synchronize, archive, discard, or distill a local plan without clear user intent.
 - If product, scope, or architecture decisions needed to execute remain open, stop and route to `work-plan` or the user.
 - Follow `user-preferences`, `safety`, `git`, `quality`, `data-boundary`, and `publish-safe-links`; do not duplicate their policy.

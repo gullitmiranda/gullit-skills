@@ -9,4 +9,4 @@
 ## Agent workspace
 
 - `.agents/AGENTS.md` is the authority for agent working artifacts, including their location, lifecycle, and tracking.
-- Local implementation plans in `.agents/plans/` are ignored and never committed. `.cursor/plans/` is a legacy local input; do not move it or create its compatibility symlink without explicit user direction.
+- Local implementation plans live only under `.agents/plans/` (ignored, never committed). `.cursor/plans` may be a compatibility symlink to that tree; do not create a second real plan directory, and do not create or repair the symlink without explicit user direction.

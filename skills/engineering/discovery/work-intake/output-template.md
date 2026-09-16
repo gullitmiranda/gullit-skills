@@ -12,7 +12,7 @@
 
 - Source:
 - Governing authority:
-- Type: local plan | tracked note | legacy local input | non-plan
+- Type: local plan | tracked note | non-plan
 - Note lifecycle: proposed | current | retired | archived | n/a
 - Execution readiness: ready | needs-refinement | blocked | unclear
 - Next route: `work-plan` | `build-plan` | `incremental-delivery` | `work-closeout` | user decision

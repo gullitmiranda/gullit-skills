@@ -4,6 +4,8 @@ Status: underway
 
 This decision record defines the target artifact model for the next revision of the agent workspace standard. It is not an implementation plan.
 
+**Amendment:** local plans use one physical tree — see [agent-workspace-plans-one-tree.decision.md](agent-workspace-plans-one-tree.decision.md). Prefer that note over any dual-home or legacy-only wording for `.cursor/plans` below.
+
 ## Purpose
 
 Separate executable implementation contracts from durable working knowledge. The previous model overloaded `plan` to mean missions, research, decisions, executable work, and local task drafts. That ambiguity made lifecycle and archival rules unreliable.
@@ -12,7 +14,7 @@ Separate executable implementation contracts from durable working knowledge. The
 
 ### Artifact roles
 
-- `.agents/plans/` is the canonical local home for implementation plans. A migrated `.cursor/plans` path may remain as a local compatibility symlink to it.
+- `.agents/plans/` is the only physical local home for implementation plans. `.cursor/plans` may be a local compatibility symlink to it (see one-tree amendment).
 - `.agents/notes/` contains tracked working knowledge: missions, proposals, research, decisions, and other material that can guide future work.
 - `.agents/scratch/` contains local, disposable material that has no preservation or lifecycle expectation.
 - `docs/` contains project documentation intended to be canonical for readers of the repository.

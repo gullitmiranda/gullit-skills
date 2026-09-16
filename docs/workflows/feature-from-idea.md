@@ -31,6 +31,6 @@ work-intake
 ## Expected outputs
 
 - Clear domain terms and decisions.
-- A ready local plan under `.agents/plans/` when planning is needed.
+- A ready local plan under `.agents/plans/` when planning is needed (same files may also resolve via a `.cursor/plans` symlink).
 - Independent deliveries only when justified.
 - Validation evidence and remaining risks.

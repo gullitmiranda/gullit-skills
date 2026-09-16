@@ -9,7 +9,7 @@ Assess work without mutating plans, branches, or remote state until the user cho
 
 ## Hard Rules
 
-- Read `.agents/AGENTS.md` first. Treat `.agents/plans/` as local, ignored plan material and `.cursor/plans/` as compatibility-only input.
+- Read `.agents/AGENTS.md` first. Treat `.agents/plans/` as the only physical local plan tree; `.cursor/plans` is usable when it resolves to that tree via symlink.
 - Default to read-only assessment. Do not archive, discard, distill, commit, push, remove a worktree, close a pull request, or delete a branch without clear user intent.
 - Archive only after explicit confirmation of the exact plan and destination. Move it unchanged to `.agents/plans/.archived/`; archived plan content is frozen.
 - Distill only durable decisions, constraints, findings, outcomes, and follow-ups into notes or documentation. Do not copy a plan wholesale.
