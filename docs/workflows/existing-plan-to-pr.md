@@ -18,7 +18,7 @@ work-intake
 
 ## Steps
 
-1. Read the source and verify whether it is a ready local plan, tracked note, legacy input, or non-plan request.
+1. Read the source and verify whether it is a ready local plan under `.agents/plans/` (or the same tree via a `.cursor/plans` symlink), tracked note, or non-plan request.
 2. Create or refine one local plan with `work-plan` unless the source is already a ready local implementation plan. Resolve execution-relevant product, scope, or architecture decisions before implementation.
 3. Choose the runtime and isolate work when needed.
 4. Execute the ready contract with `build-plan`; use `incremental-delivery` only for independently reviewable deliveries.

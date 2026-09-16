@@ -9,7 +9,8 @@ This repository uses `.agents/` for agent working artifacts. This file is the au
 
 ## Artifact model
 
-- `.agents/plans/` contains local implementation plans that are ready to execute without unresolved product, scope, or architecture decisions.
+- `.agents/plans/` is the only physical local home for implementation plans. Plans are ready to execute without unresolved product, scope, or architecture decisions.
+- `.cursor/plans` may be a local compatibility symlink to that tree so Cursor resolves the same files. It is not a second plan home.
 - `.agents/notes/` contains tracked working knowledge: missions, proposals, research, decisions, and coordination context.
 - `.agents/scratch/` contains local disposable material.
 - `docs/` contains canonical repository documentation.
@@ -28,6 +29,8 @@ This repository uses `.agents/` for agent working artifacts. This file is the au
   plans/
     .archived/
   scratch/
+.cursor/
+  plans -> ../.agents/plans   # optional; create only when needed
 ```
 
 ## Notes
@@ -42,11 +45,15 @@ Use visible `Status:` or `Outcome:` lines only when type-specific context is use
 
 ## Implementation plans
 
-Plans are local `.agents/plans/*.plan.md` artifacts and are never committed. If execution-relevant decisions remain open, refine the plan or request clarification before implementation unless the user explicitly authorizes deciding them during execution.
+Plans are local `.agents/plans/*.plan.md` artifacts and are never committed. Reading or editing through a `.cursor/plans` symlink is fine when it points at the same tree. Never create a second real plan directory.
+
+If execution-relevant decisions remain open, refine the plan or request clarification before implementation unless the user explicitly authorizes deciding them during execution.
 
 After implementation, discard the plan, archive it unchanged under `.agents/plans/.archived/`, or distill durable knowledge into notes or docs. Require clear user intent before any of those actions.
 
-## Migration
+## Tracking and unification
 
-`.cursor/plans/` is a legacy local input. Move it to `.agents/plans/` and create a compatibility symlink only when the user explicitly requests that migration. Do not implicitly move, promote, or reclassify legacy artifacts.
+`.agents/notes/` is tracked. `.agents/plans/`, `.cursor/plans`, and `.agents/scratch/` are never committed.
+
+If both plan paths exist as real directories, unify into `.agents/plans/` and replace `.cursor/plans` with the compatibility symlink only when the user explicitly requests that migration. Do not leave two independent plan trees.
 ```

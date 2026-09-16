@@ -11,7 +11,7 @@ Preserve Cursor's path-keyed state through a reversible project move.
 
 - Cursor workspace state under `~/.cursor/projects/` is path-derived; never assume it follows a project move automatically.
 - Back up relevant Cursor state and uncommitted local agent artifacts before moving anything.
-- Repository plans are local under `.agents/plans/`; notes are tracked under `.agents/notes/`. Mention `.cursor/plans/` only when an explicit compatibility symlink exists.
+- Repository plans are local under `.agents/plans/`; notes are tracked under `.agents/notes/`. Preserve a `.cursor/plans` compatibility symlink when present; do not treat it as a second plan tree.
 - Do not delete the old path, old state, or backups until verification completes and the user confirms cleanup.
 
 ## Procedure
