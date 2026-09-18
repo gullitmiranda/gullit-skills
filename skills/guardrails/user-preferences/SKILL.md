@@ -40,7 +40,8 @@ Exception: during migrations, adapters and conversion shims between old and new 
 
 ## Link formatting
 
-- When referencing any external resource, include a clickable URL whenever possible; compact raw URLs are welcome and often preferred over label-only references, and bare numbers or abbreviations should only be used when no URL is available.
+- Never refer to a GitHub PR or issue by number alone (`#682`, `terraform#17645`, `682`). The visible text must include the full URL (`https://github.com/<owner>/<repo>/pull/<n>` or `/issues/<n>`) plus the title. Naming the repo in prose is not a substitute for the URL.
+- Slack's GitHub app rewrites pasted GitHub URLs into `#123`. In Slack drafts, put each full URL in inline code so it stays visible as a URL, e.g. `` `https://github.com/<owner>/<repo>/pull/682` ``.
 
 ## Slack outbound
 

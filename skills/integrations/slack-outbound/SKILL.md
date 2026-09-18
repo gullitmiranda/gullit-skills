@@ -24,6 +24,11 @@ Write for the people who will read the message in Slack, not for this chat.
 - Apply `publish-safe-links` and `data-boundary` before any draft or send.
 - Keep formatting guidance in the Cursor Slack plugin `slack-messaging` skill;
   this skill owns audience and grounding.
+- Never write GitHub PRs or issues as `#123` or `repo#123`. Include the title
+  and the full `https://github.com/<owner>/<repo>/pull/<n>` (or `/issues/<n>`)
+  URL. Slack's GitHub app rewrites a raw GitHub URL into `#123`; wrap that
+  full URL in inline code so the URL stays visible. Naming the repo in the
+  sentence does not replace the URL.
 
 ## Procedure
 
