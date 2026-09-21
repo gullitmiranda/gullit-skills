@@ -50,14 +50,25 @@ Pick only from models the **current surface actually exposes**. If a preferred
 model is missing, write `unavailable` and the next best exposed option — do
 not invent slugs.
 
-| Role | Prefer | Avoid |
+On **Cursor**, name configurations from the operating card in
+[docs/model-selection.md](../../../../../docs/model-selection.md)
+(Pick table + Cast table). Do not substitute
+"strongest coding model" or a leaderboard rank. If the preferred cell is not
+exposed (subagent effort is often bound into the slug), take the next row in
+the same column and mark the miss.
+
+| Role | Cursor (from the operating card) | Avoid |
 | --- | --- | --- |
 | Orchestrator | Parent session model | Downgrading while writers use stronger models |
-| Implementer | Strongest coding-capable exposed model for the block | `inherit` as primary; shared write sets |
-| Review Spec | Different family from the writer when exposed | Same model+transcript as the writer |
-| Review Standards | Different from both writer and Spec when possible | Merging Standards and Spec into one agent |
-| Validation / glue | Smaller/faster coding model when exposed | Overspending a max model on Makefile glue |
-| Exploration | Main agent for bounded reading; fast subagent only for substantial independent work | Delegating a small lookup or final synthesis |
+| Implementer | Interactive column for the block's task class | `inherit` as primary; shared write sets; Sol; Opus Extra High/Max |
+| Review Spec | Different family from the writer: Opus 5 High if writer is Grok or Muse; Grok 4.6 Extra High if writer is Opus | Same model+transcript as the writer |
+| Review Standards | Remaining different family, or Muse Spark 1.3 Max | Merging Standards and Spec into one agent |
+| Validation / glue | Background column for the task class | Overspending Opus on Makefile glue |
+| Exploration | Main agent + interactive Light row; Luna Extra High only if delegated and substantial | Delegating a small lookup or final synthesis |
+
+On **Zed Agent** or OpenRouter terminal agents, use the OpenRouter stage table
+in `docs/model-selection.md` instead of the Cursor card. Do not copy Cursor
+catalog names onto Zed.
 
 Effort: set only when the surface exposes it; otherwise `n/a`.
 
