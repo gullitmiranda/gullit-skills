@@ -44,9 +44,11 @@ agent by default; add roles only when delegation has a concrete benefit.
   `unavailable` and either the next exposed option or a surface change (do
   not invent slugs). Do not leave Model as only `inherit` or
   “≠ writer if available”.
-- Operational cast defaults live here. Durable profile or default-model
-  changes use `model-selection` with evidence — do not silently change
-  profile defaults from an orchestration sketch.
+- Operational cast defaults live here. On Cursor, fill each role from the
+  operating card in
+  [docs/model-selection.md](../../../../docs/model-selection.md). Durable
+  profile or default-model changes use `model-selection` with evidence — do
+  not silently change profile defaults from an orchestration sketch.
 
 ## Defaults
 
