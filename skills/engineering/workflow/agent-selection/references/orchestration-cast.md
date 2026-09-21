@@ -61,7 +61,7 @@ the same column and mark the miss.
 | --- | --- | --- |
 | Orchestrator | Parent session model | Downgrading while writers use stronger models |
 | Implementer | Interactive column for the block's task class | `inherit` as primary; shared write sets; Sol; Opus Extra High/Max |
-| Review Spec | Different family from the writer: Opus 5 High if writer is Grok or Muse; Grok 4.6 Extra High if writer is Opus | Same model+transcript as the writer |
+| Review Spec | Different family from the writer: Opus 5 High if writer is Grok or Muse; Grok 4.7 Extra High if writer is Opus | Same model+transcript as the writer |
 | Review Standards | Remaining different family, or Muse Spark 1.3 Max | Merging Standards and Spec into one agent |
 | Validation / glue | Background column for the task class | Overspending Opus on Makefile glue |
 | Exploration | Main agent + interactive Light row; Luna Extra High only if delegated and substantial | Delegating a small lookup or final synthesis |
