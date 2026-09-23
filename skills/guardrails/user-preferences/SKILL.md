@@ -40,8 +40,10 @@ Exception: during migrations, adapters and conversion shims between old and new 
 
 ## Link formatting
 
-- Never refer to a GitHub PR or issue by number alone (`#682`, `terraform#17645`, `682`). The visible text must include the full URL (`https://github.com/<owner>/<repo>/pull/<n>` or `/issues/<n>`) plus the title. Naming the repo in prose is not a substitute for the URL.
-- Slack's GitHub app rewrites pasted GitHub URLs into `#123`. In Slack drafts, put each full URL in inline code so it stays visible as a URL, e.g. `` `https://github.com/<owner>/<repo>/pull/682` ``.
+- The full form is a markdown link whose visible text is `<owner>/<repo>#<id> - <title>`. Example: `[<owner>/<repo>#682 - <title>](https://github.com/<owner>/<repo>/pull/682)`. Use `/issues/<id>` for issues.
+- Use the full form the first time a PR or issue appears in a reply, and for every item in a list or draft meant to be copied, such as Slack or other feedback.
+- After that first full mention in the same reply, a shorter reference is enough.
+- Do not paste a raw GitHub URL. Cursor rewrites it into `#<id>` and drops the repository.
 
 ## Slack outbound
 
