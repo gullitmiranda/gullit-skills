@@ -34,5 +34,5 @@ Small tasks can proceed directly to `build-plan` only when a ready local impleme
 - Compose atomic skills; do not duplicate their policy in workflow documentation.
 - Use `agent-selection` before substantial or long-running work.
 - Use `context-capsule` before handing work to another tool, thread, or agent.
-- Keep implementation plans local under `.agents/plans/`; never commit them. A `.cursor/plans` symlink may expose the same tree to Cursor.
+- Keep implementation plans on the shared local tree `.agents/plans` / `.cursor/plans`; never commit them. In Cursor, use `.cursor/plans`.
 - Prefer vertical slices over broad horizontal phases.

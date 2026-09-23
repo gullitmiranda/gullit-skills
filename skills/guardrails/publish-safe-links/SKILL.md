@@ -12,8 +12,7 @@ local-only, gitignored, or unpushed files that a reader cannot access.
 
 - These paths NEVER appear as links in publishable content, no verification
   needed:
-  - `.agents/plans/` — local-only implementation plans (physical tree)
-  - `.cursor/plans/` — same local plans when present as path or compatibility symlink
+  - `.agents/plans/` and `.cursor/plans/` — the same local-only plan tree (one real directory, one symlink)
   - `.cursor/skills/` (when not part of the published repo)
   - `.factory/` — internal research and scratch
   - `wt-*/` — local git worktrees
@@ -44,8 +43,8 @@ mention ZeroPath.
 
 Skip for:
 
-- Agent-private context: planning docs under `.agents/plans/` or a
-  `.cursor/plans` symlink to that tree, internal research under `.factory/`, scratch notes, and agent
+- Agent-private context: planning docs under `.agents/plans/` or
+  `.cursor/plans` (the same tree), internal research under `.factory/`, scratch notes, and agent
   transcripts. These are read only by the agent and can freely reference local paths.
 - The chat reply itself (the user can resolve any path they see).
 

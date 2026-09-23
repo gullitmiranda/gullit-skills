@@ -4,7 +4,7 @@ Status: underway
 
 This decision record defines the target artifact model for the next revision of the agent workspace standard. It is not an implementation plan.
 
-**Amendment:** local plans use one physical tree — see [agent-workspace-plans-one-tree.decision.md](agent-workspace-plans-one-tree.decision.md). Prefer that note over any dual-home or legacy-only wording for `.cursor/plans` below.
+**Amendment:** local plans are one shared tree — see [agent-workspace-plans-one-tree.decision.md](agent-workspace-plans-one-tree.decision.md). Prefer that note over any dual-home wording below, any instruction to write plans only under `.agents/plans`, and any instruction to ask before linking `.cursor/plans`.
 
 ## Purpose
 
@@ -14,7 +14,7 @@ Separate executable implementation contracts from durable working knowledge. The
 
 ### Artifact roles
 
-- `.agents/plans/` is the only physical local home for implementation plans. `.cursor/plans` may be a local compatibility symlink to it (see one-tree amendment).
+- `.agents/plans` and `.cursor/plans` are one local plan tree (see one-tree amendment). Either path may be the real directory. In Cursor, write through `.cursor/plans`.
 - `.agents/notes/` contains tracked working knowledge: missions, proposals, research, decisions, and other material that can guide future work.
 - `.agents/scratch/` contains local, disposable material that has no preservation or lifecycle expectation.
 - `docs/` contains project documentation intended to be canonical for readers of the repository.
@@ -112,7 +112,7 @@ The existing `work-context-cleanup` already performs the needed evidence-gatheri
 
 Migration is per repository and opt-in. No legacy artifact is moved, reclassified, promoted, or committed unless the user explicitly directs it.
 
-Moving local legacy plans from `.cursor/plans/` to the canonical `.agents/plans/` is mechanical, not semantic: preserve the file contents, filenames, and `.archived/` history. Create a local compatibility symlink from `.cursor/plans` to `../.agents/plans` so existing paths and legacy tooling continue to resolve. The symlink is not a second plan location, must remain untracked, and new instructions and skills must target `.agents/plans/`.
+Moving local legacy plans between `.cursor/plans` and `.agents/plans` is mechanical, not semantic: preserve the file contents, filenames, and `.archived/` history, then leave one real directory and a relative symlink. Either direction is valid. The symlink is not a second plan location and must remain untracked. Current plan-path rules are in the one-tree note: Cursor writes through `.cursor/plans` without a question.
 
 This mechanical move applies only when the target path is unoccupied. A repository that already has the previous tracked `.agents/plans/` tree must first receive an explicitly approved semantic migration of that content; do not merge the two structures implicitly.
 
@@ -263,9 +263,9 @@ A high-level idea needs only a reference entry. Do not present an external skill
 
 Treat `agent-workspace`, `work-plan`, `work-intake`, `build-plan`, and `work-closeout` as a coordinated semantic rewrite, not a set of independent renames. Their common contract is:
 
-- implementation plans are local `.agents/plans/` artifacts that are discarded, archived locally, or distilled after use;
+- implementation plans are local files on the shared `.agents/plans` / `.cursor/plans` tree and are discarded, archived locally, or distilled after use;
 - tracked lifecycle artifacts are `.agents/notes/{proposed,current,retired,archived}`;
-- `.cursor/plans/` is compatibility input only and never a new canonical target.
+- in Cursor, plans are written through `.cursor/plans` (see the one-tree amendment).
 
 `agent-notes` is a distinct recurring skill for creating, updating, retiring, archiving, superseding, and distilling notes. `agent-workspace` owns setup, migration, and explanation of the artifact model.
 
@@ -275,10 +275,9 @@ Treat `agent-workspace`, `work-plan`, `work-intake`, `build-plan`, and `work-clo
 
 ### Path and reference migration map
 
-Before changing any skill path, create a reference inventory for every use of `.cursor/plans/` and the previous tracked `.agents/plans/` model. Classify each use as:
+Before changing any skill path, create a reference inventory for every use of `.cursor/plans/` and `.agents/plans/`. Classify each use as:
 
-- compatibility-only read;
-- canonical `.agents/plans/` local-plan path;
+- the shared local plan tree (either path);
 - canonical `.agents/notes/` tracked-note path; or
 - removed behavior.
 

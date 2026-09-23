@@ -31,6 +31,6 @@ work-intake
 ## Expected outputs
 
 - Clear domain terms and decisions.
-- A ready local plan under `.agents/plans/` when planning is needed (same files may also resolve via a `.cursor/plans` symlink).
+- A ready local plan on the shared `.agents/plans` / `.cursor/plans` tree when planning is needed. In Cursor, the path is `.cursor/plans/`.
 - Independent deliveries only when justified.
 - Validation evidence and remaining risks.
