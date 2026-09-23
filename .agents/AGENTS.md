@@ -4,8 +4,8 @@ This repository uses `.agents/` for agent working artifacts. This file is the au
 
 ## Artifact model
 
-- `.agents/plans/` is the only physical local home for implementation plans. A plan is an execution contract that is ready to implement without unresolved product, scope, or architecture decisions.
-- `.cursor/plans` may be a local compatibility symlink to that tree so Cursor resolves the same files. It is not a second plan home.
+- `.agents/plans` and `.cursor/plans` are the same ignored local plan tree. One path is a real directory; the other is a relative symlink. Either direction is valid. A plan is an execution contract that is ready to implement without unresolved product, scope, or architecture decisions.
+- In Cursor, create, edit, and archive plans through `.cursor/plans`. Do not ask which path to use.
 - `.agents/notes/` contains tracked working knowledge: missions, proposals, research, decisions, and other context that may guide later work.
 - `.agents/scratch/` contains local disposable material.
 - `docs/` contains canonical repository documentation for readers.
@@ -23,11 +23,11 @@ Create folders only with their first artifact.
     current/
     retired/
     archived/
-  plans/                 # local and ignored; only physical plan tree
+  plans/                 # same ignored tree as .cursor/plans
     .archived/           # frozen local plan history
   scratch/               # local and ignored; created when needed
 .cursor/
-  plans -> ../.agents/plans   # optional compatibility symlink
+  plans                  # same tree; real directory or relative symlink
 ```
 
 ## Notes
@@ -51,14 +51,14 @@ Treat `retired/` and `archived/` notes as frozen by default. Create a successor 
 
 ## Implementation plans
 
-Plans are local `.agents/plans/*.plan.md` artifacts. Reading or editing through a `.cursor/plans` symlink is fine when it points at the same tree. Never create a second real plan directory.
+Plans are local files on that shared tree and are never committed. In Cursor, the path is `.cursor/plans/*.plan.md`. Never create a second real plan directory.
 
 If an execution-relevant decision remains open, refine the plan or request clarification before implementation unless the user explicitly authorizes deciding it during execution.
 
-After implementation, discard the plan, move it unchanged to `.agents/plans/.archived/`, or distill durable knowledge into notes or docs. Do not archive, discard, or distill without clear user intent.
+After implementation, discard the plan, move it unchanged to the tree's `.archived/`, or distill durable knowledge into notes or docs. Do not archive, discard, or distill without clear user intent.
 
 ## Tracking and unification
 
-`.agents/notes/` is tracked. `.agents/plans/`, `.cursor/plans`, and `.agents/scratch/` are never committed.
+`.agents/notes/` is tracked. `.agents/plans`, `.cursor/plans`, and `.agents/scratch/` are never committed.
 
-If both plan paths exist as real directories, unify into `.agents/plans/` and replace `.cursor/plans` with the compatibility symlink only when the user explicitly requests that migration. Never publish links to either path (`publish-safe-links`).
+If both plan paths are real directories, make them one tree without asking which side is canonical. Replace an empty directory with a relative symlink. If both have files, keep one real directory, move non-colliding files into it, and symlink the other. Stop only when the same filename has different content. Never publish links to either path (`publish-safe-links`).

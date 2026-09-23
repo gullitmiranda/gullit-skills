@@ -30,11 +30,11 @@ Skills are organized in nested source homes by primary responsibility. Reinstall
 
 `.agents/AGENTS.md` is the authority for agent working artifacts in this repository:
 
-- `.agents/plans/` holds the only physical ignored local implementation-plan tree.
-- `.cursor/plans` may be a local compatibility symlink to that tree for Cursor; it is not a second home.
+- `.agents/plans` and `.cursor/plans` are the same ignored local plan tree (one real directory, one symlink, either direction).
+- In Cursor, plans are written through `.cursor/plans` so Cursor plan formatting applies.
 - `.agents/notes/` holds tracked durable working knowledge.
 - `.agents/scratch/` holds ignored disposable material.
-- Do not create a second real plan directory; migrate or symlink only with explicit user direction.
+- Do not create a second real plan directory. If the other path is missing, add the relative symlink without asking which side is canonical.
 
 ## Workflow entry points
 

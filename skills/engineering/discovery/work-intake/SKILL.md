@@ -11,7 +11,7 @@ Provide the single public entry point for engineering-workflow discovery and rou
 
 - Do not implement, move artifacts, or change repository state during intake unless the user explicitly requests it.
 - Read `.agents/AGENTS.md` before classifying a potential plan when it exists.
-- A local plan is `.agents/plans/*.plan.md` (or the same files via a `.cursor/plans` symlink); it has no tracked lifecycle. Never treat a second real `.cursor/plans/` directory as a parallel home.
+- A local plan is a file on the shared `.agents/plans` / `.cursor/plans` tree. In Cursor, resolve it through `.cursor/plans`. It has no tracked lifecycle. Never treat the two paths as separate homes.
 - A tracked note may have the note lifecycle `proposed`, `current`, `retired`, or `archived`, but it is not an executable plan solely because it is tracked.
 - Do not claim branch, validation, review, or PR state without current evidence.
 - Do not require separately installed third-party skills for the core route.
