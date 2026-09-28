@@ -44,6 +44,13 @@ agent by default; add roles only when delegation has a concrete benefit.
   `unavailable` and either the next exposed option or a surface change (do
   not invent slugs). Do not leave Model as only `inherit` or
   “≠ writer if available”.
+- **Subagent model economics:** when spawned subagents inherit the parent
+  thread's model (native Zed `spawn_agent`), a looping or parallel cast runs
+  at the thread model's price. Prefer the surface's subagent-model override
+  (Zed: `agent.subagent_model`, kept on the cheap swarm model) or hand the
+  loop to a separate cheaper thread; never leave a long subagent loop on a
+  premium thread model when the surface exposes no override. State which
+  model each delegated role actually runs on.
 - Operational cast defaults live here. On Cursor, fill each role from the
   operating card in
   [docs/model-selection.md](../../../../docs/model-selection.md). Durable

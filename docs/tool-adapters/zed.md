@@ -90,6 +90,11 @@ permission/sandbox policy at spawn time. See
 [the research note](../research/zed-subagent-profile-isolation.md) for the
 source-backed limitation.
 
+The child's model follows the parent thread unless the global
+`agent.subagent_model` override is set (also covered in the research note).
+With it set, native subagents run on the configured model regardless of the
+thread's model.
+
 `pr-delivery` defaults to `auto`, which resolves to `guarded` in a native Zed
 thread:
 
