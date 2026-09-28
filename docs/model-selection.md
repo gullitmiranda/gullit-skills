@@ -328,6 +328,12 @@ For Zed and terminal portability, hold constant: snapshot, effort,
 provider/fallback policy, tool schema, permissions, repository revision, and
 validation. OpenRouter's catalog cannot substitute for surface evidence.
 
+On Zed Agent, native subagents run on the global `agent.subagent_model` when
+it is set, not on the parent thread's model; price delegated loops from that
+setting, not from the thread model. It is currently the employer gateway
+`taurus` (glm-5.3-flash, auto-fallback to `gpt-6-luna`), set 2026-09-28 per
+the platform's internal model roles.
+
 ### Measured Surface Matrix
 
 | Surface | Workload | Configuration | Quality | Cost | Latency | Reliability | Evidence | Decision |
@@ -337,6 +343,7 @@ validation. OpenRouter's catalog cannot substitute for surface evidence.
 | Zed Agent | Safe implementation | Not evaluated | - | - | - | - | OpenRouter shortlist only; no Zed pilot | Inherit global fallback |
 | Zed Agent | Debugging and code review | Not evaluated | - | - | - | - | OpenRouter shortlist only; no Zed pilot | Inherit global fallback |
 | Zed Agent | Trusted delivery | Not evaluated | - | - | - | - | OpenRouter shortlist only; no Zed pilot | Inherit global fallback |
+| Zed Agent | Native subagent delegation | CW gateway `taurus` via `agent.subagent_model`, thinking off | Provisional | Internal, not in the published table | n/a | Auto-fallback to `gpt-6-luna` on worker failure or 30 s stall | Platform role mapping (internal models announcement, 2026-09-28); no pilot | Configured 2026-09-28; pilot if delegated quality proves insufficient |
 
 Use the scorecard and pilot template in
 [`skills/workspace/agent-runtime/model-selection/references/selection-policy.md`](../skills/workspace/agent-runtime/model-selection/references/selection-policy.md)
