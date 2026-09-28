@@ -12,6 +12,7 @@ Use these when the next step or the relevant context is unclear.
 - [`grill-with-docs`](../skills/engineering/discovery/grill-with-docs/README.md): challenge a proposal against domain language and durable decisions.
 - `agent-selection`: select the right runtime before substantial work.
 - `context-capsule`: transfer the smallest useful context across agents or tools.
+- `cursor-zed-handoff`: resume work across Cursor and Zed; recommend titles and reversible thread closeout.
 
 ## Workspace and planning
 

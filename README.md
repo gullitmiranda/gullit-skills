@@ -48,6 +48,7 @@ The core workflow is self-contained and composes small skills instead of requiri
 - `agent-workspace`: establish or migrate the workspace contract.
 - `agent-notes`: manage tracked notes and their lifecycle.
 - `cursor-project-path-migration`: move a Cursor project path with reversible workspace-state recovery.
+- `cursor-zed-handoff`: resume a Cursor conversation in Zed without losing the option to return.
 
 
 See [`docs/skills-map.md`](docs/skills-map.md) for the workflow map, [`docs/workflows/`](docs/workflows/) for examples, and [`docs/tool-adapters/`](docs/tool-adapters/) for runtime guidance.
