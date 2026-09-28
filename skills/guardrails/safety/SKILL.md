@@ -17,6 +17,7 @@ description: Git, command, Kubernetes, data, workspace, and temporary files safe
 - Do not change git stage without being asked; never commit unstaged changes without explicit request.
 - When splitting, stacking, or consolidating work from an existing feature/draft branch, never execute the mission on the source branch. Create a new working branch (or worktree) from the agreed base and treat the source branch as read-only input.
 - Before any `git commit` or `git push` in a personal repository, run the data-boundary scan. Do not skip it for notes, docs, or "I'll sanitize later."
+- Personal clones reject non-personal author/committer identities on commit and push; do not skip that hook.
 
 ## Git
 
