@@ -16,6 +16,8 @@ changes from other agents or sessions.
 - Never skip worktree creation when the user explicitly asked for one.
 - Never work in the primary worktree when a secondary worktree was created
   for the task.
+- Never place a worktree in a `-wt`-suffixed or other ad-hoc directory; use
+  the repo's `worktrees/` folder or an explicitly documented convention.
 - Never merge the feature branch into main during worktree cleanup.
 
 ## When This Skill Applies
@@ -36,11 +38,17 @@ repo's `AGENTS.md` for a worktree convention (see `workspace-topology` skill).
 If neither defines one, use:
 
 ```
-../worktrees/<repo>-<topic>
+./worktrees/<topic>
 ```
 
-`<repo>` is the current repo directory name; `<topic>` is a short kebab-case
-slug from the branch or task intent. Report the chosen path before creating.
+A `worktrees/` folder inside the repo root — not a sibling directory and not
+a `-wt`-suffixed directory. It stays inside the runtime's file-tool scope, and
+editor/LSP/lint ignores stay a single folder glob (`worktrees/`). `<topic>` is
+a short kebab-case slug from the branch or task intent. Report the chosen path
+before creating.
+
+If the repo tracks its own `worktrees/` directory, fall back to
+`../worktrees/<repo>-<topic>`.
 
 ### 2. Recommend a runtime-native creation flow when available
 
@@ -68,6 +76,10 @@ git worktree add <path> <branch>
 # or create a new branch from base:
 git worktree add -b <new-branch> <path> <base-branch>
 ```
+
+Ensure the primary checkout ignores the worktree folder: add `worktrees/` to
+`.git/info/exclude` (local only, never committed) unless the repo already
+ignores it.
 
 Verify with `git worktree list`.
 
