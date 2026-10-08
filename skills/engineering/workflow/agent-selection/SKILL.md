@@ -18,6 +18,14 @@ agent by default; add roles only when delegation has a concrete benefit.
   decisions, final synthesis, tightly coupled documentation, or work the main
   agent can complete directly with a few tool calls. This gate still applies when
   another skill recommends or assumes background delegation.
+- **Context hygiene overrides the read default:** the main thread is for
+  decisions and synthesis, not raw investigation output. Read-heavy phases
+  (broad greps, many or large files, unfamiliar subtrees) delegate to a
+  subagent that returns a bounded summary, even though reading would not
+  otherwise pass the gate — a bounded-summary read is independently
+  executable and mergeable by definition. In the main thread, bound any
+  single huge tool output (targeted line-range reads, head/tail lines) or
+  move it to a subagent.
 - Choose the **orchestration surface** before models. ACP is not a surface —
   write `ACP:<named-agent>`. See
   [references/orchestration-surfaces.md](references/orchestration-surfaces.md).
@@ -65,7 +73,7 @@ agent by default; add roles only when delegation has a concrete benefit.
 | Domain grilling | Main chat only |
 | Independent multi-block ready plan | Orchestrator + disjoint writers + clean-context reviewers (cast required); prefer Cursor when fine per-role models are needed |
 | Coupled multi-step work or final synthesis | Main agent; a one-role cast is sufficient |
-| Bounded exploration | Main agent unless enough independent reading exists to amortize the handoff |
+| Bounded exploration | Main agent for a few targeted reads; read-heavy investigation goes to a subagent with a bounded summary |
 | Parallel side question | Subagent only when it passes the delegation gate |
 | Side path becomes primary | Fork or new thread; new cast |
 | Focused single-block implementation | Current surface; cast may be one implementer row. Fine cast → Cursor; employer gateway/OpenRouter non-negotiable → Zed Agent |
