@@ -101,10 +101,31 @@ Reject or park candidates that fail any of:
 - unsupported parameters or missing tool support;
 - provider ineligibility on the surface (for example an employer `llm-gateway`
   is ineligible for Cursor agent inference in the current setup—revisit if
-  BYOK/OpenAI-compatible routing appears).
+  BYOK/OpenAI-compatible routing appears);
+- routing integrity: a gateway lane may serve a different model than the one
+  requested (provider fallback on stall, reroute rules, budget downgrades,
+  deploy-time provider switches). Record each lane's full chain before
+  treating its name as the configuration.
 
 Pricing is both a budget filter and a scored dimension (effective cost per
 validated completion).
+
+## Risk and sensitivity are separate axes
+
+Classify every task on both before picking a model:
+
+- **Risk** is the cost of a wrong result. It sets the quality tier: plan
+  review, hard builds, and delivery use frontier configurations with a
+  reviewer from a different model family.
+- **Sensitivity** is where the data may go. It is a hard filter, not a tier:
+  only lanes whose whole chain (fallbacks included) stays inside the approved
+  boundary are eligible. The surface's compaction model and subagent model
+  receive the same thread, so they must pass the same filter.
+
+A task can be critical but not sensitive (frontier is fine), sensitive but
+routine (an in-boundary lane with no external fallback), or both. When both
+apply and no in-boundary lane is strong enough, use an approved frontier
+endpoint or add human review; do not quietly relax the filter.
 
 ## Evidence Hierarchy
 
@@ -113,7 +134,9 @@ After hard filters, use the strongest available quality evidence, in this order:
 1. Repeated results on representative local tasks on the target surface.
 2. Reproducible evaluations that match the target surface, tools, and effort.
 3. Surface-specific public benchmarks, such as
-   [CursorBench](https://cursor.com/cursorbench).
+   [CursorBench](https://cursor.com/cursorbench) for Cursor only. For other
+   surfaces, use the per-question evidence stack in
+   [`coding-agent-benchmarks.research.md`](../.agents/notes/current/coding-agent-benchmarks.research.md).
 4. General public benchmarks that expose a comparable task and configuration.
 5. Provider documentation and qualitative claims.
 
@@ -328,10 +351,13 @@ For Zed and terminal portability, hold constant: snapshot, effort,
 provider/fallback policy, tool schema, permissions, repository revision, and
 validation. OpenRouter's catalog cannot substitute for surface evidence.
 
+When the provider is an employer gateway, the lane map and provisional cast
+belong in the employer-gateway overlay skill, not in this public document.
+
 On Zed Agent, native subagents run on the global `agent.subagent_model` when
 it is set, not on the parent thread's model; price delegated loops from that
-setting, not from the thread model. It is currently the employer gateway
-swarm lane; check its fallback chain against the sensitivity filter.
+setting, not from the thread model. Keep it on a cheap swarm lane, and check
+that lane's fallback chain against the sensitivity filter.
 
 ### Measured Surface Matrix
 
@@ -342,7 +368,7 @@ swarm lane; check its fallback chain against the sensitivity filter.
 | Zed Agent | Safe implementation | Not evaluated | - | - | - | - | OpenRouter shortlist only; no Zed pilot | Inherit global fallback |
 | Zed Agent | Debugging and code review | Not evaluated | - | - | - | - | OpenRouter shortlist only; no Zed pilot | Inherit global fallback |
 | Zed Agent | Trusted delivery | Not evaluated | - | - | - | - | OpenRouter shortlist only; no Zed pilot | Inherit global fallback |
-| Zed Agent | Native subagent delegation | Employer-gateway swarm lane via `agent.subagent_model`, thinking off | Provisional | - | n/a | Fallback chain recorded in the employer-gateway overlay | No pilot | Configured 2026-09-28; pilot if delegated quality proves insufficient |
+| Zed Agent | Native subagent delegation | Employer-gateway swarm lane via `agent.subagent_model`, thinking off | Provisional | - | n/a | Fallback chain recorded in the employer-gateway overlay | No pilot | Pilot if delegated quality proves insufficient |
 
 Use the scorecard and pilot template in
 [`skills/workspace/agent-runtime/model-selection/references/selection-policy.md`](../skills/workspace/agent-runtime/model-selection/references/selection-policy.md)

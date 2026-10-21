@@ -66,9 +66,12 @@ the same column and mark the miss.
 | Validation / glue | Background column for the task class | Overspending Opus on Makefile glue |
 | Exploration | Main agent + interactive Light row; Luna Extra High only if delegated and substantial | Delegating a small lookup or final synthesis |
 
-On **Zed Agent** or OpenRouter terminal agents, use the OpenRouter stage table
-in `docs/model-selection.md` instead of the Cursor card. Do not copy Cursor
-catalog names onto Zed.
+On **Zed Agent** or terminal agents, use the employer-gateway overlay's cast
+card when the gateway is the provider; otherwise use the OpenRouter stage
+table in `docs/model-selection.md`. Do not copy Cursor catalog names onto Zed.
+Apply the sensitivity filter (risk and sensitivity are separate axes in
+`docs/model-selection.md`) before picking any role, including compaction and
+subagent models.
 
 Effort: set only when the surface exposes it; otherwise `n/a`.
 
