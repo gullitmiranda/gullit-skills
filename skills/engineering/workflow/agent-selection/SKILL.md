@@ -68,12 +68,22 @@ agent by default; add roles only when delegation has a concrete benefit.
   loop to a separate cheaper thread; never leave a long subagent loop on a
   premium thread model when the surface exposes no override. State which
   model each delegated role actually runs on.
-- **Boundary-filtered casts need per-spawn overrides.** When the privacy
+- **Boundary-filtered casts need creation-time overrides.** When the privacy
   boundary forbids externally-backed lanes but the surface's subagent default
-  carries an external fallback, pass an explicit `model:` on every spawn (or an
-  internal-only default for the duration). State which lanes are internal-only
-  and whether a frontier lane exists inside the boundary; when it does not, name
-  the sensitivity-vs-quality trade instead of silently promoting a writer.
+  carries an external fallback, pass an explicit `model:` when each session is
+  created (or an internal-only default for the duration). State which lanes are
+  internal-only and whether a frontier lane exists inside the boundary; when it
+  does not, name the sensitivity-vs-quality trade instead of silently promoting
+  a writer.
+- **Explicit spawn models: qualified IDs, creation only, full prompt up
+  front.** The spawn `model:` takes the surface's native model ID exactly as the
+  surface exposes it (Zed: the `provider/model` ID from `list_agents_and_models`
+  with `is_native: true`) — never a bare lane slug from a cast card. It is legal
+  only at session creation: a resumed session keeps its creation model, so a
+  follow-up with `session_id` must omit `model:`. A failed spawn may still return
+  a `session_id` — retry into it as a resume, not a new spawn. Put the full task
+  prompt in the initial spawn message; a stub plus follow-up demands a second
+  `model:` use that the surface will reject.
 - Operational cast defaults live here. On Cursor, fill each role from the
   operating card in
   [docs/model-selection.md](../../../../docs/model-selection.md). Durable
