@@ -40,7 +40,10 @@ agent by default; add roles only when delegation has a concrete benefit.
   Rationale: "run in background" executed in the parent thread blocks the
   conversation and duplicates work the user expected to happen elsewhere.
 - If the recommendation hands work to another tool or agent, invoke or
-  produce a `context-capsule` first.
+  produce a `context-capsule` first — unless the role runs in the same thread
+  through a native subagent tool, where the spawn prompt *is* the capsule. Do
+  not also emit a markdown capsule in that case; offer it only as a pre-review
+  of the prompts or when the handoff crosses surfaces.
 - For independently executable multi-block plans, parallel streams, or
   block/increment review, present an **orchestration cast** using
   [references/orchestration-cast.md](references/orchestration-cast.md) in
@@ -48,6 +51,12 @@ agent by default; add roles only when delegation has a concrete benefit.
   **concrete primary model** (not vague `inherit`), effort when exposed, write
   set, capsule type, honest order (`after` vs `parallel`), and fallback. A
   coupled multi-step task may use a one-role cast without special pleading.
+- **Parallelism is only real when nothing unresolved blocks the write set.**
+  Before writing `parallel with`, name the decisions each writer needs (paths,
+  pins, names, repo layout). A plan that gates only *install* or *execution*
+  still blocks *authorship* when the artifacts must encode fixed values; put
+  those writers `after` the cheap decision commit instead of blessing them with
+  placeholders — work that must be torn down cleanly cannot absorb guessed paths.
 - Recommend only models the surface exposes; if preferred is missing, mark
   `unavailable` and either the next exposed option or a surface change (do
   not invent slugs). Do not leave Model as only `inherit` or
@@ -59,6 +68,12 @@ agent by default; add roles only when delegation has a concrete benefit.
   loop to a separate cheaper thread; never leave a long subagent loop on a
   premium thread model when the surface exposes no override. State which
   model each delegated role actually runs on.
+- **Boundary-filtered casts need per-spawn overrides.** When the privacy
+  boundary forbids externally-backed lanes but the surface's subagent default
+  carries an external fallback, pass an explicit `model:` on every spawn (or an
+  internal-only default for the duration). State which lanes are internal-only
+  and whether a frontier lane exists inside the boundary; when it does not, name
+  the sensitivity-vs-quality trade instead of silently promoting a writer.
 - Operational cast defaults live here. On Cursor, fill each role from the
   operating card in
   [docs/model-selection.md](../../../../docs/model-selection.md). Durable

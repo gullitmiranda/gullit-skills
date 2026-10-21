@@ -17,6 +17,9 @@ without reading the whole conversation.
 - When the capsule is a prompt for another thread, return its complete content
   in one fenced `markdown` block. Keep recommendations and other reader-facing
   guidance outside that block.
+- **Native subagent, same surface:** the spawn prompt is the capsule. Do not
+  produce a second copy as a fenced block unless it is handed across surfaces or
+  the user asked to review the prompts first.
 - **Review capsules** (Standards, Spec, Bugbot, security, or block review):
   include only the diff command, commit list, spec/plan paths, and standards
   paths (plus expected return). Do **not** include the implementer's debug
