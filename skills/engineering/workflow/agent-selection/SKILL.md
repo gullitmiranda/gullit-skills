@@ -75,15 +75,16 @@ agent by default; add roles only when delegation has a concrete benefit.
   internal-only and whether a frontier lane exists inside the boundary; when it
   does not, name the sensitivity-vs-quality trade instead of silently promoting
   a writer.
-- **Explicit spawn models: qualified IDs, creation only, full prompt up
-  front.** The spawn `model:` takes the surface's native model ID exactly as the
-  surface exposes it (Zed: the `provider/model` ID from `list_agents_and_models`
-  with `is_native: true`) — never a bare lane slug from a cast card. It is legal
-  only at session creation: a resumed session keeps its creation model, so a
-  follow-up with `session_id` must omit `model:`. A failed spawn may still return
-  a `session_id` — retry into it as a resume, not a new spawn. Put the full task
-  prompt in the initial spawn message; a stub plus follow-up demands a second
-  `model:` use that the surface will reject.
+- **Spawn model IDs are resolved, never guessed.** The spawn `model:` takes the
+  surface's native model ID exactly as the surface exposes it (Zed: the
+  `provider/model` ID from `list_agents_and_models` with `is_native: true`).
+  A cast card names the *lane*; the surface qualifies it. Read the ID from the
+  surface instead of assembling it, and never pass a bare lane slug.
+- **Spawn `model:` is creation-only.** A resumed session keeps its creation
+  model, so a follow-up with `session_id` must omit `model:`. A failed spawn may
+  still return a `session_id` — retry into it as a resume, not a new spawn. Put
+  the full task prompt in the initial spawn message; a stub plus follow-up
+  demands a second `model:` use that the surface will reject.
 - Operational cast defaults live here. On Cursor, fill each role from the
   operating card in
   [docs/model-selection.md](../../../../docs/model-selection.md). Durable
@@ -118,7 +119,8 @@ agent by default; add roles only when delegation has a concrete benefit.
 3. Pick the orchestration surface from
    [references/orchestration-surfaces.md](references/orchestration-surfaces.md).
 4. If delegation remains, check subagent availability; if absent, stop at
-   alternatives and wait.
+   alternatives and wait. When it is available and a role needs an explicit
+   model, resolve that model's ID on the surface before the first spawn.
 5. Build and emit the smallest honest cast. Put any handoff `context-capsule`
    in its own fenced `markdown` block afterward.
 

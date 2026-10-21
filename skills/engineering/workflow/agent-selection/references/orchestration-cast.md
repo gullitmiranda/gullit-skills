@@ -31,6 +31,9 @@ Close with: review fixed point(s), spec/plan paths, when reviews fire.
   actually exposes (user-facing name or slug). `inherit` is allowed only as
   **Fallback**, never as the primary Model cell/line — except Orchestrator,
   which may be `Composer (parent)` / current parent model.
+- A cast line names the **lane**; delegating it needs the surface's **qualified
+  model ID**. Resolve that ID on the surface before the first spawn and pass it
+  only at session creation — see the spawn rules in [../SKILL.md](../SKILL.md).
 - If the preferred model is ineligible on the chosen surface (for example an
   employer gateway on Cursor in the current setup), mark `unavailable` and propose a
   surface change — do not invent a slug.
