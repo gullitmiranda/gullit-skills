@@ -16,7 +16,7 @@ description: General rules for GitHub, issue trackers, Trunk, MCP servers, and e
 
 ## Issue Trackers
 
-- Prefer repository-attached issues (e.g. GitHub issues) as the canonical record for project-scoped work; use team trackers for cross-repo or team-level work.
+- Prefer repository-attached issues (e.g. GitHub issues) as the canonical record for project work, including cross-repo or team-level work; use team trackers (e.g. Linear) only when the user explicitly asks for an issue there.
 - Use the repository's configured issue-tracker CLI as the primary path; use MCP or direct APIs only when the CLI cannot perform the operation.
 - Preserve issue identifiers and links when they are explicitly part of the task.
 - Do not invent issue references, teams, projects, labels, or statuses.
