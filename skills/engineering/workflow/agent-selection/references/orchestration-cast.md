@@ -55,10 +55,12 @@ not invent slugs.
 
 On **Cursor**, name configurations from the operating card in
 [docs/model-selection.md](../../../../../docs/model-selection.md)
-(Pick table + Cast table). Do not substitute
-"strongest coding model" or a leaderboard rank. If the preferred cell is not
-exposed (subagent effort is often bound into the slug), take the next row in
-the same column and mark the miss.
+(Pick table + Cast table). That path resolves only inside the skills
+repository; from another project, read the card from the user's skills
+checkout or ask. An unreachable card is not a licence to improvise — do not
+substitute "strongest coding model" or a leaderboard rank. If the preferred
+cell is not exposed (subagent effort is often bound into the slug), take the
+next row in the same column and mark the miss.
 
 | Role | Cursor (from the operating card) | Avoid |
 | --- | --- | --- |

@@ -26,6 +26,13 @@ agent by default; add roles only when delegation has a concrete benefit.
   executable and mergeable by definition. In the main thread, bound any
   single huge tool output (targeted line-range reads, head/tail lines) or
   move it to a subagent.
+- **Read-heaviness is often discovered mid-phase, and the trigger still
+  fires.** A checklist of targeted verifications can turn into open-ended
+  search: repeated greps, patterns that return false negatives, archaeology in
+  an unfamiliar subtree. When that happens, stop and delegate the *remainder*
+  as one bounded-summary task instead of finishing the dig in the main thread.
+  Do not treat the initial classification as settled; having already started is
+  not a reason to continue.
 - Choose the **orchestration surface** before models. ACP is not a surface —
   write `ACP:<named-agent>`. See
   [references/orchestration-surfaces.md](references/orchestration-surfaces.md).
@@ -87,9 +94,13 @@ agent by default; add roles only when delegation has a concrete benefit.
   demands a second `model:` use that the surface will reject.
 - Operational cast defaults live here. On Cursor, fill each role from the
   operating card in
-  [docs/model-selection.md](../../../../docs/model-selection.md). Durable
-  profile or default-model changes use `model-selection` with evidence — do
-  not silently change profile defaults from an orchestration sketch.
+  [docs/model-selection.md](../../../../docs/model-selection.md) — reachable
+  only while working inside the skills repository, because the path leaves the
+  skill directory. From another project, read the card from the user's skills
+  checkout, ask, or name models the surface exposes; do not guess a
+  configuration because the card would not open. Durable profile or
+  default-model changes use `model-selection` with evidence — do not silently
+  change profile defaults from an orchestration sketch.
 
 ## Defaults
 
