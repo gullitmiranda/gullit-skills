@@ -28,6 +28,7 @@ Write for the people who will read the message in Slack, not for this chat.
   and the full `https://github.com/<owner>/<repo>/pull/<n>` (or `/issues/<n>`)
   URL. Naming the repo in the sentence does not replace the URL. Do not wrap
   the URL in inline code or otherwise obscure it.
+- Deliver Slack message drafts to the user as raw Slack mrkdwn inside a fenced code block so copy/paste works as a snippet: plain *bold* bullets, raw URLs, never rendered chat markdown or [text](url) syntax.
 
 ## Procedure
 
