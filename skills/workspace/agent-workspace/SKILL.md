@@ -18,6 +18,7 @@ Apply the workspace model as a guardrail; install its repository contract only o
 - Before writing a plan, if the other path is missing, create the relative symlink. Do not ask.
 - Never leave two real plan directories. If both are real: replace an empty one with a symlink to the other; if both have files, keep one real directory, move non-colliding files into it, and symlink the other. Stop only when the same filename has different content.
 - `.agents/notes/` is tracked working knowledge; `*.plan.md` never belongs there.
+- A handoff prompt is disposable: deliver it as paste-ready chat text, and at most write it under `.agents/scratch/`. Promote it to `.agents/notes/` only when its execution is deferred beyond the current session; never place it in tracked documentation folders.
 - `retired/` and `archived/` notes are frozen unless the user explicitly authorizes a correction, migration, cleanup, or reactivation.
 - Do not create empty lifecycle folders or placeholder files.
 - Never publish links to either plan path (`publish-safe-links`).
