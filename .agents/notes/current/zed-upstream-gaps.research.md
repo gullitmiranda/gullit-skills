@@ -15,7 +15,7 @@ Relevant code today: legacy `crates/assistant` is gone. Current crates:
 `agent_panel.rs`), `sidebar` (Threads Sidebar + thread switcher),
 `settings_content` (agent settings UI), `gpui` (platform layer).
 
-## Gap map (as of 2026-10-22)
+## Gap map (original inventory 2026-10-22; terminal execution added 2026-11-06)
 
 | # | Gap | Upstream anchor | Status / today | Contribution route |
 |---|-----|-----------------|-----------------|--------------------|
@@ -27,6 +27,7 @@ Relevant code today: legacy `crates/assistant` is gone. Current crates:
 | 6 | Native OS notifications | [#63482](https://github.com/zed-industries/zed/pull/63482) (terminal-only, open); [#61189](https://github.com/zed-industries/zed/pull/61189) API merged, idle | In-app popup + sound | Hook agent completion to the platform API |
 | 7 | Hide execution details, focus on final answer | [discussion #58333](https://github.com/zed-industries/zed/discussions/58333) 70 upvotes; [discussion #58314](https://github.com/zed-industries/zed/discussions/58314) 19 upvotes | Settings cover native cards/thinking only | **Phase 2 of #58314 is the local desire** |
 | 8 | Context bloat (Zed consumes far more than Cursor) | [#59401](https://github.com/zed-industries/zed/issues/59401), open | Compaction + terminal 16 KB cap shipped; grep/read_file untruncated | Truncation at assembly; code-first |
+| 10 | Enforced terminal deadlines without killing intentional services | [v1.27.0 terminal tool](https://github.com/zed-industries/zed/blob/c84af5b99cbc366d675064e52b23664a015b6e35/crates/agent/src/tools/terminal_tool.rs) | Explicit timeout works; omitted timeout is unbounded in the inspected implementation | Runtime deadline policy plus a separate persistent-session lifecycle; instructions alone are not enforcement |
 
 Fork-first development strategy and reference-PR inventory:
 [zed-contribution-fork-strategy.decision.md](./zed-contribution-fork-strategy.decision.md).
@@ -260,6 +261,49 @@ auto-collapse-on-completion is the wanted part.
   mirroring the terminal cap — staff explicitly called this "the remaining
 gap". Anchored, code-first candidate.
 
+## 10. Terminal deadlines and intentional process lifetimes
+
+**Verified 2026-11-06:** source inspection used upstream `v1.27.0`, commit
+`c84af5b99cbc366d675064e52b23664a015b6e35`. The locally inspected CLI reported
+`Zed 1.27.0`, build `20261104.154313`; that alone does not establish which
+binary serves every active conversation.
+
+- `timeout_ms` is optional. The inspected terminal tool declares no default or
+  ceiling; with no timeout supplied, it waits for completion or explicit
+  cancellation. The timeout branch marks the operation as timed out and calls
+  `terminal.kill`: [schema](https://github.com/zed-industries/zed/blob/c84af5b99cbc366d675064e52b23664a015b6e35/crates/agent/src/tools/terminal_tool.rs#L51-L85),
+  [execution](https://github.com/zed-industries/zed/blob/c84af5b99cbc366d675064e52b23664a015b6e35/crates/agent/src/tools/terminal_tool.rs#L995-L1038).
+- Unix PTY cleanup targets the foreground process group and the child shell.
+  This is not a guarantee for every descendant, detached session, platform,
+  or non-PTY path: [terminal cleanup](https://github.com/zed-industries/zed/blob/c84af5b99cbc366d675064e52b23664a015b6e35/crates/terminal/src/terminal.rs#L3110-L3128),
+  [process-group signaling](https://github.com/zed-industries/zed/blob/c84af5b99cbc366d675064e52b23664a015b6e35/crates/terminal/src/pty_info.rs#L149-L174).
+- The tool's instruction to supply timeouts and avoid indefinite servers is
+  model guidance, not a mandatory deadline. No supported global deadline
+  setting or argument-rewriting pre-tool hook was identified in this
+  investigation. [Instructions](https://zed.dev/docs/ai/instructions) and
+  [tool permission regexes](https://zed.dev/docs/ai/tool-permissions) do not
+  themselves implement a runtime deadline.
+
+**Applied policy mitigation:** the `quality` skill owns the Command Execution
+contract; the Zed instruction bootstrap and Git/PR workflows load it. Finite
+operations require explicit budgets, native waits replace avoidable sleep
+polling, and timeout starts diagnosis rather than an unchanged retry. Service
+lifetimes remain separate from startup/readiness/status deadlines. Stopping
+an observation must not implicitly stop a service or cancel remote CI.
+
+**Runtime smoke checks:** native terminal calls with `timeout_ms: 1000`
+returned timeout results with captured output. An instrumented, self-expiring
+60-second parent/child fixture was absent 6.319 seconds after start, before
+its own expiry. This verifies the tested process group only, not arbitrary
+process trees. No persistent service or remote workflow was started.
+
+**Remaining enforcement work:** a runtime default/ceiling for finite tool
+operations and a supported persistent-session lifecycle require harness work;
+these were not implemented by editing instructions. Regression coverage must
+include a bounded native CI watch, diagnosis after timeout, owned-process
+cleanup, and a persistent service surviving a timed-out status observation.
+The CI-watch and persistent-service cases were not exercised in this check.
+
 ## Upstream trajectory and contributing reality
 
 - The agent panel is one of the most active areas: ~30 agent-panel PRs merged
@@ -297,6 +341,9 @@ gap". Anchored, code-first candidate.
 
 ## Re-check triggers
 
+- Terminal tool defaults, global deadline settings, pre-execution hooks, or
+  managed background-session support change; re-check timeout and service
+  lifecycle semantics separately.
 - #58676 moves beyond "Planned" or gains an implementation PR.
 - #59401 gains an implementation PR (non-terminal tool output truncation).
 - Discussion #58374 gains a maintainer plan for pinning / sort modes.

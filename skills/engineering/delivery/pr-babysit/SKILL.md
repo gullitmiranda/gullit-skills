@@ -44,7 +44,9 @@ For each PR, before watching or changing anything:
 
 ## Watch And Triage Loop
 
-Observe only the current expected head. Re-check its SHA before every remote mutation and after every CI polling interval.
+Observe only the current expected head. Re-check its SHA before every remote mutation and after each native CI watch returns.
+
+Apply `quality`'s Command Execution contract before executing commands. Choose one overall watch budget per invocation and use native GitHub watch commands within it. After a watch returns, refresh status and re-check the expected SHA. If the budget expires with checks pending, return `timed-out` without restarting the budget or canceling remote runs.
 
 One invocation owns exactly one head SHA. Draft→ready conversion does not end the run (SHA unchanged). Any scoped fix that creates a new SHA ends this run's authority to ready or merge: return `needs-delta-review`; `pr-delivery` reviews the delta; only a new invocation pinned to the new SHA may proceed.
 

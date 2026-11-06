@@ -13,6 +13,7 @@ description: Pull request lifecycle - create and update PRs with gh CLI, validat
 - Before creating or updating a PR, check for existing related PRs/issues with overlapping scope and cross-reference when it helps reviewers.
 - Issues are created on GitHub (native sync sends them to Linear), but Linear has the richer integration — especially status changes. When linking an issue, check the GitHub issue for its synced Linear ID (the sync adds it to the issue) and link BOTH: the GitHub issue (auto-close on merge) and the Linear issue (status tracking). Use Linear alone only when a Linear URL/ID was given with no GitHub counterpart. Never invent an ID.
 - Never claim tests/checks passed unless they were actually executed in the current session.
+- Load `quality` before local validation or CI monitoring; its Command Execution contract governs both.
 - Always include URLs when reporting GitHub PR/issue references; markdown links or compact raw URLs are fine, never bare `#123`.
 - Apply the `zeropath` skill only for PRs that already mention ZeroPath in the prompt, commits, diff, PR body, comments, or linked evidence. Do not add ZeroPath sections to unrelated PRs.
 - If the current branch belongs to a `gh stack` stack (check `gh stack view --json`), delegate stack operations (submit, sync, merge, navigation) to the `gh-stack` skill; never use `gh pr merge` on a stacked PR — use `gh stack merge <target> --yes`.

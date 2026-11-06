@@ -12,6 +12,7 @@ description: >-
 - Personal clones reject non-personal author/committer identities on commit and push. Do not override with a work email, `GIT_AUTHOR_EMAIL`, or `--author`.
 - Do not write employer, client, or organization identifiers into a public personal repository. Research notes and unpublished drafts in a public repo are still public.
 - Do not use `--no-verify` to skip `personal-publish-guard`. If that hook is missing, stop.
+- Load `quality` before validation or commits and follow its Command Execution contract.
 
 ## Steps
 

@@ -1,6 +1,6 @@
 ---
 name: quality
-description: Quality gates, native file-edit safety, commit and PR standards, and output character hygiene. Use when writing code, editing files, committing, creating PRs, generating text, or when the user runs /gremlin-clean.
+description: Quality gates, bounded command execution, native file-edit safety, commit and PR standards, and output character hygiene. Use when running terminal commands, writing code, editing files, committing, creating PRs, generating text, or when the user runs /gremlin-clean.
 ---
 
 # Quality Rules
@@ -29,6 +29,20 @@ When pasting or referencing external text, rewrite it as clean text instead of c
 - Use the harness's native file tools (`edit_file`, `write_file`, `save_file`, `move_path`, `copy_path`, `delete_path`, `create_directory`) when available for file operations inside project roots.
 - Do not edit files via shell (`sed -i`, `python3 << EOF`, heredocs, `cat >`, `mv`, `cp`) inside project roots.
 - Shell file edits are allowed only outside all project roots (for example, an unadded worktree or `~/.agents/skills/`); state the exception before using them.
+
+## Command Execution
+
+- Classify commands as finite operations, bounded observations, or intentionally persistent services/development watchers before choosing timeout and cleanup behavior.
+- For every finite foreground call, set an explicit positive harness timeout (`timeout_ms` or equivalent); a promise in chat is not a deadline.
+- Start with 30 seconds for queries, 120 seconds for focused validation, and 10 minutes for CI waits. Use a longer explicit budget only when expected runtime or observed progress justifies it; bound the total wait/retry budget rather than restarting it each attempt.
+- Prefer native wait/watch over `sleep` polling when available. After a wait/watch returns, take one fresh status snapshot before acting.
+- Use documented non-interactive, one-shot modes for validation and hooks; close stdin when safe.
+- Preserve stderr and bound returned logs instead of discarding diagnostic evidence.
+- Report timeout as incomplete validation or pending work, not as a passing check or proof of test failure.
+- After timeout, identify the blocked stage and collect evidence before retrying; do not repeat unchanged or merely increase the deadline without new evidence.
+- Keep intentional services/development watchers in a supported managed session with a stop handle, and stop them when their task lifecycle calls for it; do not block the agent on their full lifetime. If the current tool cannot manage persistent sessions, use a dedicated terminal or supervisor instead.
+- Bound startup/readiness/status waits independently of service lifetime. Ending an observation must not implicitly stop a persistent service or cancel remote CI.
+- Cancel only task-owned processes/sessions; verify cleanup rather than assuming every descendant was terminated.
 
 ## Commit Standards
 
