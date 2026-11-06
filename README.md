@@ -45,6 +45,7 @@ The core workflow is self-contained and composes small skills instead of requiri
 - `build-plan`: execute one ready local implementation plan.
 - `incremental-delivery`: coordinate multiple independent deliveries.
 - `work-closeout`: assess a plan or work context and perform confirmed closeout actions.
+- `session-closeout`: end the session with hygiene, plan archival, and worktree teardown.
 - `agent-workspace`: establish or migrate the workspace contract.
 - `agent-notes`: manage tracked notes and their lifecycle.
 - `cursor-project-path-migration`: move a Cursor project path with reversible workspace-state recovery.

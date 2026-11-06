@@ -5,7 +5,7 @@ description: Assess and close a local plan or work context using implementation 
 
 # Work Closeout
 
-Assess work without mutating plans, branches, or remote state until the user chooses an action.
+Assess work without mutating plans, branches, or remote state until the user chooses an action. To run the hygiene, archive the plan, and tear down the session, use `session-closeout`.
 
 ## Hard Rules
 
