@@ -13,6 +13,7 @@ description: General rules for GitHub, issue trackers, Trunk, MCP servers, and e
 - Use generic HTTP fetching only for resources confirmed to be public.
 - Never assume that an editor login provides CLI authentication.
 - Do not publish private resource contents, tokens, prompts, or credentials.
+- When waiting on a workflow run or another long-running command, block on its own watch mode with a harness timeout (`gh run watch <id> --exit-status`, `kubectl wait`, `--follow`), then confirm with a single status query; never poll with `sleep`.
 
 ## Issue Trackers
 
