@@ -31,7 +31,7 @@ Use these to implement and assess a ready contract.
 - `build-plan`: execute one ready local implementation plan.
 - `incremental-delivery`: coordinate multi-increment implementation when needed.
 - `work-closeout`: classify a plan or context and perform only confirmed closure actions.
-- `session-closeout`: end the session by running the hygiene, archiving the plan, and tearing down the finished worktree and branch.
+- `end`: end the session by running the hygiene, archiving the plan, and tearing down the finished worktree and branch.
 - `quality`: apply checks and output hygiene.
 
 ## Guardrails
@@ -63,7 +63,7 @@ work-intake
 -> quality
 -> pr when requested
 -> work-closeout when the user wants plan assessment or closure
--> session-closeout when the session ends
+-> end when the session ends
 ```
 
 Existing ready plan:
@@ -77,7 +77,7 @@ work-intake
 -> build-plan
 -> quality
 -> work-closeout
--> session-closeout when the session ends
+-> end when the session ends
 ```
 
 Bug or regression:

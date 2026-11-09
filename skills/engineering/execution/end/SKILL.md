@@ -1,5 +1,5 @@
 ---
-name: session-closeout
+name: end
 description: Close the current work session - run the hygiene that removes pending state, archive the current plan, and tear down the finished worktree and branch. Use when the user runs /end, /end clean, /end keep, /archive, or /arq, or asks to wrap up and archive the current work.
 ---
 
