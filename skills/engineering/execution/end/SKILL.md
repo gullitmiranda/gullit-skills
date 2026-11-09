@@ -25,7 +25,7 @@ Routes: `/end` and `/end clean` run full closeout. `/end keep` preserves the wor
 2. Run hygiene: the repository's format, lint, typecheck, and tests; commit what remains; push the branch; reconcile PR title and body against `git diff <base>...HEAD`; resolve actionable threads; empty `.agents/scratch/`.
 3. Distill only durable decisions, findings, and follow-ups with `agent-notes`. Never copy the plan.
 4. Archive the plan and report the destination.
-5. Teardown unless the route is `/end keep`. Require a clean `git status`, `HEAD` equal to `origin/<branch>`, PR `MERGED` or no PR with a pushed branch, no open actionable thread, no stack membership (delegate those to `gh-stack`), the branch not checked out in another worktree, and `git status --ignored --short` listing only regenerable artifacts. Then `git worktree remove` for a linked worktree, or switch the primary clone to base and `git pull --ff-only`; finish with `git branch -d`.
+5. Teardown unless the route is `/end keep`. Require a clean `git status`, `HEAD` equal to `origin/<branch>`, no open actionable thread, no stack membership (delegate those to `gh-stack`), the branch not checked out in another worktree, and `git status --ignored --short` listing only regenerable artifacts. PR state alone never blocks teardown: the pushed branch and PR already hold everything, the session normally does not return to the thread, and an open PR matters only through its actionable threads. Then `git worktree remove` for a linked worktree, or switch the primary clone to base and `git pull --ff-only`; finish with `git branch -d`.
 
 ## Report
 
