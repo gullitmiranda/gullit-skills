@@ -28,7 +28,7 @@ Provide the single public entry point for engineering-workflow discovery and rou
 1. Read the provided context and inspect enough repository state to identify evidence, constraints, workstreams, and open decisions.
 2. Classify each source as a local plan, tracked note, or non-plan. Record its path, authority, readiness, and next route; lifecycle is `n/a` for plans and non-plans.
 3. Select the smallest core route: clarify or decide in the main chat; create/refine a plan with `work-plan`; execute one ready plan with `build-plan`; coordinate multiple independent deliveries with `incremental-delivery`; or assess completed work with `work-closeout`.
-4. Run `agent-selection` for the cast (not only a single runtime). For a handoff, show the completed `context-capsule` as a standalone fenced `markdown` block after the prose recommendation, then stop before implementation unless asked to continue.
+4. Run `agent-selection` for the cast (not only a single runtime). For a handoff, show the completed `context-capsule` as a standalone fenced `markdown` block in the conversation's language after the prose recommendation, then stop before implementation unless asked to continue.
 
 ## Route guide
 

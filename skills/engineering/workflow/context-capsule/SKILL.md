@@ -14,12 +14,19 @@ without reading the whole conversation.
 - Do not include work-only information in personal or public repositories unless it is explicitly safe.
 - Mark validation as stale unless it was run in the current session or is immutable CI evidence.
 - Do not hide blockers; make them explicit.
-- When the capsule is a prompt for another thread, return its complete content
-  in one fenced `markdown` block. Keep recommendations and other reader-facing
-  guidance outside that block.
+- **Always a snippet in chat:** whenever the capsule appears in the conversation
+  — implement or review, same surface or cross-surface — print its complete
+  content as one fenced `markdown` block, with recommendations and other
+  reader-facing guidance outside it. The fence is not decoration: it makes the
+  handoff copy-pasteable without losing its structure, and plain prose does not.
+- **Language:** write the capsule in the language of the conversation that
+  requested it, not the English artifact default in `user-preferences`. The
+  template section headings follow that language too; treat them as placeholders.
+  Language of the capsule does not change the language of the result: review
+  output and other durable returns still follow `user-preferences`.
 - **Native subagent, same surface:** the spawn prompt is the capsule. Do not
-  produce a second copy as a fenced block unless it is handed across surfaces or
-  the user asked to review the prompts first.
+  print a second copy in chat; if the user asks to review the prompt, show it as
+  the same fenced `markdown` snippet.
 - **Review capsules** (Standards, Spec, Bugbot, security, or block review):
   include only the diff command, commit list, spec/plan paths, and standards
   paths (plus expected return). Do **not** include the implementer's debug

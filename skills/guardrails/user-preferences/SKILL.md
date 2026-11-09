@@ -27,6 +27,7 @@ Exception: during migrations, adapters and conversion shims between old and new 
 - Write all durable and publishable technical artifacts in English by default: source code, code comments, documentation, plans, commit messages, pull requests, issues, review comments, release notes, and generated text intended for publication.
 - Use another language only when the user explicitly requests it or a repository instruction or applicable task-specific skill explicitly requires it.
 - Do not infer an artifact's language from the language of the conversation.
+- Exception: handoffs and context capsules (`context-capsule`) are written in the language of the conversation that requested them, including section headings. They are continuation prompts for the next agent or session, not published artifacts.
 - This policy governs artifacts only; it does not govern conversational replies.
 
 ## Conversation language

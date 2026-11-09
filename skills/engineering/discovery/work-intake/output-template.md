@@ -62,8 +62,9 @@ If solo sequential, give the exception reason in one line.
 
 Include only when work moves to another runtime. Put the completed
 `context-capsule` in one fenced `markdown` block so the user can copy it into
-the receiving thread unchanged. Do not repeat the execution recommendation
-inside the prompt.
+the receiving thread unchanged; use the language of this conversation, not the
+English artifact default. Do not repeat the execution recommendation inside the
+prompt.
 
 ## Risks And Blockers
 

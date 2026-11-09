@@ -133,7 +133,8 @@ agent by default; add roles only when delegation has a concrete benefit.
    alternatives and wait. When it is available and a role needs an explicit
    model, resolve that model's ID on the surface before the first spawn.
 5. Build and emit the smallest honest cast. Put any handoff `context-capsule`
-   in its own fenced `markdown` block afterward.
+   in its own fenced `markdown` block afterward, written in the conversation's
+   language.
 
 ## Output
 
