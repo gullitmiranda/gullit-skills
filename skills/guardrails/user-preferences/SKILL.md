@@ -72,3 +72,9 @@ Exception: during migrations, adapters and conversion shims between old and new 
 ## PR Review Comments
 
 - When the user asks to resolve PR review comments from automated review agents, handle each targeted comment individually by replying in GitHub or updating the PR, whichever best resolves it, and then mark the thread/comment as resolved before finishing.
+
+## GitHub issues
+
+- Creating an issue always includes the minimal triage: one type label, area or component labels when the repo has them, and a complexity estimate (S/M/L with a reason). Follow `github-issue`.
+- Never assign an issue unless the request explicitly names who is doing the work, including "I'll do it myself".
+- Do not set milestone, project, or due date unless requested.

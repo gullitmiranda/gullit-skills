@@ -21,6 +21,8 @@ description: General rules for GitHub, issue trackers, Trunk, MCP servers, and e
 - Use the repository's configured issue-tracker CLI as the primary path; use MCP or direct APIs only when the CLI cannot perform the operation.
 - Preserve issue identifiers and links when they are explicitly part of the task.
 - Do not invent issue references, teams, projects, labels, or statuses.
+- When creating an issue, always apply the minimal triage: type and area labels from the repo's existing set, plus a complexity estimate. Follow `github-issue`.
+- Never assign an issue by default; assign only when the user explicitly names who is doing the work.
 - Keep organization-specific defaults in a private profile or specialized skill.
 
 ## Trunk and Tooling

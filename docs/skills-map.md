@@ -44,6 +44,7 @@ Use these whenever their boundary applies.
 - `publish-safe-links`: prevent local or unpublished paths from appearing in publishable text.
 - `slack-outbound`: compose Slack messages for the destination audience (ground, draft, confirm before send).
 - `pr`, `pr-delivery`, and `pr-babysit`: pull-request lifecycle work when requested.
+- `github-issue`: create GitHub issues with mandatory type and area labels plus a complexity estimate; no assignee by default.
 
 ## Default compositions
 
