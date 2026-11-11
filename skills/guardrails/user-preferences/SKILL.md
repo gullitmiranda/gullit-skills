@@ -48,7 +48,7 @@ Exception: during migrations, adapters and conversion shims between old and new 
 
 ## Slack outbound
 
-- When preparing or sending Slack messages, follow `slack-outbound`: ground in the destination channel/thread, write for that audience, and prefer draft over send until the final text is confirmed.
+- When preparing or sending Slack messages, follow `slack-outbound`: ground in the destination channel/thread, write for that audience, print the exact message before any Slack write tool so it can be read as a preview, and prefer draft over direct send. Printing the preview replaces waiting for approval; do not end the turn to ask.
 
 ## Git commit destinations
 
