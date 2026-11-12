@@ -35,7 +35,7 @@ When pasting or referencing external text, rewrite it as clean text instead of c
 - Classify commands as finite operations, bounded observations, or intentionally persistent services/development watchers before choosing timeout and cleanup behavior.
 - For every finite foreground call, set an explicit positive harness timeout (`timeout_ms` or equivalent); a promise in chat is not a deadline.
 - Start with 30 seconds for queries, 120 seconds for focused validation, and 10 minutes for CI waits. Use a longer explicit budget only when expected runtime or observed progress justifies it; bound the total wait/retry budget rather than restarting it each attempt.
-- Prefer native wait/watch over `sleep` polling when available. After a wait/watch returns, take one fresh status snapshot before acting.
+- Wait with the native watcher for the signal the action produces (see Waiting For An External Event); never with a guessed delay.
 - Use documented non-interactive, one-shot modes for validation and hooks; close stdin when safe.
 - Preserve stderr and bound returned logs instead of discarding diagnostic evidence.
 - Report timeout as incomplete validation or pending work, not as a passing check or proof of test failure.
@@ -43,6 +43,20 @@ When pasting or referencing external text, rewrite it as clean text instead of c
 - Keep intentional services/development watchers in a supported managed session with a stop handle, and stop them when their task lifecycle calls for it; do not block the agent on their full lifetime. If the current tool cannot manage persistent sessions, use a dedicated terminal or supervisor instead.
 - Bound startup/readiness/status waits independently of service lifetime. Ending an observation must not implicitly stop a persistent service or cancel remote CI.
 - Cancel only task-owned processes/sessions; verify cleanup rather than assuming every descendant was terminated.
+
+### Waiting For An External Event
+
+- Never use `sleep` as a delay. A bare `sleep N`, `sleep N && <command>`, or a leading `sleep` before a check is banned: it guesses how long the remote takes, and the guess is wrong in both directions.
+- Wait on the signal the action actually produces, not on the text surface you happened to be reading:
+  - CI / status checks: `gh pr checks <n> --watch`
+  - Workflow run: `gh run watch <run-id> --exit-status`
+  - PR state: `gh pr view <n> --json state,mergeStateStatus,statusCheckRollup`
+  - Kubernetes: `kubectl wait --for=<condition> --timeout=<d>`
+- When a bot reports through a status check or app comment (for example Atlantis plan/unlock), wait on that app's check with `gh pr checks`, not by diffing PR comments.
+- If no native watcher covers the exact signal, poll a condition inside an explicit deadline instead of guessing a duration: `timeout 600 bash -c 'until <condition>; do sleep 5; done'`. That bounded, condition-driven loop is the only allowed use of `sleep`.
+- After any wait returns, take one fresh status snapshot before acting.
+- If a wait times out, report the pending signal with the last observed snapshot. Do not re-run it with a longer `sleep`.
+- A missing watcher for the exact text you were reading is not a license to `sleep`: switch to the status check the action produces, or use the bounded condition loop. Do not argue yourself into a fixed delay.
 
 ## Commit Standards
 
