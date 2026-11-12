@@ -53,7 +53,7 @@ After implementation, discard the plan, archive it unchanged under the tree's `.
 
 ## Tracking
 
-`.agents/notes/` is tracked. `.agents/plans`, `.cursor/plans`, and `.agents/scratch/` are never committed.
+`.agents/notes/` is tracked. `.agents/plans`, `.cursor/plans`, and `.agents/scratch/` are never committed. Add `.cursor/plans` to the root `.gitignore`; the entry in `.agents/.gitignore` does not cover the symlink at the repo root.
 
 If both plan paths are real directories, make them one tree: replace an empty directory with a relative symlink; if both have files, keep one real directory, move non-colliding files into it, and symlink the other. Do not ask which side is canonical. Stop only when the same filename has different content. Do not leave two independent plan trees.
 ```

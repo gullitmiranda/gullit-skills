@@ -1,6 +1,6 @@
 ---
 name: agent-notes
-description: Create, transition, supersede, or distill tracked agent notes under `.agents/notes/`. Use for durable decisions, research, proposals, missions, and coordination context. Notes are routed to a destination repo by topic scope (see Routing), never to whichever project the current thread happens to run in.
+description: Create, transition, supersede, or distill tracked agent notes under `.agents/notes/`. Use for durable decisions, research, proposals, missions, and coordination context. Notes are routed to a destination repo by topic scope (see Routing), never to whichever project the current thread happens to run in. A workspace root that is not a repository also uses `<workspace>/.agents/notes/` (see Workspace Roots Without a Repo).
 ---
 
 # Agent Notes
@@ -48,3 +48,18 @@ Rules:
 ## Report
 
 State the note path, lifecycle transition if any, successor relationship, and knowledge that was intentionally not preserved.
+
+## Workspace Roots Without a Repo
+
+A workspace root that is not a repository still uses
+`<workspace>/.agents/notes/`. A root-level `notes/` directory is a
+divergence to migrate, not a convention to follow.
+
+- Record the routing in `<workspace>/.agents/AGENTS.md`: workspace knowledge in
+  the workspace tree, repo-owned knowledge in that repo's `.agents/notes/`,
+  agent workspace conventions in `gullit-skills`.
+- Nothing in that tree is committed, so these notes cannot be linked from
+  published artifacts.
+- Do not open a second knowledge home where a repo already documents durable
+  knowledge (for example a per-cluster docs tree plus raw evidence): add only
+  plans there, and write notes where the repo already keeps them.

@@ -45,3 +45,22 @@ When authenticating a new account, include the `workflow` scope when the account
 gh auth login --scopes workflow
 gh auth refresh --scopes workflow
 ```
+
+## Access and Permission Checks
+
+Confirm access when starting work in a new context, not at push time.
+
+- Repo write access: `gh api repos/OWNER/REPO --jq .permissions` (needs
+  `push: true`). Rulesets, branch protection, and a required signed-commits
+  rule can still block a push, so check the target branch's rules as well.
+- A rejected `git push --dry-run` is not proof of missing permission: a
+  non-fast-forward, a hook, and a protected branch read like an auth failure.
+  Read the error text, and fetch and compare before concluding anything
+  about access.
+- Read-only infrastructure access is checked with the platform's own
+  authorization command (for example `kubectl auth can-i get pods -n NS`),
+  never inferred from a successful login.
+- After moving a clone, re-check routing:
+  `git config --show-origin --get-all credential.https://github.com.helper`
+  (a bare `credential.helper` hides URL-scoped helpers) and any `includeIf
+  gitdir` pointing at the old path.

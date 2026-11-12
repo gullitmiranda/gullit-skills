@@ -46,3 +46,14 @@ Write for the people who will read the message in Slack, not for this chat.
    turn — `slack_send_message_draft` by default, a direct send only when the user
    asked to send as-is. Do not stop the turn to wait for approval. After send,
    return the message permalink when available.
+
+## Permalinks
+
+A Slack permalink already identifies the destination; parse it instead of
+searching by name, which fails for private channels, DMs, and lists the search
+index does not cover.
+
+- `.../archives/<channel_id>/p<ts>` gives the channel ID plus `thread_ts`
+  (dot before the last six digits: `p1794343236340939` becomes
+  `1794343236.340939`).
+- `.../lists/<team_id>/<list_id>` gives the list ID directly.

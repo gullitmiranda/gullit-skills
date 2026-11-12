@@ -21,14 +21,19 @@ Apply the workspace model as a guardrail; install its repository contract only o
 - A handoff prompt is disposable: deliver it as paste-ready chat text, and at most write it under `.agents/scratch/`. Promote it to `.agents/notes/` only when its execution is deferred beyond the current session; never place it in tracked documentation folders.
 - `retired/` and `archived/` notes are frozen unless the user explicitly authorizes a correction, migration, cleanup, or reactivation.
 - Do not create empty lifecycle folders or placeholder files.
+- Do not add a second knowledge home. A repo that already documents durable
+  knowledge elsewhere (for example a per-cluster docs tree plus raw evidence)
+  gets plans and scratch only, with no `.agents/notes/`.
+- Leave legacy scratch paths (for example `.agent-tmp/`) ignored and untouched;
+  document `.agents/scratch/` as the current path instead of migrating them.
 - Never publish links to either plan path (`publish-safe-links`).
 
 ## Procedure
 
 1. Determine the mode from the user's request: guardrail by default, setup or migration only when explicitly requested.
 2. In guardrail mode, follow `.agents/AGENTS.md` for notes and scratch. Create only the plan, note, or scratch artifact required by the task. Before a plan write, make `.agents/plans` and `.cursor/plans` the same tree, then write through `.cursor/plans` when the runtime is Cursor.
-3. For explicit setup, inspect existing `.agents/`, `.cursor/plans`, and project instructions. Unify the plan paths with the rules above. Do not ask which side should be the real directory.
-4. Create or adapt `.agents/AGENTS.md` from [the template](templates/agents-AGENTS.md), plus `.agents/.gitignore` for `plans/` and `scratch/`.
+3. For explicit setup, inspect existing `.agents/`, `.cursor/plans`, project instructions (a root `AGENTS.md`, or a contract kept in `README.md`), and where durable knowledge already lives. Unify the plan paths with the rules above. Do not ask which side should be the real directory.
+4. Create or adapt `.agents/AGENTS.md` from [the template](templates/agents-AGENTS.md), plus `.agents/.gitignore` for `plans/` and `scratch/`, and add `.cursor/plans` to the root `.gitignore`: the `.agents/.gitignore` entry does not cover the symlink that sits at the repo root, so it shows up as untracked.
 5. Report created, changed, migrated, and deliberately untouched artifacts, including whether each plan is local or each note is tracked.
 
 ## Artifact model
@@ -44,3 +49,7 @@ docs/         canonical reader documentation
 ```
 
 Notes move only through `proposed`, `current`, `retired`, and `archived` folders. The folder is the lifecycle; visible `Status:` and `Outcome:` lines are optional type-specific context, not lifecycle metadata.
+
+A workspace root that is not a repository follows the same model. Nothing there is
+committed, and its `.agents/AGENTS.md` routes cross-repo knowledge to the workspace
+tree and repo-owned knowledge to each repo's own tree.

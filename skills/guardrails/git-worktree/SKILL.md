@@ -93,6 +93,19 @@ file-tool scope, give one optional post-creation recommendation for opening or
 attaching that checkout in the runtime. Do not repeat the pre-creation advice,
 require a reply, or block the existing terminal workflow.
 
+## Worktrees of Submodules
+
+A worktree created from a submodule stores its admin files under the
+superproject's module git dir (`.git/modules/<name>/worktrees/<id>`), so it is
+bound to the paths of both the submodule and the superproject.
+
+- Moving the superproject or the submodule can leave `git worktree list`
+  pointing at the old path. Verify from inside the submodule and run
+  `git worktree repair` there when the path is stale.
+- A `WORKSPACE.md` exception may place such worktrees in a stable directory of
+  a consuming workspace (see `workspace-topology`). That documented exception
+  replaces the `./worktrees/<topic>` default, and it covers worktrees only.
+
 ## Finishing a Worktree
 
 When the user says "finalizar worktree", "remover worktree", or "trazer para

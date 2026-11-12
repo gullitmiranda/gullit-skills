@@ -1,6 +1,6 @@
 ---
 name: workspace-topology
-description: Resolve clone/worktree destinations across a personal multi-context code directory using hierarchical WORKSPACE.md rules. Use before cloning a repository, choosing a worktree path, opening a set of repos as a workspace (Cursor/Zed multi-root/pseudo-project), or when a repo may belong to one of several context directories.
+description: Resolve clone/worktree destinations across a personal multi-context code directory using hierarchical WORKSPACE.md rules. Use before cloning a repository, choosing a worktree path, opening a set of repos as a workspace (Cursor/Zed multi-root/pseudo-project), when a repo may belong to one of several context directories, or when moving an existing clone between contexts.
 ---
 
 # Workspace Topology
@@ -46,3 +46,23 @@ so the workspace mirrors the tree instead of guessing.
 
 See [WORKSPACE-template.md](WORKSPACE-template.md) for the minimal
 `WORKSPACE.md` format. Nested files only record deviations from ancestors.
+
+## Moving an Existing Clone
+
+When a repo's correct context changes, move the existing clone instead of
+cloning again: history, worktrees, local config, and hooks move with it.
+
+1. Confirm the tree state first (`git status`, `git worktree list`, unpushed
+   commits). Do not move a clone holding work you cannot recover.
+2. Move the directory to the destination resolved by the rules above.
+3. Update every `WORKSPACE.md` that names the repo or the old path: the old
+   context, the new context, and their common ancestors.
+4. Re-verify identity in the new path: `user.email`, conditional includes
+   (`includeIf gitdir`) still keyed on the old path, and credential routing
+   (see `gh-profile`).
+5. Re-verify access from the new path before starting work.
+
+A `WORKSPACE.md` may declare a documented exception allowing worktrees of
+another context's canonical clone inside one stable directory of the
+consuming workspace (for example `worktrees/`). That exception covers
+worktrees only and must be written down before the worktree is created.
