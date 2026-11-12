@@ -2,8 +2,8 @@
 name: slack-outbound
 description: >-
   Compose, draft, or send Slack messages for a destination audience. Use when
-  preparing, drafting, or posting Slack messages, replies, or announcements —
-  including when using Slack MCP send/draft tools.
+  preparing, drafting, or posting Slack messages, replies, announcements, or PR
+  review requests — including when using Slack MCP send/draft tools.
 ---
 
 # Slack Outbound
@@ -32,6 +32,31 @@ Write for the people who will read the message in Slack, not for this chat.
   URL. Naming the repo in the sentence does not replace the URL. Do not wrap
   the URL in inline code or otherwise obscure it.
 - Deliver the chat preview and any draft as raw Slack mrkdwn inside a fenced code block so copy/paste works as a snippet: plain *bold* bullets, raw URLs, never rendered chat markdown or [text](url) syntax.
+- Default to short. If the message fits in one or two lines, it must not become
+  a paragraph; length needs a reason the reader can act on.
+
+## PR Review Requests
+
+A review request is a ping, not a report. The PR title and description already
+carry scope, and the thread already carries the previous context; restating
+them turns the channel into a newsletter.
+
+- Default shape: one line of what changed plus the ask, then the full PR URL.
+
+```
+Fixes stale restart-panel data on the runners dashboard — review?
+https://github.com/<owner>/<repo>/pull/<n>
+```
+
+- Do not restate the PR body: scope, rollout steps, deployment flow, checklists,
+  or "closing the loop on the previous PR". One line of explanation is usually
+  more than enough.
+- Reply in the existing thread when one covers the same change; never re-explain
+  what that thread already says.
+- Elaborate only when the request needs it — the user asked for detail, or
+  omitting a fact would mislead the reviewer (non-obvious risk, rollback or
+  sequencing caveat, a decision they must make). Even then, pick one: a short
+  line inside the request itself, or a follow-up reply in the request's thread.
 
 ## Procedure
 
