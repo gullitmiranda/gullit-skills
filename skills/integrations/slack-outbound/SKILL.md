@@ -19,11 +19,12 @@ Write for the people who will read the message in Slack, not for this chat.
 - Never assume chat-only shared context. Ban: "as we discussed", "the PR",
   "the fix", "the issue" without a public referent (link, ID, or one-line
   restatement a stranger in that channel would understand).
-- Print the exact message text in chat before calling any Slack write tool, so
-  the wording and destination are reviewable as a preview instead of as raw tool
-  input. Print, then proceed in the same turn: do not end the turn waiting for
-  approval. Still prefer `slack_send_message_draft` over a direct send, since
-  the Slack draft is the review gate.
+- Never call a Slack write tool (`slack_send_message`, drafts included) until
+  the user has explicitly approved the exact text. Print the message in chat and
+  stop; approval covers that one message and does not carry to follow-ups,
+  corrections, or other destinations.
+- "Send directly" means skip the Slack draft, not skip the review: the text is
+  still approved in chat first.
 - The local `slack_send_message` bridge appends an attribution footer by
   default. Pass `show_footer: false` to omit it or `footer: "..."` to
   replace its text for that one message — only when the user asks for that
@@ -71,10 +72,11 @@ https://github.com/<owner>/<repo>/pull/<n>
 3. **Audience rewrite.** Lead with the point. Include: who/what, why it
    matters here, next step or ask, and clickable public links. Match channel
    tone from the recent messages, not from this conversation.
-4. **Ship posture.** Print the exact message, then call the tool in the same
-   turn — `slack_send_message_draft` by default, a direct send only when the user
-   asked to send as-is. Do not stop the turn to wait for approval. After send,
-   return the message permalink when available.
+4. **Ship posture.** Print the exact message and stop. Write to Slack only
+   after the user approves that text: `slack_send_message` directly;
+   `slack_send_message_draft` only when the user explicitly asked for a
+   draft. Approval never extends to a later message. After send, return the
+   message permalink when available.
 
 ## Permalinks
 
