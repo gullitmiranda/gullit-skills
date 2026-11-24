@@ -353,6 +353,9 @@ validation. OpenRouter's catalog cannot substitute for surface evidence.
 
 When the provider is an employer gateway, the lane map and provisional cast
 belong in the employer-gateway overlay skill, not in this public document.
+The overlay's lane map and cast were last refreshed 2026-11-24 from
+gateway telemetry (latency, failures, price); Zed quality pilots remain
+pending, so no Zed row here is promoted to a measured default.
 
 On Zed Agent, native subagents run on the global `agent.subagent_model` when
 it is set, not on the parent thread's model; price delegated loops from that
