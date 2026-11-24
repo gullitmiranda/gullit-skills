@@ -24,6 +24,10 @@ Write for the people who will read the message in Slack, not for this chat.
   input. Print, then proceed in the same turn: do not end the turn waiting for
   approval. Still prefer `slack_send_message_draft` over a direct send, since
   the Slack draft is the review gate.
+- The local `slack_send_message` bridge appends an attribution footer by
+  default. Pass `show_footer: false` to omit it or `footer: "..."` to
+  replace its text for that one message — only when the user asks for that
+  message; never vary attribution on your own judgment.
 - Apply `publish-safe-links` and `data-boundary` before any draft or send.
 - Keep formatting guidance in the Cursor Slack plugin `slack-messaging` skill;
   this skill owns audience and grounding.
